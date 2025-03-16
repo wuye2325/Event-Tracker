@@ -1,0 +1,73 @@
+
+    <view class="container">
+        <block wx:if="{{!loading && event}}">
+            <!-- 事件头部卡片 -->
+            <view class="event-card">
+                <view class="event-header">
+                    <view class="header-row">
+                        <text class="event-title">{{event.title}}</text>
+                        <view class="event-status {{event.status === '进行中' ? 'status-active' : 'status-ended'}}">{{event.status}}</view>
+                    </view>
+                    <view class="event-meta">
+                        <text class="event-time">{{event.created_at}}</text>
+                        <text class="comment-count" wx:if="{{event.comment_count}}">{{event.comment_count}}条讨论</text>
+                    </view>
+                    <view class="event-desc">{{event.description}}</view>
+                    <view class="event-tags" wx:if="{{event.tags.length > 0}}">
+                        <text class="tag" wx:for="{{event.tags}}" wx:key="*this">{{item}}</text>
+                    </view>
+                    <view class="event-actions">
+                        <view class="action-button" bind:tap="onViewEventRelation">
+                            <text class="action-icon">🔗</text>
+                            <text>查看事件关联图</text>
+                        </view>
+                    </view>
+                </view>
+            </view>
+            <!-- 时间线 -->
+            <view class="timeline">
+                <view class="timeline-header">
+                    <text class="timeline-title">事件进展</text>
+                    <text class="timeline-count">共 {{timeline.length}} 条</text>
+                </view>
+                <view class="timeline-list">
+                    <view class="timeline-item" wx:for="{{timeline}}" wx:key="recordId">
+                        <view class="timeline-dot"></view>
+                        <view class="timeline-time">{{item.publish_time}}</view>
+                        <view class="timeline-card" bindtap="onViewComments"
+                        data-id="{{item.recordId}}">
+                            <view class="timeline-header">
+                                <image class="avatar" src="/images/icons/default-avatar.png" mode="aspectFill"></image>
+                                <view class="timeline-info">
+                                    <text class="nickname">{{item.nickname}}</text>
+                                    <text class="time">{{item.publish_time}}</text>
+                                </view>
+                            </view>
+                            <view class="timeline-content">
+                                <text>{{item.content}}</text>
+                            </view>
+                            <view class="timeline-images" wx:if="{{item.images.length > 0}}">
+                                <image wx:for="{{item.images}}" wx:key="*this" wx:for-item="imageUrl"
+                                src="{{imageUrl}}" mode="aspectFill" catchtap="previewImage" data-current="{{imageUrl}}"
+                                data-urls="{{item.images}}"></image>
+                            </view>
+                            <view class="timeline-actions">
+                                <view class="action-item">
+                                    <image class="action-icon" src="/images/icons/like.png"></image>
+                                    <text class="action-count">{{item.like_count || 0}}</text>
+                                </view>
+                                <view class="action-item">
+                                    <image class="action-icon" src="/images/icons/comment.png"></image>
+                                    <text class="action-count">{{item.comment_count || 0}}</text>
+                                </view>
+                            </view>
+                        </view>
+                    </view>
+                </view>
+            </view>
+        </block>
+        <!-- 加载中 -->
+        <view class="loading" wx:if="{{loading}}">
+            <text>加载中...</text>
+        </view>
+    </view>

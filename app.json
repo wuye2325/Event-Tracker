@@ -1,0 +1,54 @@
+{
+  "pages": [
+    "pages/home/index",
+    "pages/event-detail/index",
+    "pages/post-create/index",
+    "pages/vote/index",
+    "pages/vote-success/index",
+    "pages/comments/index",
+    "pages/profile/index",
+    "pages/event-relation/index",
+    "pages/notification/index"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#07C160",
+    "navigationBarTitleText": "社区事件追踪",
+    "navigationBarTextStyle": "white"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#07C160",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页",
+        "iconPath": "images/icons/home.png",
+        "selectedIconPath": "images/icons/home-active.png"
+      },
+      {
+        "pagePath": "pages/post-create/index",
+        "text": "发布",
+        "iconPath": "images/icons/post.png",
+        "selectedIconPath": "images/icons/post-active.png"
+      },
+      {
+        "pagePath": "pages/notification/index",
+        "text": "通知",
+        "iconPath": "images/icons/notification.png",
+        "selectedIconPath": "images/icons/notification-active.png"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的",
+        "iconPath": "images/icons/user.png",
+        "selectedIconPath": "images/icons/user-active.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

@@ -1,0 +1,23 @@
+<view class="event-card" bindtap="onTap">
+  <view class="event-card__header">
+    <text class="event-card__title">{{event.title}}</text>
+    <text class="event-card__status {{event.status === 'optKQgNnTm' ? 'status--ongoing' : 'status--ended'}}">{{statusText}}</text>
+  </view>
+  
+  <view class="event-card__content">
+    <text class="event-card__desc">{{event.description}}</text>
+  </view>
+  
+  <view class="event-card__footer">
+    <view class="event-card__info">
+      <text class="event-card__time">开始时间：{{event.start_date}}</text>
+      <text class="event-card__count">评论：{{event.comment_count || 0}}</text>
+    </view>
+    
+    <view class="event-card__tags">
+      <block wx:for="{{event.tags}}" wx:key="id">
+        <text class="event-card__tag">{{item.name}}</text>
+      </block>
+    </view>
+  </view>
+</view> 

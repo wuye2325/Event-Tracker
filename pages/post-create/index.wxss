@@ -1,0 +1,259 @@
+.container {
+  min-height: 100vh;
+  background-color: #F5F5F5;
+  padding-bottom: 120rpx;
+}
+
+/* 状态切换 */
+.status-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  background: #fff;
+  padding: 24rpx 32rpx;
+  border-bottom: 1rpx solid #EEEEEE;
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  font-size: 28rpx;
+  color: #666666;
+  position: relative;
+  padding: 16rpx 0;
+}
+
+.tab.active {
+  color: #07C160;
+  font-weight: 500;
+}
+
+.tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 48rpx;
+  height: 4rpx;
+  background: #07C160;
+  border-radius: 2rpx;
+}
+
+/* 帖子列表 */
+.post-list {
+  padding: 24rpx 32rpx;
+}
+
+.post-card {
+  background: #FFFFFF;
+  border-radius: 12rpx;
+  padding: 24rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+}
+
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.post-title {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #333333;
+  flex: 1;
+}
+
+.post-type {
+  font-size: 24rpx;
+  color: #07C160;
+  background: rgba(7, 193, 96, 0.1);
+  padding: 4rpx 12rpx;
+  border-radius: 4rpx;
+  margin-left: 16rpx;
+}
+
+.post-content {
+  font-size: 28rpx;
+  color: #666666;
+  line-height: 1.6;
+  margin-bottom: 24rpx;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.post-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 24rpx;
+}
+
+.post-time {
+  color: #999999;
+}
+
+.post-actions {
+  display: flex;
+  gap: 24rpx;
+}
+
+.action {
+  color: #07C160;
+}
+
+/* 空状态 */
+.empty-state {
+  padding: 120rpx 0;
+  text-align: center;
+}
+
+.empty-icon {
+  width: 160rpx;
+  height: 160rpx;
+  margin-bottom: 24rpx;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999999;
+}
+
+/* 加载中 */
+.loading-state {
+  text-align: center;
+  padding: 32rpx;
+  color: #999999;
+  font-size: 28rpx;
+}
+
+/* 发布按钮 */
+.create-btn {
+  position: fixed;
+  bottom: 48rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #07C160;
+  color: #FFFFFF;
+  font-size: 32rpx;
+  padding: 20rpx 64rpx;
+  border-radius: 40rpx;
+  box-shadow: 0 4rpx 12rpx rgba(7, 193, 96, 0.3);
+}
+
+.create-icon {
+  font-size: 40rpx;
+  margin-right: 8rpx;
+  font-weight: 300;
+}
+
+.form-item {
+  margin-bottom: 32rpx;
+}
+
+.content-input {
+  width: 100%;
+  height: 240rpx;
+  padding: 24rpx;
+  box-sizing: border-box;
+  font-size: 28rpx;
+  line-height: 1.6;
+  background: #f7f7f7;
+  border-radius: 12rpx;
+}
+
+.image-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.image-item {
+  position: relative;
+  width: 216rpx;
+  height: 216rpx;
+}
+
+.preview-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 8rpx;
+}
+
+.remove-btn {
+  position: absolute;
+  top: -16rpx;
+  right: -16rpx;
+  width: 40rpx;
+  height: 40rpx;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-btn {
+  width: 216rpx;
+  height: 216rpx;
+  background: #f7f7f7;
+  border-radius: 8rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-icon {
+  font-size: 48rpx;
+  color: #999;
+}
+
+.type-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.type-item {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 24rpx;
+  background: #f7f7f7;
+  border-radius: 32rpx;
+  transition: all 0.3s;
+}
+
+.type-item radio {
+  display: none;
+}
+
+.type-item text {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.type-item-active {
+  background: var(--primary-light, #f0f9f0);
+}
+
+.type-item-active text {
+  color: var(--primary-color, #07C160);
+}
+
+.submit-btn {
+  width: 100% !important;
+  height: 88rpx;
+  line-height: 88rpx;
+  font-size: 32rpx;
+  color: #fff;
+  background: var(--primary-color, #07C160) !important;
+  border-radius: 44rpx;
+} 

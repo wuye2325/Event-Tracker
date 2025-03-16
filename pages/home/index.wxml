@@ -1,0 +1,67 @@
+<view class="container">
+  <!-- 搜索栏 -->
+  <view class="search-bar">
+    <view class="search-input-wrap">
+      <icon type="search" size="14" color="#999"/>
+      <input 
+        class="search-input"
+        placeholder="搜索事件或关键词"
+        value="{{keyword}}"
+        bindinput="onSearch"
+      />
+    </view>
+  </view>
+
+  <!-- 筛选标签 -->
+  <view class="filter-tabs">
+    <view 
+      wx:for="{{statusList}}" 
+      wx:key="value"
+      class="filter-tab {{currentStatus === item.value ? 'active' : ''}}"
+      data-value="{{item.value}}"
+      bindtap="onStatusChange"
+    >
+      {{item.text}}
+    </view>
+  </view>
+
+  <!-- 事件列表 -->
+  <view class="event-list">
+    <block wx:if="{{!loading && events.length > 0}}">
+      <view 
+        class="event-card"
+        wx:for="{{events}}"
+        wx:key="recordId"
+        bindtap="onEventTap"
+        data-record-id="{{item.recordId}}"
+      >
+        <view class="event-header">
+          <text class="event-title">{{item.title}}</text>
+          <text class="event-status {{item.status === '进行中' ? 'ongoing' : 'ended'}}">{{item.status}}</text>
+        </view>
+        <view class="event-info">
+          <view class="info-item">
+            <text class="iconfont icon-calendar"></text>
+            <text>{{item.start_date}} 开始</text>
+          </view>
+          <view class="info-item">
+            <text class="iconfont icon-comment"></text>
+            <text>{{item.comment_count || 0}}条讨论</text>
+          </view>
+        </view>
+        <view class="event-tags" wx:if="{{item.tags.length > 0}}">
+          <text class="tag" wx:for="{{item.tags}}" wx:key="*this" wx:for-item="tagItem">#{{tagItem}}</text>
+        </view>
+      </view>
+    </block>
+    <view class="empty" wx:elif="{{!loading && events.length === 0}}">
+      <text>暂无事件</text>
+    </view>
+    <view class="loading" wx:if="{{loading}}">
+      <text>加载中...</text>
+    </view>
+  </view>
+
+  <!-- 删除这里的悬浮按钮 -->
+  <!-- 不再需要的 FAB 按钮已移除 -->
+</view>

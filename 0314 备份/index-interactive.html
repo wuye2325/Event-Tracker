@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>社区事件追踪小程序交互原型</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f5f5f5;
+            padding: 2rem;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+        }
+        
+        .phone-container {
+            width: 375px;
+            height: 812px;
+            background: white;
+            border-radius: 40px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            position: relative;
+            border: 12px solid #111;
+            margin: 0 auto;
+        }
+        
+        .phone-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40%;
+            height: 25px;
+            background: #111;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            z-index: 10;
+        }
+        
+        .phone-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            overflow: hidden;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+            gap: 1rem;
+        }
+        
+        .control-btn {
+            background: #07C160;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .control-btn:hover {
+            background: #06a050;
+        }
+        
+        h1.main-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #07C160;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        
+        .page-title {
+            text-align: center;
+            margin-top: 1rem;
+            font-weight: 600;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="main-title">社区事件追踪小程序交互原型</h1>
+    
+    <div class="phone-container">
+        <iframe id="phoneFrame" class="phone-frame" src="pages/home.html"></iframe>
+    </div>
+    
+    <div class="page-title" id="pageTitle">首页 - 事件列表</div>
+    
+    <div class="controls">
+        <button class="control-btn" onclick="loadPage('pages/home.html', '首页 - 事件列表')">首页</button>
+        <button class="control-btn" onclick="loadPage('pages/event-detail.html', '事件详情 - 时间线')">事件详情</button>
+        <button class="control-btn" onclick="loadPage('pages/post-create.html', '发布帖子')">发布帖子</button>
+        <button class="control-btn" onclick="loadPage('pages/vote.html', '投票表决')">投票表决</button>
+        <button class="control-btn" onclick="loadPage('pages/vote-success.html', '投票成功')">投票成功</button>
+        <button class="control-btn" onclick="loadPage('pages/comments.html', '评论讨论')">评论讨论</button>
+        <button class="control-btn" onclick="loadPage('pages/profile.html', '个人中心')">个人中心</button>
+        <button class="control-btn" onclick="loadPage('pages/event-relation.html', '事件关联展示')">事件关联图</button>
+    </div>
+    
+    <script>
+        // 页面加载函数
+        function loadPage(url, title) {
+            document.getElementById('phoneFrame').src = url;
+            document.getElementById('pageTitle').textContent = title;
+        }
+        
+        // 监听iframe内部的链接点击
+        document.getElementById('phoneFrame').onload = function() {
+            try {
+                const iframe = document.getElementById('phoneFrame');
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                
+                // 处理所有a标签点击
+                const links = iframeDoc.querySelectorAll('a');
+                links.forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const href = this.getAttribute('href');
+                        if (href) {
+                            // 更新iframe的src
+                            iframe.src = href.includes('/') ? href : 'pages/' + href;
+                            
+                            // 更新页面标题
+                            let pageTitle = '未知页面';
+                            if (href.includes('home')) pageTitle = '首页 - 事件列表';
+                            else if (href.includes('event-detail')) pageTitle = '事件详情 - 时间线';
+                            else if (href.includes('post-create')) pageTitle = '发布帖子';
+                            else if (href.includes('vote.html')) pageTitle = '投票表决';
+                            else if (href.includes('vote-success')) pageTitle = '投票成功';
+                            else if (href.includes('comments')) pageTitle = '评论讨论';
+                            else if (href.includes('profile')) pageTitle = '个人中心';
+                            else if (href.includes('event-relation')) pageTitle = '事件关联展示';
+                            
+                            document.getElementById('pageTitle').textContent = pageTitle;
+                        }
+                    });
+                });
+                
+                // 处理底部标签栏点击
+                const tabItems = iframeDoc.querySelectorAll('.tab-item');
+                tabItems.forEach(item => {
+                    item.addEventListener('click', function() {
+                        const index = Array.from(tabItems).indexOf(this);
+                        let targetPage = '';
+                        let pageTitle = '';
+                        
+                        switch(index) {
+                            case 0: // 首页
+                                targetPage = 'pages/home.html';
+                                pageTitle = '首页 - 事件列表';
+                                break;
+                            case 1: // 发现
+                                targetPage = 'pages/event-detail.html';
+                                pageTitle = '事件详情 - 时间线';
+                                break;
+                            case 2: // 通知
+                                targetPage = 'pages/comments.html';
+                                pageTitle = '评论讨论';
+                                break;
+                            case 3: // 我的
+                                targetPage = 'pages/profile.html';
+                                pageTitle = '个人中心';
+                                break;
+                        }
+                        
+                        if (targetPage) {
+                            iframe.src = targetPage;
+                            document.getElementById('pageTitle').textContent = pageTitle;
+                        }
+                    });
+                });
+                
+                // 处理发布按钮点击
+                const fabButton = iframeDoc.querySelector('.fab');
+                if (fabButton) {
+                    fabButton.addEventListener('click', function() {
+                        iframe.src = 'pages/post-create.html';
+                        document.getElementById('pageTitle').textContent = '发布帖子';
+                    });
+                }
+                
+                // 处理事件卡片点击
+                const eventCards = iframeDoc.querySelectorAll('.event-card');
+                if (eventCards.length > 0) {
+                    eventCards.forEach(card => {
+                        card.style.cursor = 'pointer'; // 添加鼠标指针样式，提示可点击
+                        card.addEventListener('click', function() {
+                            console.log('事件卡片被点击');
+                            iframe.src = 'pages/event-detail.html';
+                            document.getElementById('pageTitle').textContent = '事件详情 - 时间线';
+                        });
+                    });
+                }
+            } catch (e) {
+                console.error('无法访问iframe内容:', e);
+            }
+        };
+    </script>
+</body>
+</html>

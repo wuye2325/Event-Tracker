@@ -1,0 +1,57 @@
+<!--pages/post-create/index.wxml-->
+<view class="container">
+  <!-- 状态切换标签 -->
+  <view class="status-tabs">
+    <view class="tab {{currentStatus === 'published' ? 'active' : ''}}" 
+          bindtap="onChangeStatus" 
+          data-status="published">已发布</view>
+    <view class="tab {{currentStatus === 'revoked' ? 'active' : ''}}" 
+          bindtap="onChangeStatus" 
+          data-status="revoked">已撤销</view>
+  </view>
+
+  <!-- 帖子列表 -->
+  <view class="post-list">
+    <block wx:if="{{posts.length > 0}}">
+      <view class="post-card" wx:for="{{posts}}" wx:key="id">
+        <view class="post-header">
+          <text class="post-title">{{item.title}}</text>
+          <text class="post-type">{{item.type}}</text>
+        </view>
+        
+        <view class="post-content">{{item.content}}</view>
+        
+        <view class="post-footer">
+          <text class="post-time">{{item.createTime}}</text>
+          
+          <view class="post-actions">
+            <block wx:if="{{currentStatus === 'published'}}">
+              <text class="action" bindtap="onEditPost" data-id="{{item.id}}">编辑</text>
+              <text class="action" bindtap="onRevokePost" data-id="{{item.id}}">撤销</text>
+            </block>
+            <block wx:if="{{currentStatus === 'revoked'}}">
+              <text class="action" bindtap="onDeletePost" data-id="{{item.id}}">删除</text>
+            </block>
+            <text class="action" bindtap="onViewPost" data-id="{{item.id}}">查看</text>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:elif="{{!loading}}">
+      <image class="empty-icon" src="/images/icons/empty.png" />
+      <text class="empty-text">暂无{{currentStatus === 'published' ? '已发布' : '已撤销'}}的帖子</text>
+    </view>
+
+    <!-- 加载状态 -->
+    <view class="loading-state" wx:if="{{loading}}">
+      <text>加载中...</text>
+    </view>
+  </view>
+
+  <!-- 发布按钮 -->
+  <view class="create-btn" bindtap="onCreatePost">
+    <text>发布新帖子</text>
+  </view>
+</view>

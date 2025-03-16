@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>事件关联展示</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+        
+        .relation-map {
+            width: 100%;
+            height: 300px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .node {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #f0f9f0;
+            border: 2px solid #07C160;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(7, 193, 96, 0.2);
+        }
+        
+        .node.main {
+            background: #07C160;
+            color: white;
+            z-index: 10;
+        }
+        
+        .line {
+            position: absolute;
+            height: 2px;
+            background: #ddd;
+            transform-origin: 0 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- 状态栏 -->
+    <div class="status-bar bg-gray-100 flex justify-between px-4 py-1 text-xs text-gray-600">
+        <span>12:30</span>
+        <span class="flex items-center space-x-1">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-three-quarters"></i>
+        </span>
+    </div>
+
+    <!-- 微信小程序导航栏 -->
+    <div class="nav-bar bg-white flex justify-between items-center px-4 py-3 border-b border-gray-200">
+        <div class="flex items-center">
+            <a href="event-detail.html" class="text-gray-600 mr-2">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <span class="text-base font-medium">事件关联图</span>
+        </div>
+        <div><i class="fas fa-share-alt text-gray-600"></i></div>
+    </div>
+
+    <div class="content bg-gray-100">
+        <!-- 事件标题 -->
+        <div class="bg-white rounded-lg p-4 shadow-sm mb-4">
+            <h3 class="text-base font-medium mb-2">小区高空抛物监控安装</h3>
+            <div class="flex justify-between text-xs text-gray-500">
+                <span>开始时间：2023-03-01</span>
+                <span>状态：进行中</span>
+            </div>
+        </div>
+
+        <!-- 关联图 -->
+        <div class="relation-map mb-4">
+            <!-- 主事件节点 -->
+            <div class="node main" style="left: 50%; top: 50%; transform: translate(-50%, -50%);">
+                高空抛物监控安装
+            </div>
+            
+            <!-- 关联事件节点 -->
+            <div class="node" style="left: 20%; top: 30%; transform: translate(-50%, -50%);">
+                高空抛物事件报告
+            </div>
+            
+            <div class="node" style="left: 70%; top: 20%; transform: translate(-50%, -50%);">
+                监控方案讨论
+            </div>
+            
+            <div class="node" style="left: 80%; top: 60%; transform: translate(-50%, -50%);">
+                供应商选择投票
+            </div>
+            
+            <div class="node" style="left: 30%; top: 70%; transform: translate(-50%, -50%);">
+                安装进度跟踪
+            </div>
+            
+            <!-- 连接线 -->
+            <div class="line" style="left: 50%; top: 50%; width: 100px; transform: rotate(-45deg);"></div>
+            <div class="line" style="left: 50%; top: 50%; width: 80px; transform: rotate(-15deg);"></div>
+            <div class="line" style="left: 50%; top: 50%; width: 90px; transform: rotate(30deg);"></div>
+            <div class="line" style="left: 50%; top: 50%; width: 70px; transform: rotate(135deg);"></div>
+        </div>
+
+        <!-- 关联事件列表 -->
+        <div class="bg-white rounded-lg p-4 shadow-sm mb-4">
+            <h4 class="text-sm font-medium mb-3">关联事件列表</h4>
+            
+            <!-- 事件1 -->
+            <div class="border-b border-gray-100 pb-3 mb-3">
+                <div class="flex justify-between items-start mb-1">
+                    <div class="text-sm font-medium">高空抛物事件报告</div>
+                    <div class="text-xs py-1 px-2 bg-gray-200 text-gray-600 rounded-full">已结束</div>
+                </div>
+                <div class="text-xs text-gray-500 mb-1">2023-02-15 ~ 2023-02-28</div>
+                <div class="text-xs text-gray-600">业主反映小区多次发生高空抛物事件，引发安全担忧</div>
+            </div>
+            
+            <!-- 事件2 -->
+            <div class="border-b border-gray-100 pb-3 mb-3">
+                <div class="flex justify-between items-start mb-1">
+                    <div class="text-sm font-medium">监控方案讨论</div>
+                    <div class="text-xs py-1 px-2 bg-gray-200 text-gray-600 rounded-full">已结束</div>
+                </div>
+                <div class="text-xs text-gray-500 mb-1">2023-03-01 ~ 2023-03-05</div>
+                <div class="text-xs text-gray-600">业委会组织讨论监控安装方案，确定安装范围和预算</div>
+            </div>
+            
+            <!-- 事件3 -->
+            <div class="border-b border-gray-100 pb-3 mb-3">
+                <div class="flex justify-between items-start mb-1">
+                    <div class="text-sm font-medium">供应商选择投票</div>
+                    <div class="text-xs py-1 px-2 bg-green-100 text-green-600 rounded-full">进行中</div>
+                </div>
+                <div class="text-xs text-gray-500 mb-1">2023-03-10 ~ 2023-03-20</div>
+                <div class="text-xs text-gray-600">三家供应商提供方案，业主投票选择最合适的供应商</div>
+            </div>
+            
+            <!-- 事件4 -->
+            <div>
+                <div class="flex justify-between items-start mb-1">
+                    <div class="text-sm font-medium">安装进度跟踪</div>
+                    <div class="text-xs py-1 px-2 bg-gray-100 text-gray-500 rounded-full">未开始</div>
+                </div>
+                <div class="text-xs text-gray-500 mb-1">预计 2023-03-25 开始</div>
+                <div class="text-xs text-gray-600">监控设备安装进度跟踪，包括施工和验收</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

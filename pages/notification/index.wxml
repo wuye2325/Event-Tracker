@@ -1,0 +1,38 @@
+<!-- pages/notification/index.wxml -->
+<view class="container">
+  <view class="header">
+    <view class="title">通知中心</view>
+  </view>
+  
+  <view class="content">
+    <view class="loading" wx:if="{{loading}}">
+      <view class="loading-icon"></view>
+      <view class="loading-text">加载中...</view>
+    </view>
+    
+    <view class="empty" wx:elif="{{notifications.length === 0}}">
+      <image class="empty-icon" src="/images/icons/empty.png"></image>
+      <view class="empty-text">暂无通知</view>
+    </view>
+    
+    <view class="notification-list" wx:else>
+      <view class="notification-item {{item.read ? 'read' : ''}}" 
+            wx:for="{{notifications}}" 
+            wx:key="id"
+            bindtap="markAsRead"
+            data-id="{{item.id}}"
+            catch:tap="goToEvent"
+            data-eventid="{{item.eventId}}">
+        <view class="notification-dot" wx:if="{{!item.read}}"></view>
+        <view class="notification-content">
+          <view class="notification-title">{{item.title}}</view>
+          <view class="notification-desc">{{item.content}}</view>
+          <view class="notification-time">{{item.time}}</view>
+        </view>
+        <view class="notification-arrow" wx:if="{{item.eventId}}">
+          <image src="/images/icons/arrow-right.png"></image>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

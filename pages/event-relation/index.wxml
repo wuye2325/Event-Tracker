@@ -1,0 +1,55 @@
+<!-- pages/event-relation/index.wxml -->
+<view class="container">
+  <!-- 顶部导航栏 -->
+  <view class="nav-bar">
+    <view class="nav-back" bindtap="goBack">
+      <text class="iconfont icon-back">←</text>
+    </view>
+    <view class="nav-title">事件关联图</view>
+    <view class="nav-actions">
+      <view class="nav-action" bindtap="toggleLegend">
+        <text class="iconfont icon-legend">图例</text>
+      </view>
+      <view class="nav-action" bindtap="resetView">
+        <text class="iconfont icon-reset">重置</text>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 主体内容区 -->
+  <view class="content">
+    <!-- 加载状态 -->
+    <view class="loading-container" wx:if="{{loading}}">
+      <view class="loading-spinner"></view>
+      <view class="loading-text">加载中...</view>
+    </view>
+    
+    <!-- 关系图 Canvas -->
+    <canvas 
+      id="relationChart" 
+      type="2d" 
+      class="relation-chart"
+      bindtouchstart="onTouchStart"
+      bindtouchmove="onTouchMove"
+      bindtouchend="onTouchEnd"
+      wx:if="{{!loading}}"
+    ></canvas>
+    
+    <!-- 操作提示 -->
+    <view class="tips" wx:if="{{!loading}}">
+      <text>单指点击节点查看详情，双指缩放，单指拖动平移</text>
+    </view>
+  </view>
+  
+  <!-- 底部控制区 -->
+  <view class="control-bar" wx:if="{{!loading}}">
+    <view class="event-info">
+      <text class="event-title">{{currentEvent.title || '未知事件'}}</text>
+      <text class="event-status">{{currentEvent.statusText || '状态未知'}}</text>
+    </view>
+    <view class="zoom-controls">
+      <view class="zoom-btn zoom-out" bindtap="zoomOut">-</view>
+      <view class="zoom-btn zoom-in" bindtap="zoomIn">+</view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,17 @@
+<view class="card" bind:tap="onTap">
+  <view class="card-header">
+    <view class="card-title">{{title}}</view>
+    <view class="card-extra" wx:if="{{extra}}">{{extra}}</view>
+  </view>
+  <view class="card-body">
+    <image wx:if="{{thumb}}" class="card-thumb" src="{{thumb}}" mode="aspectFill" />
+    <slot></slot>
+  </view>
+  <view class="card-footer">
+    <view class="card-status" wx:if="{{status}}">
+      <text class="status-dot {{status === '进行中' ? 'status-active' : 'status-ended'}}"></text>
+      <text>{{status}}</text>
+    </view>
+    <text class="card-time" wx:if="{{time}}">{{time}}</text>
+  </view>
+</view> 
