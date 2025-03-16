@@ -2,7 +2,6 @@
 // 生成时间：2025-03-16
 // 数据源：通过飞书 API 获取的 5 张表结构（Events/Timeline/Comments/Votes/Users）
 
-// 添加用户表字段映射
 const FEISHU_FIELD_MAP = {
     // ------------------------ 事件表（Events）------------------------
     events: {
@@ -72,16 +71,15 @@ const FEISHU_FIELD_MAP = {
       关联时间线: '时间线表（Timeline）', // 双向关联字段
       关联评论: '评论表（Comments）' // 双向关联字段
     }
-};
+  };
   
-// 导出业务主键映射（关键！避免误用飞书内部 record_id）
-const FEISHU_PRIMARY_KEYS = {
+  // 导出业务主键映射（关键！避免误用飞书内部 record_id）
+  const FEISHU_PRIMARY_KEYS = {
     events: 'event_id',
     timeline: 'timeline_id',
     comments: 'comment_id',
     votes: 'vote_id',
     users: 'openid'
-};
+  };
   
-// 修改为CommonJS导出语法
-module.exports = { FEISHU_FIELD_MAP, FEISHU_PRIMARY_KEYS };
+  export { FEISHU_FIELD_MAP, FEISHU_PRIMARY_KEYS };

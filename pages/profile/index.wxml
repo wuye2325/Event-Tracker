@@ -6,16 +6,13 @@
       <image class="avatar" src="{{isLogin ? userInfo.avatarUrl : '/images/icons/user.png'}}" mode="aspectFill" />
       <view class="user-detail">
         <text class="nickname">{{isLogin ? userInfo.nickName : '未登录'}}</text>
-        <text class="community" wx:if="{{isLogin}}">{{userInfo.department || '飞书社区'}}</text>
+        <text class="community" wx:if="{{isLogin}}">飞书社区</text>
       </view>
       <view class="edit-btn" wx:if="{{isLogin}}" bindtap="editProfile">
         <text class="edit-text">编辑</text>
       </view>
     </view>
-    <!-- 修改登录按钮，使用open-type="getPhoneNumber" -->
     <button wx:if="{{!isLogin}}" class="login-btn" bindtap="handleLogin">点击登录</button>
-    <!-- 在实际项目中应该使用以下代码获取真实手机号 -->
-    <!-- <button wx:if="{{!isLogin}}" class="login-btn" open-type="getPhoneNumber" bindgetphonenumber="onGetPhoneNumber">点击登录</button> -->
   </view>
 
   <!-- 功能模块列表 -->

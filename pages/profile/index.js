@@ -1,6 +1,4 @@
 // pages/profile/index.js
-const { UserAPI } = require('../../services/api');
-
 Page({
   data: {
     userInfo: null,
@@ -89,70 +87,25 @@ Page({
     }
   },
 
-  // 修改登录方法，使用手机号授权
   handleLogin() {
-    // 显示合规提示
-    wx.showModal({
-      title: '授权提示',
-      content: '我们需要获取您的手机号以验证身份。您的信息将被安全保存，仅用于身份验证。',
-      confirmText: '同意',
-      cancelText: '拒绝',
+    wx.getUserProfile({
+      desc: '用于完善用户资料',
       success: (res) => {
-        if (res.confirm) {
-          // 用户同意授权，获取手机号
-          this.getPhoneNumber();
-        }
-      }
-    });
-  },
-  
-  // 获取手机号
-  getPhoneNumber() {
-    wx.showLoading({
-      title: '登录中...',
-    });
-    
-    // 模拟获取手机号的过程
-    // 注意：实际项目中应该使用 wx.login 和 <button open-type="getPhoneNumber"> 获取真实手机号
-    // 这里为了演示，直接使用王主任的手机号进行匹配
-    
-    setTimeout(async () => {
-      try {
-        // 模拟手机号 - 实际项目中应从微信API获取
-        const phoneNumber = "13800138000"; // 假设这是王主任的手机号
-        
-        // 调用后端API验证手机号并获取用户信息
-        const userInfo = await UserAPI.getUserByPhone(phoneNumber);
-        
-        if (userInfo) {
-          // 保存用户信息到本地
-          wx.setStorageSync('userInfo', userInfo);
-          
-          this.setData({
-            userInfo,
-            isLogin: true
-          });
-          
-          wx.showToast({
-            title: '登录成功',
-            icon: 'success'
-          });
-        } else {
-          wx.showToast({
-            title: '用户不存在',
-            icon: 'error'
-          });
-        }
-      } catch (error) {
-        console.error('登录失败:', error);
-        wx.showToast({
-          title: '登录失败',
-          icon: 'error'
+        const userInfo = res.userInfo;
+        wx.setStorageSync('userInfo', userInfo);
+        this.setData({
+          userInfo,
+          isLogin: true
         });
-      } finally {
-        wx.hideLoading();
+      },
+      fail: (err) => {
+        console.error('获取用户信息失败', err);
+        wx.showToast({
+          title: '获取用户信息失败',
+          icon: 'none'
+        });
       }
-    }, 1000); // 模拟网络延迟
+    });
   },
 
   handleMenuTap(e) {

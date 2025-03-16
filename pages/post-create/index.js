@@ -1,5 +1,5 @@
 // pages/post-create/index.js
-const { EventAPI, TimelineAPI, BitableAPI, UserAPI } = require('../../services/api');
+const { EventAPI, TimelineAPI, BitableAPI } = require('../../services/api');
 
 Page({
 
@@ -25,12 +25,7 @@ Page({
     if (options.eventId) {
       this.setData({ eventId: options.eventId });
     }
-    
-    // 获取用户信息
-    const userInfo = wx.getStorageSync('userInfo');
-    this.setData({ userInfo });
-    
-    this.loadPosts();
+    this.loadPosts()
   },
 
   /**
@@ -143,15 +138,6 @@ Page({
       });
       return;
     }
-    
-    // 检查用户是否登录
-    if (!this.data.userInfo || !this.data.userInfo.userId) {
-      wx.showToast({
-        title: '请先登录',
-        icon: 'none'
-      });
-      return;
-    }
 
     try {
       this.setData({ submitting: true });
@@ -161,21 +147,18 @@ Page({
         const event = await EventAPI.createEvent({
           title: this.data.content.slice(0, 20) + '...',
           description: this.data.content,
-          tags: [],
-          author: this.data.userInfo.nickName,
-          author_id: this.data.userInfo.userId // 添加作者ID
+          tags: []
         });
         this.setData({ eventId: event.record_id });
       }
 
       // 创建时间线记录
       await TimelineAPI.createPost({
-        eventRecordId: this.data.eventId,
+        eventId: this.data.eventId,
         content: this.data.content,
         type: this.data.type,
         images: this.data.images,
-        author: this.data.userInfo.nickName,
-        author_id: this.data.userInfo.userId // 添加作者ID
+        author: getApp().globalData.userInfo?.nickName || '匿名用户'
       });
 
       wx.showToast({
@@ -183,16 +166,6 @@ Page({
         icon: 'success'
       });
 
-      // 清空表单
-      this.setData({
-        content: '',
-        images: [],
-        type: '公告'
-      });
-      
-      // 刷新帖子列表
-      this.loadPosts
-      
       // 返回上一页
       setTimeout(() => {
         wx.navigateBack();
@@ -219,35 +192,20 @@ Page({
 
   async loadPosts() {
     try {
-      this.setData({ loading: true });
       wx.showLoading({ title: '加载中' });
       
-      // 获取用户信息
-      const userInfo = this.data.userInfo;
+      // 根据当前状态获取帖子
+      const filter = {
+        status: this.data.currentStatus,
+        author: '王主任' // 添加作者筛选条件
+      };
       
-      if (!userInfo || !userInfo.userId) {
-        this.setData({ 
-          posts: [],
-          loading: false 
-        });
-        wx.hideLoading();
-        return;
-      }
-      
-      // 获取当前用户的帖子
-      const posts = await UserAPI.getUserPosts(userInfo.userId);
-      
-      // 过滤出当前状态的帖子
-      const filteredPosts = posts.filter(post => 
-        this.data.currentStatus === 'published' 
-          ? post.status === 'published' 
-          : post.status === 'revoked'
-      );
+      const posts = await PostAPI.getPosts(filter);
       
       this.setData({
-        posts: filteredPosts.map(post => ({
+        posts: posts.map(post => ({
           ...post,
-          createTime: post.createTime ? new Date(post.createTime).toLocaleString() : '未知时间'
+          publish_time: formatTime(new Date(post.publish_time))
         }))
       });
     } catch (error) {
@@ -257,7 +215,6 @@ Page({
         icon: 'error'
       });
     } finally {
-      this.setData({ loading: false });
       wx.hideLoading();
     }
   },

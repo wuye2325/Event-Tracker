@@ -1,199 +1,253 @@
-// 飞书API相关工具函数
+const APP_ID = 'cli_a75e41b0cdfcd013';
+const APP_SECRET = 'gQDboZzkXd84iVSAJglqkhrWC8GhtXBf';
 
 // 飞书多维表格配置
 const BITABLE_CONFIG = {
   appToken: 'LGrcbUHMhasJgmsXOK5c3xCvnld',
   tables: {
-    events: 'tblKD957TsPgrNJn',
+    events: 'tblGGeNFxIWyWkj6',
     timeline: 'tbl36h41v2pW3EMZ',
-    votes: 'tblKD957TsPgrNJn',
-    users: 'tblfXC7NC9ZsT69E' // 添加用户表的ID
+    comments: 'tblKD957TsPgrNJn',
+    votes: 'tblxZ5f6lgGk18tL',
+    users: 'tblfXC7NC9ZsT69E'
   }
 };
 
-// 获取租户访问令牌
+// 获取tenant_access_token
 async function getTenantAccessToken() {
-  // 实现获取令牌的逻辑
-  // 这里应该有原有的实现代码
-  return 'your_access_token';
-}
-
-// 发起请求的通用方法
-async function makeRequest(url, method = 'GET', token, data = null) {
-  // 实现请求逻辑
-  // 这里应该有原有的实现代码
-  return {};
-}
-
-// 飞书多维表格API
-const BitableAPI = {
-  // 获取事件列表
-  getEvents: async function(filter = '') {
-    const token = await getTenantAccessToken();
-    const appToken = BITABLE_CONFIG.appToken;
-    const tableId = BITABLE_CONFIG.tables.events;
+  try {
+    const response = await new Promise((resolve, reject) => {
+      wx.request({
+        url: 'https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal',
+        method: 'POST',
+        data: {
+          app_id: APP_ID,
+          app_secret: APP_SECRET
+        },
+        success: (res) => {
+          console.log('getTenantAccessToken response:', res);
+          resolve(res);
+        },
+        fail: (error) => {
+          console.error('getTenantAccessToken request failed:', error);
+          reject(error);
+        }
+      });
+    });
     
-    let url = `https://open.feishu.cn/open-apis/bitable/v1/apps/${appToken}/tables/${tableId}/records?page_size=100`;
-    
-    if (filter) {
-      url += `&filter=${encodeURIComponent(filter)}`;
+    if (!response.data) {
+      throw new Error('Response data is undefined');
     }
     
-    return await makeRequest(url, 'GET', token);
+    if (response.data.code === 0) {
+      return response.data.tenant_access_token;
+    }
+    
+    throw new Error(response.data.msg || '获取token失败');
+  } catch (error) {
+    console.error('getTenantAccessToken error:', error);
+    throw error;
+  }
+}
+
+// 封装飞书API请求
+async function request(path, method = 'GET', data = null) {
+  try {
+    const token = await getTenantAccessToken();
+    if (!token) {
+      throw new Error('Failed to get access token');
+    }
+
+    const response = await new Promise((resolve, reject) => {
+      wx.request({
+        url: `https://open.feishu.cn/open-apis/bitable/v1/${path}`,
+        method,
+        data,
+        header: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        success: (res) => {
+          console.log('API request response:', res);
+          resolve(res);
+        },
+        fail: (error) => {
+          console.error('API request failed:', error);
+          reject(error);
+        }
+      });
+    });
+    
+    if (!response.data) {
+      throw new Error('Response data is undefined');
+    }
+    
+    if (response.data.code === 0) {
+      return response.data.data;
+    }
+    
+    throw new Error(response.data.msg || '请求失败');
+  } catch (error) {
+    console.error('feishu api request error:', error);
+    throw error;
+  }
+}
+
+// 数据表操作封装
+const BitableAPI = {
+  // 获取事件列表
+  async getEvents(filter = '') {
+    const path = `apps/${BITABLE_CONFIG.appToken}/tables/${BITABLE_CONFIG.tables.events}/records`;
+    return await request(path + (filter ? `?filter=${encodeURIComponent(filter)}` : ''));
   },
   
-  // 获取事件详情
-  getEventById: async function(recordId) {
-    const token = await getTenantAccessToken();
-    const appToken = BITABLE_CONFIG.appToken;
-    const tableId = BITABLE_CONFIG.tables.events;
-    
-    const url = `https://open.feishu.cn/open-apis/bitable/v1/apps/${appToken}/tables/${tableId}/records/${recordId}`;
-    
-    return await makeRequest(url, 'GET', token);
+  // 获取单条事件记录
+  async getEventById(recordId) {
+    const path = `apps/${BITABLE_CONFIG.appToken}/tables/${BITABLE_CONFIG.tables.events}/records/${recordId}`;
+    return await request(path);
   },
   
   // 创建事件
-  createEvent: async function(data) {
-    const token = await getTenantAccessToken();
-    const appToken = BITABLE_CONFIG.appToken;
-    const tableId = BITABLE_CONFIG.tables.events;
-    
-    const url = `https://open.feishu.cn/open-apis/bitable/v1/apps/${appToken}/tables/${tableId}/records`;
-    
-    return await makeRequest(url, 'POST', token, { fields: data });
+  async createEvent(data) {
+    const path = `apps/${BITABLE_CONFIG.appToken}/tables/${BITABLE_CONFIG.tables.events}/records`;
+    return await request(path, 'POST', { fields: data });
   },
   
   // 获取时间线列表
-  getTimeline: async function(filter = '') {
-    const token = await getTenantAccessToken();
-    const appToken = BITABLE_CONFIG.appToken;
-    const tableId = BITABLE_CONFIG.tables.timeline;
+  async getTimeline(eventId) {
+    const path = `apps/${BITABLE_CONFIG.appToken}/tables/${BITABLE_CONFIG.tables.timeline}/records`;
     
-    let url = `https://open.feishu.cn/open-apis/bitable/v1/apps/${appToken}/tables/${tableId}/records?page_size=100`;
-    
-    if (filter) {
-      url += `&filter=${encodeURIComponent(filter)}`;
+    // 如果是 record_id 格式，直接获取单条记录
+    if (eventId.startsWith('rec')) {
+      const recordPath = `${path}/${eventId}`;
+      console.log('使用记录查询路径:', recordPath);
+      const result = await request(recordPath);
+      // 将单条记录转换为列表格式
+      return {
+        items: result ? [result] : [],
+        total: result ? 1 : 0,
+        has_more: false
+      };
     }
     
-    return await makeRequest(url, 'GET', token);
-  },
-  
-  // 获取时间线详情
-  getTimelineById: async function(recordId) {
-    const token = await getTenantAccessToken();
-    const appToken = BITABLE_CONFIG.appToken;
-    const tableId = BITABLE_CONFIG.tables.timeline;
+    // 其他情况使用过滤查询
+    let filter;
+    if (eventId.includes('CurrentValue')) {
+      filter = eventId;
+    } else if (eventId.startsWith('ET')) {
+      filter = `CurrentValue.[event_id] = "${eventId}"`;
+    } else {
+      const paddedId = String(eventId).padStart(9, '0');
+      filter = `CurrentValue.[event_id] = "ET${paddedId}"`;
+    }
     
-    const url = `https://open.feishu.cn/open-apis/bitable/v1/apps/${appToken}/tables/${tableId}/records/${recordId}`;
+    console.log('获取时间线列表参数:', {
+      path,
+      filter: decodeURIComponent(filter),
+      originalEventId: eventId,
+      queryType: 'filter'
+    });
     
-    return await makeRequest(url, 'GET', token);
+    const result = await request(path + `?filter=${encodeURIComponent(filter)}`);
+    console.log('获取时间线列表结果:', {
+      success: !!result,
+      hasMore: result?.has_more,
+      total: result?.total,
+      itemCount: result?.items?.length || 0,
+      firstItem: result?.items?.[0]
+    });
+    return result;
   },
   
   // 创建时间线记录
-  createTimeline: async function(data) {
-    const token = await getTenantAccessToken();
-    const appToken = BITABLE_CONFIG.appToken;
-    const tableId = BITABLE_CONFIG.tables.timeline;
-    
-    const url = `https://open.feishu.cn/open-apis/bitable/v1/apps/${appToken}/tables/${tableId}/records`;
-    
-    return await makeRequest(url, 'POST', token, { fields: data });
+  async createTimeline(data) {
+    const path = `apps/${BITABLE_CONFIG.appToken}/tables/${BITABLE_CONFIG.tables.timeline}/records`;
+    return await request(path, 'POST', { fields: data });
   },
   
-  // 获取投票列表
-  getVotes: async function(filter = '') {
-    const token = await getTenantAccessToken();
-    const appToken = BITABLE_CONFIG.appToken;
-    const tableId = BITABLE_CONFIG.tables.votes;
-    
-    let url = `https://open.feishu.cn/open-apis/bitable/v1/apps/${appToken}/tables/${tableId}/records?page_size=100`;
-    
-    if (filter) {
-      url += `&filter=${encodeURIComponent(filter)}`;
-    }
-    
-    return await makeRequest(url, 'GET', token);
+  // 更新时间线记录
+  async updateTimeline(recordId, data) {
+    const path = `apps/${BITABLE_CONFIG.appToken}/tables/${BITABLE_CONFIG.tables.timeline}/records/${recordId}`;
+    return await request(path, 'PUT', { fields: data });
   },
   
-  // 创建投票
-  createVote: async function(data) {
-    const token = await getTenantAccessToken();
-    const appToken = BITABLE_CONFIG.appToken;
-    const tableId = BITABLE_CONFIG.tables.votes;
-    
-    const url = `https://open.feishu.cn/open-apis/bitable/v1/apps/${appToken}/tables/${tableId}/records`;
-    
-    return await makeRequest(url, 'POST', token, { fields: data });
-  },
-  
-  // 更新投票
-  updateVote: async function(recordId, data) {
-    const token = await getTenantAccessToken();
-    const appToken = BITABLE_CONFIG.appToken;
-    const tableId = BITABLE_CONFIG.tables.votes;
-    
-    const url = `https://open.feishu.cn/open-apis/bitable/v1/apps/${appToken}/tables/${tableId}/records/${recordId}`;
-    
-    return await makeRequest(url, 'PUT', token, { fields: data });
+  // 删除时间线记录
+  async deleteTimeline(recordId) {
+    const path = `apps/${BITABLE_CONFIG.appToken}/tables/${BITABLE_CONFIG.tables.timeline}/records/${recordId}`;
+    return await request(path, 'DELETE');
   },
   
   // 获取评论列表
-  getComments: async function(filter = '') {
-    const token = await getTenantAccessToken();
-    const appToken = BITABLE_CONFIG.appToken;
-    const tableId = BITABLE_CONFIG.tables.comments;
+  async getComments(timelineId) {
+    const path = `apps/${BITABLE_CONFIG.appToken}/tables/${BITABLE_CONFIG.tables.comments}/records`;
     
-    let url = `https://open.feishu.cn/open-apis/bitable/v1/apps/${appToken}/tables/${tableId}/records?page_size=100`;
-    
-    if (filter) {
-      url += `&filter=${encodeURIComponent(filter)}`;
+    // 确保 timelineId 有效
+    if (!timelineId) {
+      console.error('无效的 timelineId:', timelineId);
+      return { items: [] };
     }
     
-    return await makeRequest(url, 'GET', token);
+    // 使用成功的方法3: CurrentValue 前缀
+    const filter = `CurrentValue.[timeline_id] = "${timelineId}"`;
+    
+    console.log('获取评论列表请求参数:', {
+      path,
+      timelineId,
+      filter: decodeURIComponent(filter),
+      encodedFilter: encodeURIComponent(filter)
+    });
+    
+    return await request(path + `?filter=${encodeURIComponent(filter)}`);
   },
   
   // 创建评论
-  createComment: async function(data) {
-    const token = await getTenantAccessToken();
-    const appToken = BITABLE_CONFIG.appToken;
-    const tableId = BITABLE_CONFIG.tables.comments;
-    
-    const url = `https://open.feishu.cn/open-apis/bitable/v1/apps/${appToken}/tables/${tableId}/records`;
-    
-    return await makeRequest(url, 'POST', token, { fields: data });
+  async createComment(data) {
+    const path = `apps/${BITABLE_CONFIG.appToken}/tables/${BITABLE_CONFIG.tables.comments}/records`;
+    return await request(path, 'POST', { fields: data });
   },
   
-  // 添加用户表操作方法
-  getUsers: async function(filter = '') {
-    const token = await getTenantAccessToken();
-    const appToken = BITABLE_CONFIG.appToken;
-    const tableId = BITABLE_CONFIG.tables.users;
-    
-    let url = `https://open.feishu.cn/open-apis/bitable/v1/apps/${appToken}/tables/${tableId}/records?page_size=100`;
-    
-    if (filter) {
-      url += `&filter=${encodeURIComponent(filter)}`;
-    }
-    
-    console.log('getUsers API URL:', url);
-    
-    return await makeRequest(url, 'GET', token);
+  // 获取投票列表
+  async getVotes(eventId) {
+    const path = `apps/${BITABLE_CONFIG.appToken}/tables/${BITABLE_CONFIG.tables.votes}/records`;
+    const filter = `CurrentValue.[event_id]="${eventId}"`;
+    return await request(path + `?filter=${encodeURIComponent(filter)}`);
   },
   
-  getUserById: async function(recordId) {
-    const token = await getTenantAccessToken();
-    const appToken = BITABLE_CONFIG.appToken;
-    const tableId = BITABLE_CONFIG.tables.users;
+  // 创建投票
+  async createVote(data) {
+    const path = `apps/${BITABLE_CONFIG.appToken}/tables/${BITABLE_CONFIG.tables.votes}/records`;
+    return await request(path, 'POST', { fields: data });
+  },
+
+  // 获取用户信息
+  async getUsers(openids = []) {
+    if (!openids.length) return { items: [] };
     
-    const url = `https://open.feishu.cn/open-apis/bitable/v1/apps/${appToken}/tables/${tableId}/records/${recordId}`;
+    const path = `apps/${BITABLE_CONFIG.appToken}/tables/${BITABLE_CONFIG.tables.users}/records`;
+    const filter = `OR(${openids.map(id => `CurrentValue.[openid]="${id}"`).join(',')})`;
     
-    return await makeRequest(url, 'GET', token);
+    console.log('获取用户信息请求参数:', {
+      path,
+      filter: decodeURIComponent(filter),
+      openids
+    });
+    
+    const result = await request(path + `?filter=${encodeURIComponent(filter)}`);
+    console.log('获取用户信息返回结果:', result);
+    
+    // 确保返回格式正确
+    return {
+      items: result?.items || []
+    };
+  },
+  
+  // 根据 record_id 获取单条时间线记录
+  async getTimelineById(recordId) {
+    const path = `apps/${BITABLE_CONFIG.appToken}/tables/${BITABLE_CONFIG.tables.timeline}/records/${recordId}`;
+    return await request(path);
   }
 };
 
-// 导出模块
 module.exports = {
-  BitableAPI,
-  BITABLE_CONFIG
+  BitableAPI
 };
