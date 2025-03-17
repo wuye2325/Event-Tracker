@@ -68,21 +68,37 @@ Page({
   },
 
   onShow() {
+    // 设置TabBar选中状态
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({
-        selected: 3  // 确保"我的"选项卡高亮显示
+        selected: 3
       });
     }
+    
     // 每次显示页面时检查登录状态
     this.checkLoginStatus();
   },
 
   checkLoginStatus() {
-    const userInfo = wx.getStorageSync('userInfo');
-    if (userInfo) {
+    try {
+      const userInfo = wx.getStorageSync('userInfo');
+      if (userInfo) {
+        this.setData({
+          userInfo,
+          isLogin: true
+        });
+      } else {
+        this.setData({
+          userInfo: null,
+          isLogin: false
+        });
+      }
+    } catch (error) {
+      const app = getApp();
+      app.handleError(error, '检查登录状态失败');
       this.setData({
-        userInfo,
-        isLogin: true
+        userInfo: null,
+        isLogin: false
       });
     }
   },

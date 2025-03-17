@@ -25,7 +25,16 @@ Page({
     if (options.eventId) {
       this.setData({ eventId: options.eventId });
     }
-    this.loadPosts()
+    try {
+      this.loadPosts();
+    } catch (error) {
+      const app = getApp();
+      app.handleError(error, '加载帖子列表失败');
+      wx.showToast({
+        title: '加载失败',
+        icon: 'error'
+      });
+    }
   },
 
   /**
@@ -39,7 +48,12 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-
+    // 设置TabBar选中状态
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({
+        selected: 1
+      });
+    }
   },
 
   /**
@@ -107,7 +121,10 @@ Page({
           });
           return JSON.parse(uploadRes.data).url;
         } catch (error) {
-          console.error('图片上传失败:', error);
+              const errorInfo = getApp().handleError(error, '图片上传失败', {
+            path,
+            url: 'YOUR_UPLOAD_URL'
+          });
           return null;
         }
       });
@@ -119,7 +136,11 @@ Page({
         images: [...this.data.images, ...validImages]
       });
     } catch (error) {
-      console.error('选择图片失败:', error);
+      const errorInfo = getApp().handleError(error, '选择图片失败', {
+        count: 9,
+        sizeType: ['compressed'],
+        sourceType: ['album', 'camera']
+      });
     }
   },
 
@@ -171,6 +192,12 @@ Page({
         wx.navigateBack();
       }, 1500);
     } catch (error) {
+      const errorInfo = getApp().handleError(error, '发布帖子失败', {
+        eventId: this.data.eventId,
+        content: this.data.content,
+        type: this.data.type,
+        images: this.data.images
+      });
       wx.showToast({
         title: '发布失败',
         icon: 'error'
@@ -191,6 +218,10 @@ Page({
   },
 
   async loadPosts() {
+    console.log('业务层 - 开始加载帖子列表', {
+      status: this.data.currentStatus,
+      author: '王主任'
+    });
     try {
       wx.showLoading({ title: '加载中' });
       

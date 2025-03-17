@@ -76,6 +76,9 @@ Page({
   },
 
   async loadData() {
+    console.log('业务层 - 开始加载评论数据', {
+      timelineId: this.data.timelineId
+    });
     try {
       wx.showLoading({ title: '加载中' });
       
@@ -121,7 +124,11 @@ Page({
         comments: this.data.comments
       });
     } catch (error) {
-      console.error('加载评论数据失败:', error);
+      const errorInfo = getApp().handleError(error, '加载评论数据失败', {
+        timelineId: this.data.timelineId,
+        post,
+        comments
+      });
       wx.showToast({
         title: '加载失败',
         icon: 'error'
@@ -163,7 +170,12 @@ Page({
         icon: 'success'
       });
     } catch (error) {
-      console.error('发送评论失败:', error);
+      const errorInfo = getApp().handleError(error, '发送评论失败', {
+        timelineId: this.data.timelineId,
+        content: this.data.commentText,
+        parentId: this.data.replyToId,
+        author: '王主任'
+      });
       wx.showToast({
         title: '发送失败',
         icon: 'error'
