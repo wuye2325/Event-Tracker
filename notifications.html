@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>消息通知</title>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2D6AE0;
+            --primary-light: #F5F5F5;
+            --success-color: #34C759;
+            --warning-color: #FF9500;
+            --error-color: #FF3B30;
+        }
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #f7f8fa;
+        }
+        .nav-header {
+            height: 44px;
+            background: #fff;
+            border-bottom: 1px solid #eee;
+        }
+        .notification-item {
+            background: white;
+            border-radius: 12px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .notification-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .notification-item.unread {
+            background: #F0F7FF;
+        }
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        .icon-comment {
+            background: var(--primary-color);
+        }
+        .icon-update {
+            background: var(--warning-color);
+        }
+        .icon-system {
+            background: var(--success-color);
+        }
+        .unread-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 4px;
+            background: var(--error-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-header flex items-center justify-between px-4">
+        <button class="text-gray-600" onclick="history.back()">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <span class="font-medium">消息通知</span>
+        <button class="text-sm text-gray-600">全部已读</button>
+    </div>
+
+    <div class="p-4 space-y-4">
+        <!-- 未读评论通知 -->
+        <div class="notification-item unread p-4">
+            <div class="flex items-start gap-3">
+                <div class="notification-icon icon-comment">
+                    <i class="fas fa-comment-dots"></i>
+                </div>
+                <div class="flex-1">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="font-medium">新评论提醒</span>
+                        <div class="unread-dot"></div>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-1">李四 回复了你在"电梯检修与升级工程"中的评论</p>
+                    <p class="text-sm text-gray-500">感谢反馈，我们会加快进度。</p>
+                    <span class="text-xs text-gray-400 mt-2 block">10分钟前</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 未读更新通知 -->
+        <div class="notification-item unread p-4">
+            <div class="flex items-start gap-3">
+                <div class="notification-icon icon-update">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div class="flex-1">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="font-medium">事件更新提醒</span>
+                        <div class="unread-dot"></div>
+                    </div>
+                    <p class="text-sm text-gray-600">你关注的"园区绿化改造工程"有新进展</p>
+                    <span class="text-xs text-gray-400 mt-2 block">30分钟前</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 已读系统通知 -->
+        <div class="notification-item p-4">
+            <div class="flex items-start gap-3">
+                <div class="notification-icon icon-system">
+                    <i class="fas fa-info"></i>
+                </div>
+                <div class="flex-1">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="font-medium">系统通知</span>
+                    </div>
+                    <p class="text-sm text-gray-600">欢迎使用大事小事追踪小程序，这里可以帮助你了解小区重要事项的进展。</p>
+                    <span class="text-xs text-gray-400 mt-2 block">2024-03-19 12:00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 已读评论通知 -->
+        <div class="notification-item p-4">
+            <div class="flex items-start gap-3">
+                <div class="notification-icon icon-comment">
+                    <i class="fas fa-comment-dots"></i>
+                </div>
+                <div class="flex-1">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="font-medium">新评论提醒</span>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-1">王五 回复了你在"小区健身设施更新"中的评论</p>
+                    <p class="text-sm text-gray-500">同意，希望能增加更多健身设施。</p>
+                    <span class="text-xs text-gray-400 mt-2 block">昨天 15:30</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

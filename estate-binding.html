@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小区绑定 - 大事小事追踪</title>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/styles.css">
+    <style>
+        .estate-binding-container {
+            min-height: 100vh;
+            background-color: var(--bg-light);
+            display: flex;
+            flex-direction: column;
+            max-width: 390px;
+            margin: 0 auto;
+        }
+        .search-box {
+            position: relative;
+            margin-bottom: var(--spacing-xl);
+        }
+        .search-box input {
+            padding-left: 48px;
+            padding-right: 48px;
+            height: 52px;
+            font-size: 16px;
+            box-shadow: var(--shadow-sm);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            transition: all var(--transition-fast);
+        }
+        .search-box input:focus {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-md);
+        }
+        .search-box i.search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 20px;
+        }
+        .search-box button.clear-btn {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            border: none;
+            background: transparent;
+            font-size: 18px;
+            cursor: pointer;
+            transition: color var(--transition-fast);
+        }
+        .search-box button.clear-btn:hover {
+            color: var(--text-primary);
+        }
+        .search-history {
+            margin-bottom: var(--spacing-xl);
+        }
+        .history-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+        }
+        .history-item {
+            display: flex;
+            align-items: center;
+            padding: var(--spacing-md) var(--spacing-lg);
+            background-color: var(--bg-card);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--spacing-sm);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-fast);
+        }
+        .history-item:active {
+            transform: scale(0.98);
+            background-color: var(--bg-light);
+        }
+        .history-item i {
+            color: var(--text-secondary);
+            margin-right: var(--spacing-md);
+        }
+        .estate-results {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: var(--spacing-xl);
+        }
+        .estate-card {
+            background-color: var(--bg-card);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+            position: relative;
+            transition: all var(--transition-normal);
+        }
+        .estate-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        .estate-card .check-icon {
+            position: absolute;
+            right: var(--spacing-lg);
+            top: var(--spacing-lg);
+            color: var(--success-color);
+            font-size: 20px;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all var(--transition-fast);
+        }
+        .estate-card.selected .check-icon {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .estate-card .tag-group {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-sm);
+        }
+        .estate-card .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: var(--spacing-xs) var(--spacing-md);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            transition: all var(--transition-fast);
+        }
+        .estate-card .tag i {
+            margin-right: var(--spacing-xs);
+        }
+        .estate-card .tag:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+        .create-estate-btn {
+            background-color: rgba(47, 128, 237, 0.05);
+            border: 2px dashed var(--primary-color);
+            color: var(--primary-color);
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-md);
+            text-align: center;
+            margin-top: var(--spacing-xl);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        .create-estate-btn:hover {
+            background-color: rgba(47, 128, 237, 0.1);
+            transform: translateY(-2px);
+        }
+        .create-estate-btn i {
+            font-size: 24px;
+            margin-bottom: var(--spacing-sm);
+        }
+        .footer-btn {
+            margin-top: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+            width: 100%;
+            height: 56px;
+            border-radius: var(--radius-lg);
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .footer-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .footer-btn:not(:disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(74, 144, 226, 0.2);
+        }
+        
+        .footer-btn:not(:disabled):active {
+            transform: translateY(0);
+        }
+        
+        .footer-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .footer-btn:not(:disabled):hover::after {
+            opacity: 1;
+        }
+        
+        .no-result {
+            text-align: center;
+            padding: var(--spacing-xl) 0;
+            color: var(--text-secondary);
+        }
+        .no-result i {
+            font-size: 48px;
+            color: var(--text-tertiary);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        /* 弹窗样式优化 */
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+        .modal-content {
+            max-width: 340px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+        }
+        .modal-header {
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .modal-body {
+            padding: var(--spacing-lg);
+        }
+        .modal-footer {
+            padding: var(--spacing-lg);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: var(--spacing-md);
+        }
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+        .form-label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="estate-binding-container">
+        <div class="navbar">
+            <div class="navbar-back" onclick="window.location.href='login.html'">
+                <i class="fas fa-chevron-left"></i>
+            </div>
+            <div class="navbar-title">绑定小区</div>
+            <div class="navbar-action"></div>
+        </div>
+        
+        <div class="content">
+            <h1 class="font-lg font-bold mb-4">选择您所在的小区</h1>
+            <p class="text-secondary mb-4">绑定小区后，您将可以查看和发布小区内的事件</p>
+            
+            <div class="search-box">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="form-input" id="estate-search" placeholder="搜索小区名称" oninput="searchEstate()">
+                <button class="clear-btn" onclick="clearSearch()">
+                    <i class="fas fa-times-circle"></i>
+                </button>
+            </div>
+            
+            <div class="search-history" id="search-history">
+                <div class="history-title">
+                    <span class="font-bold">历史搜索</span>
+                    <a href="#" class="text-primary font-sm" onclick="clearHistory()">清空</a>
+                </div>
+                <div class="history-list">
+                    <div class="history-item" onclick="selectHistory('阳光小区')">
+                        <i class="fas fa-history"></i>
+                        <span>阳光小区</span>
+                    </div>
+                    <div class="history-item" onclick="selectHistory('和平广场')">
+                        <i class="fas fa-history"></i>
+                        <span>和平广场</span>
+                    </div>
+                    <div class="history-item" onclick="selectHistory('幸福家园')">
+                        <i class="fas fa-history"></i>
+                        <span>幸福家园</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="estate-results" id="estate-results">
+                <!-- 默认显示推荐小区 -->
+                <div class="font-bold mb-3">推荐小区</div>
+                
+                <div class="estate-card" onclick="selectEstate('阳光小区', 'est_001')">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="font-bold">阳光小区</h3>
+                            <p class="text-secondary font-sm mt-1">北京市海淀区</p>
+                        </div>
+                        <i class="fas fa-check-circle check-icon" style="display: none;"></i>
+                    </div>
+                    <div class="tag-group">
+                        <span class="tag"><i class="fas fa-users"></i> 258 用户</span>
+                        <span class="tag"><i class="fas fa-calendar-alt"></i> 125 事件</span>
+                    </div>
+                </div>
+                
+                <div class="estate-card" onclick="selectEstate('和平广场', 'est_002')">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="font-bold">和平广场</h3>
+                            <p class="text-secondary font-sm mt-1">北京市朝阳区</p>
+                        </div>
+                        <i class="fas fa-check-circle check-icon" style="display: none;"></i>
+                    </div>
+                    <div class="tag-group">
+                        <span class="tag"><i class="fas fa-users"></i> 183 用户</span>
+                        <span class="tag"><i class="fas fa-calendar-alt"></i> 78 事件</span>
+                    </div>
+                </div>
+                
+                <div class="estate-card" onclick="selectEstate('幸福家园', 'est_003')">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="font-bold">幸福家园</h3>
+                            <p class="text-secondary font-sm mt-1">北京市西城区</p>
+                        </div>
+                        <i class="fas fa-check-circle check-icon" style="display: none;"></i>
+                    </div>
+                    <div class="tag-group">
+                        <span class="tag"><i class="fas fa-users"></i> 326 用户</span>
+                        <span class="tag"><i class="fas fa-calendar-alt"></i> 214 事件</span>
+                    </div>
+                </div>
+                
+                <div class="create-estate-btn" id="create-estate-btn" onclick="showCreateEstateModal()">
+                    <i class="fas fa-plus-circle"></i>
+                    <div class="font-bold">创建新小区</div>
+                    <p class="text-secondary font-sm mt-1">没找到您的小区？点击创建</p>
+                </div>
+            </div>
+            
+            <div class="no-result" id="no-result" style="display: none;">
+                <i class="fas fa-search"></i>
+                <p class="font-bold mb-2">未找到相关小区</p>
+                <p class="text-secondary mb-4">您可以尝试其他关键词或创建新小区</p>
+                <button class="btn btn-outline" onclick="showCreateEstateModal()">
+                    <i class="fas fa-plus-circle mr-2"></i> 创建新小区
+                </button>
+            </div>
+            
+            <div class="form-group">
+                <button type="button" class="btn btn-primary btn-block" onclick="confirmBinding()">
+                    <span class="btn-text">确认绑定</span>
+                    <div class="loading-spinner"></div>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 创建小区弹窗 -->
+    <div id="create-estate-modal" class="modal-backdrop" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">创建新小区</h3>
+            </div>
+            <div class="modal-body">
+                <form id="create-estate-form">
+                    <div class="form-group">
+                        <label class="form-label">小区名称</label>
+                        <input type="text" class="form-input" placeholder="请输入小区名称" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">所在城市</label>
+                        <input type="text" class="form-input" placeholder="请输入所在城市" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">详细地址</label>
+                        <input type="text" class="form-input" placeholder="请输入详细地址" required>
+                    </div>
+                </form>
+                <p class="text-secondary font-sm mt-2">注：新创建的小区需经管理员审核后才能发布事件</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="hideCreateEstateModal()">取消</button>
+                <button class="btn btn-primary" onclick="createEstate()">提交</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 审核中弹窗 -->
+    <div id="pending-modal" class="modal-backdrop" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">小区审核中</h3>
+            </div>
+            <div class="modal-body text-center">
+                <i class="fas fa-clock text-warning" style="font-size: 48px; margin-bottom: 16px;"></i>
+                <p class="mb-3">您创建的小区正在审核中</p>
+                <p class="text-secondary font-sm">审核通过后，您将收到通知并可以发布事件</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary btn-block" onclick="goToHome()">我知道了</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedEstate = null;
+        
+        // 搜索小区
+        function searchEstate() {
+            const searchInput = document.getElementById('estate-search').value.trim().toLowerCase();
+            if (searchInput.length < 3) {
+                document.getElementById('search-history').style.display = 'block';
+                document.getElementById('estate-results').style.display = 'block';
+                document.getElementById('no-result').style.display = 'none';
+                return;
+            }
+            
+            // 模拟搜索结果
+            document.getElementById('search-history').style.display = 'none';
+            
+            if (searchInput === 'sun' || searchInput === '阳光') {
+                document.getElementById('estate-results').innerHTML = `
+                    <div class="estate-card" onclick="selectEstate('阳光小区', 'est_001')">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h3 class="font-bold">阳光小区</h3>
+                                <p class="text-secondary font-sm mt-1">北京市海淀区</p>
+                            </div>
+                            <i class="fas fa-check-circle check-icon" style="display: none;"></i>
+                        </div>
+                        <div class="tag-group">
+                            <span class="tag"><i class="fas fa-users"></i> 258 用户</span>
+                            <span class="tag"><i class="fas fa-calendar-alt"></i> 125 事件</span>
+                        </div>
+                    </div>
+                    <div class="create-estate-btn" id="create-estate-btn" onclick="showCreateEstateModal()">
+                        <i class="fas fa-plus-circle"></i>
+                        <div class="font-bold">创建新小区</div>
+                        <p class="text-secondary font-sm mt-1">没找到您的小区？点击创建</p>
+                    </div>
+                `;
+                document.getElementById('estate-results').style.display = 'block';
+                document.getElementById('no-result').style.display = 'none';
+            } else {
+                document.getElementById('estate-results').style.display = 'none';
+                document.getElementById('no-result').style.display = 'block';
+            }
+        }
+        
+        // 清空搜索
+        function clearSearch() {
+            document.getElementById('estate-search').value = '';
+            document.getElementById('search-history').style.display = 'block';
+            document.getElementById('estate-results').style.display = 'block';
+            document.getElementById('no-result').style.display = 'none';
+        }
+        
+        // 清空历史
+        function clearHistory() {
+            document.querySelector('.history-list').innerHTML = '';
+        }
+        
+        // 选择历史记录
+        function selectHistory(name) {
+            document.getElementById('estate-search').value = name;
+            searchEstate();
+        }
+        
+        // 选择小区
+        function selectEstate(name, id) {
+            // 清除之前的选择
+            document.querySelectorAll('.check-icon').forEach(icon => {
+                icon.style.display = 'none';
+            });
+            
+            // 设置新选择
+            const card = event.currentTarget;
+            const checkIcon = card.querySelector('.check-icon');
+            checkIcon.style.display = 'block';
+            
+            selectedEstate = { name, id };
+        }
+        
+        // 确认绑定逻辑
+        function confirmBinding() {
+            // 显示加载状态
+            const confirmBtn = document.querySelector('.btn-primary');
+            const btnText = confirmBtn.querySelector('.btn-text');
+            const spinner = confirmBtn.querySelector('.loading-spinner');
+            
+            btnText.style.display = 'none';
+            spinner.style.display = 'block';
+            confirmBtn.disabled = true;
+            
+            // 模拟绑定流程
+            setTimeout(() => {
+                // 跳转到首页
+                window.location.href = 'home.html';
+            }, 1500);
+        }
+        
+        // 显示创建小区弹窗
+        function showCreateEstateModal() {
+            document.getElementById('create-estate-modal').style.display = 'flex';
+        }
+        
+        // 隐藏创建小区弹窗
+        function hideCreateEstateModal() {
+            document.getElementById('create-estate-modal').style.display = 'none';
+        }
+        
+        // 创建小区
+        function createEstate() {
+            // 显示加载
+            const submitBtn = document.querySelector('#create-estate-modal .btn-primary');
+            submitBtn.innerHTML = '<div class="loading-spinner" style="width: 20px; height: 20px;"></div> 提交中...';
+            submitBtn.disabled = true;
+            
+            // 模拟创建过程
+            setTimeout(() => {
+                hideCreateEstateModal();
+                document.getElementById('pending-modal').style.display = 'flex';
+            }, 1500);
+        }
+        
+        // 审核中，跳转首页
+        function goToHome() {
+            window.location.href = 'home.html';
+        }
+    </script>
+</body>
+</html> 

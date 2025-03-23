@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>发布事件 - 大事小事追踪</title>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles.css">
+    <style>
+        .publish-container {
+            max-width: 390px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background-color: var(--bg-light);
+            padding-bottom: 80px;
+        }
+        
+        .form-section {
+            margin-bottom: var(--spacing-lg);
+            background-color: var(--bg-card);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .form-section-title {
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .textarea {
+            width: 100%;
+            min-height: 160px;
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            resize: vertical;
+            font-size: 16px;
+            transition: all var(--transition-fast);
+            background-color: var(--bg-light);
+        }
+        
+        .textarea:focus {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .upload-area {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-md);
+        }
+        
+        .upload-item {
+            aspect-ratio: 1;
+            border-radius: var(--radius-md);
+            border: 2px dashed var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all var(--transition-fast);
+            background-color: var(--bg-light);
+        }
+        
+        .upload-item:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .upload-preview {
+            aspect-ratio: 1;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            position: relative;
+            transition: all var(--transition-fast);
+        }
+        
+        .upload-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .upload-preview .remove-btn {
+            position: absolute;
+            top: var(--spacing-xs);
+            right: var(--spacing-xs);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .upload-preview .remove-btn:hover {
+            background-color: var(--error-color);
+        }
+        
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-sm);
+        }
+        
+        .tag-item {
+            display: inline-flex;
+            align-items: center;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            background-color: var(--bg-light);
+            color: var(--text-secondary);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            border: 1px solid var(--border-color);
+        }
+        
+        .tag-item:hover:not(.selected) {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .tag-item.selected {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+        }
+        
+        .tag-item i {
+            margin-right: var(--spacing-sm);
+        }
+        
+        .custom-tag-input {
+            display: inline-flex;
+            align-items: center;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            background-color: var(--bg-light);
+            border: 1px dashed var(--border-color);
+            transition: all var(--transition-fast);
+            min-width: 120px;
+        }
+        
+        .custom-tag-input:focus-within {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .custom-tag-input input {
+            border: none;
+            background: none;
+            outline: none;
+            font-size: 14px;
+            color: var(--text-primary);
+            width: 100%;
+        }
+        
+        .custom-tag-input input::placeholder {
+            color: var(--text-secondary);
+        }
+        
+        .custom-tag-input .add-btn {
+            color: var(--primary-color);
+            cursor: pointer;
+            padding: 0 var(--spacing-xs);
+            font-size: 14px;
+            opacity: 0;
+            transition: all var(--transition-fast);
+        }
+        
+        .custom-tag-input:focus-within .add-btn {
+            opacity: 1;
+        }
+        
+        .action-buttons {
+            position: fixed;
+            bottom: var(--spacing-lg);
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: var(--spacing-md);
+            width: calc(100% - 32px);
+            max-width: 358px;
+            z-index: 1000;
+            padding-top: var(--spacing-lg);
+        }
+        
+        .action-buttons .btn {
+            height: 44px;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        
+        .action-buttons .btn-primary {
+            flex: 1;
+            background: var(--primary-gradient);
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-back" onclick="window.location.href='home.html'">
+            <i class="fas fa-chevron-left"></i>
+        </div>
+        <div class="navbar-title">发布事件</div>
+        <div class="navbar-action"></div>
+    </div>
+    
+    <div class="content">
+        <div class="form-section">
+            <div class="form-section-title">事件标题</div>
+            <input type="text" class="form-input" placeholder="请输入标题（2-20字）" maxlength="20">
+        </div>
+        
+        <div class="form-section">
+            <div class="form-section-title">事件内容</div>
+            <textarea class="textarea" placeholder="请详细描述事件的内容（10-500字）..."></textarea>
+        </div>
+        
+        <div class="form-section">
+            <div class="form-section-title">添加图片</div>
+            <p class="text-secondary font-sm mb-3">最多上传9张图片</p>
+            <div class="upload-area">
+                <div class="upload-preview">
+                    <img src="https://images.unsplash.com/photo-1496979551903-46e46589a88b?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" alt="预览图">
+                    <div class="remove-btn">
+                        <i class="fas fa-times"></i>
+                    </div>
+                </div>
+                
+                <div class="upload-item">
+                    <i class="fas fa-plus"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <div class="form-section-title">选择标签</div>
+            <p class="text-secondary font-sm mb-3">最多选择5个标签</p>
+            <div class="tags-container">
+                <div class="tag-item" onclick="toggleTag(this)">
+                    <i class="fas fa-building"></i> 物业通知
+                </div>
+                <div class="tag-item" onclick="toggleTag(this)">
+                    <i class="fas fa-fire-extinguisher"></i> 安全演练
+                </div>
+                <div class="tag-item selected" onclick="toggleTag(this)">
+                    <i class="fas fa-users"></i> 全员参与
+                </div>
+                <div class="tag-item" onclick="toggleTag(this)">
+                    <i class="fas fa-dumbbell"></i> 基础设施
+                </div>
+                <div class="tag-item" onclick="toggleTag(this)">
+                    <i class="fas fa-leaf"></i> 环保行动
+                </div>
+                <div class="custom-tag-input">
+                    <input type="text" placeholder="添加自定义标签" maxlength="10" onkeypress="handleCustomTagKeyPress(event)">
+                    <i class="fas fa-plus add-btn" onclick="addCustomTag()"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="action-buttons">
+        <button class="action-button draft" onclick="saveDraft()">
+            <i class="far fa-save"></i>
+            保存草稿
+        </button>
+        <button class="action-button publish" onclick="publishEvent()">
+            <i class="fas fa-paper-plane"></i>
+            发布事件
+        </button>
+    </div>
+    
+    <script>
+        function toggleTag(element) {
+            // 获取已选中的标签数量
+            const selectedTags = document.querySelectorAll('.tag-item.selected').length;
+            
+            if (!element.classList.contains('selected') && selectedTags >= 5) {
+                alert('最多只能选择5个标签');
+                return;
+            }
+            
+            element.classList.toggle('selected');
+        }
+        
+        function handleCustomTagKeyPress(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                addCustomTag();
+            }
+        }
+        
+        function addCustomTag() {
+            const input = document.querySelector('.custom-tag-input input');
+            const tagText = input.value.trim();
+            
+            if (!tagText) return;
+            
+            // 检查标签数量限制
+            const selectedTags = document.querySelectorAll('.tag-item.selected').length;
+            if (selectedTags >= 5) {
+                alert('最多只能选择5个标签');
+                return;
+            }
+            
+            // 检查标签是否已存在
+            const existingTags = Array.from(document.querySelectorAll('.tag-item')).map(tag => 
+                tag.textContent.trim()
+            );
+            if (existingTags.includes(tagText)) {
+                alert('该标签已存在');
+                return;
+            }
+            
+            // 创建新标签
+            const newTag = document.createElement('div');
+            newTag.className = 'tag-item selected';
+            newTag.onclick = function() { toggleTag(this); };
+            newTag.innerHTML = `<i class="fas fa-tag"></i> ${tagText}`;
+            
+            // 插入到输入框前面
+            const customTagInput = document.querySelector('.custom-tag-input');
+            customTagInput.parentNode.insertBefore(newTag, customTagInput);
+            
+            // 清空输入框
+            input.value = '';
+        }
+        
+        function saveDraft() {
+            alert('保存草稿成功');
+        }
+        
+        function publishEvent() {
+            // 表单验证
+            const title = document.querySelector('.form-input').value;
+            const content = document.querySelector('.textarea').value;
+            
+            if (title.length < 2 || title.length > 20) {
+                alert('标题长度需要在2-20字之间');
+                return;
+            }
+            
+            if (content.length < 10 || content.length > 500) {
+                alert('内容长度需要在10-500字之间');
+                return;
+            }
+            
+            // 显示加载状态
+            const publishBtn = document.querySelector('.action-button.publish');
+            const btnText = publishBtn.querySelector('span');
+            const spinner = document.createElement('div');
+            spinner.className = 'loading-spinner';
+            spinner.style.width = '20px';
+            spinner.style.height = '20px';
+            spinner.style.margin = '0 auto';
+            
+            btnText.style.display = 'none';
+            publishBtn.appendChild(spinner);
+            publishBtn.disabled = true;
+            
+            // 模拟发布
+            setTimeout(() => {
+                alert('发布成功！');
+                window.location.href = 'home.html';
+            }, 1500);
+        }
+    </script>
+</body>
+</html> 

@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搜索 - 大事小事追踪</title>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4A90E2;
+            --success-color: #52C41A;
+            --warning-color: #FAAD14;
+            --error-color: #F5222D;
+            --text-primary: #262626;
+            --text-secondary: #595959;
+            --text-light: #8C8C8C;
+            --bg-light: #F5F5F5;
+            --border-color: #E8E8E8;
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 16px;
+        }
+        
+        body {
+            font-family: "Noto Sans SC", sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-primary);
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+        
+        .search-header {
+            background: white;
+            padding: var(--spacing-md);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: var(--bg-light);
+            border-radius: var(--radius-lg);
+            padding: 12px var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            transition: all 0.3s ease;
+        }
+        
+        .search-bar:focus-within {
+            background: white;
+            box-shadow: 0 0 0 2px var(--primary-color);
+        }
+        
+        .search-bar i {
+            color: var(--text-secondary);
+            font-size: 18px;
+            margin-right: var(--spacing-md);
+        }
+        
+        .search-input {
+            flex: 1;
+            border: none;
+            background: none;
+            font-size: 16px;
+            color: var(--text-primary);
+            outline: none;
+        }
+        
+        .search-input::placeholder {
+            color: var(--text-light);
+        }
+        
+        .filter-tabs {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding-bottom: var(--spacing-sm);
+        }
+        
+        .filter-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .filter-tab {
+            padding: 6px var(--spacing-md);
+            border-radius: var(--radius-lg);
+            font-size: 14px;
+            color: var(--text-secondary);
+            background: white;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+        
+        .filter-tab.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .hot-tags,
+        .section-title,
+        .tag-grid,
+        .tag {
+            display: none;
+        }
+        
+        .search-results {
+            padding: 0 var(--spacing-md);
+            padding-top: var(--spacing-sm);
+        }
+        
+        .result-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .result-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .result-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .result-left {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .result-status {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            color: var(--text-light);
+            font-size: 12px;
+        }
+        
+        .result-type {
+            padding: 2px var(--spacing-sm);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+        }
+        
+        .type-vote {
+            background: rgba(82, 196, 26, 0.1);
+            color: var(--success-color);
+        }
+        
+        .type-complaint {
+            background: rgba(245, 34, 45, 0.1);
+            color: var(--error-color);
+        }
+        
+        .result-date {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        .result-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .result-meta {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+        
+        .result-latest {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-sm);
+            padding: var(--spacing-sm);
+            background: var(--bg-light);
+            border-radius: var(--radius-md);
+        }
+        
+        .result-tags {
+            display: flex;
+            gap: var(--spacing-xs);
+            flex-wrap: wrap;
+        }
+        
+        .result-tag {
+            padding: 2px var(--spacing-sm);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            background: var(--bg-light);
+            color: var(--text-secondary);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: var(--spacing-lg);
+            color: var(--text-light);
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: var(--spacing-md);
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="search-header">
+        <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" class="search-input" placeholder="搜索事件、标签或关键词">
+        </div>
+        
+        <div class="filter-tabs">
+            <div class="filter-tab active">全部</div>
+            <div class="filter-tab">投票</div>
+            <div class="filter-tab">公告</div>
+            <div class="filter-tab">投诉</div>
+            <div class="filter-tab">更新</div>
+            <div class="filter-tab">最新发布</div>
+            <div class="filter-tab">最多关注</div>
+        </div>
+    </div>
+    
+    <div class="search-results">
+        <div class="result-card">
+            <div class="result-header">
+                <div class="result-left">
+                    <span class="result-type type-vote">投票</span>
+                    <span class="result-status">
+                        <i class="fas fa-circle" style="font-size: 8px;"></i>
+                        进行中
+                    </span>
+                </div>
+                <span class="result-date">2024-03-19</span>
+            </div>
+            <div class="result-title">小区绿化改造整体规划方案</div>
+            <div class="result-meta">
+                <span class="meta-item">
+                    <i class="fas fa-user"></i>
+                    238人参与
+                </span>
+                <span class="meta-item">
+                    <i class="fas fa-clock"></i>
+                    12次更新
+                </span>
+                <span class="meta-item">
+                    <i class="fas fa-comment"></i>
+                    56条评论
+                </span>
+            </div>
+            <div class="result-latest">
+                <i class="fas fa-bell"></i>
+                最新进展：已收集居民意见，正在制定最终方案
+            </div>
+            <div class="result-tags">
+                <span class="result-tag">环境改造</span>
+                <span class="result-tag">公共空间</span>
+                <span class="result-tag">业主投票</span>
+                <span class="result-tag">在进行</span>
+            </div>
+        </div>
+        
+        <div class="result-card">
+            <div class="result-header">
+                <div class="result-left">
+                    <span class="result-type type-complaint">投诉</span>
+                    <span class="result-status">
+                        <i class="fas fa-circle" style="font-size: 8px; color: var(--success-color);"></i>
+                        已解决
+                    </span>
+                </div>
+                <span class="result-date">2024-03-18</span>
+            </div>
+            <div class="result-title">2号楼电梯系统升级改造项目</div>
+            <div class="result-meta">
+                <span class="meta-item">
+                    <i class="fas fa-user"></i>
+                    156人关注
+                </span>
+                <span class="meta-item">
+                    <i class="fas fa-clock"></i>
+                    8次更新
+                </span>
+                <span class="meta-item">
+                    <i class="fas fa-comment"></i>
+                    32条评论
+                </span>
+            </div>
+            <div class="result-latest">
+                <i class="fas fa-check-circle" style="color: var(--success-color);"></i>
+                最新进展：电梯系统升级完成，已恢复正常运行
+            </div>
+            <div class="result-tags">
+                <span class="result-tag">设施维护</span>
+                <span class="result-tag">安全隐患</span>
+                <span class="result-tag">物业服务</span>
+                <span class="result-tag">已完成</span>
+            </div>
+        </div>
+        
+        <!-- 空状态 -->
+        <div class="empty-state" style="display: none;">
+            <i class="fas fa-search"></i>
+            <div>暂无搜索结果</div>
+            <div style="font-size: 14px; margin-top: 8px;">
+                试试其他关键词
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 搜索框聚焦效果
+        const searchInput = document.querySelector('.search-input');
+        const searchBar = document.querySelector('.search-bar');
+        
+        // 标签页切换
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
+        
+        // 热门标签点击
+        document.querySelectorAll('.tag').forEach(tag => {
+            tag.addEventListener('click', () => {
+                searchInput.value = tag.textContent;
+                // 触发搜索...
+            });
+        });
+    </script>
+</body>
+</html> 

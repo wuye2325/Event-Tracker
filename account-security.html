@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>账号安全 - 大事小事追踪</title>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2D6AE0;
+            --primary-dark: #357ABD;
+            --primary-light: #F5F5F5;
+            --success-color: #34C759;
+            --warning-color: #FF9500;
+            --error-color: #FF3B30;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --text-light: #8C8C8C;
+            --bg-light: #F5F5F5;
+            --border-color: #E8E8E8;
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 16px;
+        }
+        
+        body {
+            font-family: "Noto Sans SC", sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        .nav-header {
+            background: white;
+            padding: var(--spacing-md) var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .nav-header .back-btn {
+            color: var(--text-primary);
+            padding: var(--spacing-xs);
+            margin-right: var(--spacing-sm);
+        }
+
+        .nav-header .title {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .security-list {
+            background: white;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            margin: var(--spacing-md);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .security-item {
+            display: flex;
+            align-items: center;
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .security-item:hover {
+            background-color: var(--bg-light);
+        }
+
+        .security-item:last-child {
+            border-bottom: none;
+        }
+
+        .security-item .icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-md);
+            background: var(--primary-light);
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: var(--spacing-md);
+        }
+
+        .security-item .content {
+            flex: 1;
+        }
+
+        .security-item .title {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .security-item .description {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .security-item .arrow {
+            color: var(--text-light);
+            transition: transform 0.3s ease;
+        }
+
+        .security-item:hover .arrow {
+            transform: translateX(4px);
+        }
+
+        /* 弹窗样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            padding: var(--spacing-lg);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .close-btn {
+            color: var(--text-light);
+            padding: var(--spacing-xs);
+        }
+
+        .input-group {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .input-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .input-field {
+            width: 100%;
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(45, 106, 224, 0.1);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: var(--spacing-md);
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 16px;
+            font-weight: 500;
+            margin-top: var(--spacing-lg);
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .submit-btn:disabled {
+            background: var(--text-light);
+            cursor: not-allowed;
+        }
+
+        .error-text {
+            color: var(--error-color);
+            font-size: 12px;
+            margin-top: var(--spacing-xs);
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <div class="nav-header">
+        <a href="user-center.html" class="back-btn">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+        <span class="title">账号安全</span>
+    </div>
+
+    <!-- 安全设置列表 -->
+    <div class="security-list">
+        <div class="security-item" onclick="showModal('username')">
+            <div class="icon">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="content">
+                <div class="title">修改用户名</div>
+                <div class="description">当前用户名：王业主</div>
+            </div>
+            <i class="fas fa-chevron-right arrow"></i>
+        </div>
+
+        <div class="security-item" onclick="showModal('password')">
+            <div class="icon">
+                <i class="fas fa-key"></i>
+            </div>
+            <div class="content">
+                <div class="title">修改密码</div>
+                <div class="description">定期更换密码可以提升账号安全性</div>
+            </div>
+            <i class="fas fa-chevron-right arrow"></i>
+        </div>
+    </div>
+
+    <!-- 修改用户名弹窗 -->
+    <div id="usernameModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">修改用户名</div>
+                <div class="close-btn" onclick="hideModal('username')">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+            <div class="input-group">
+                <div class="input-label">新用户名</div>
+                <input type="text" class="input-field" id="newUsername" placeholder="请输入新的用户名">
+            </div>
+            <button class="submit-btn" onclick="updateUsername()">确认修改</button>
+        </div>
+    </div>
+
+    <!-- 修改密码弹窗 -->
+    <div id="passwordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">修改密码</div>
+                <div class="close-btn" onclick="hideModal('password')">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+            <div class="input-group">
+                <div class="input-label">当前密码</div>
+                <input type="password" class="input-field" id="currentPassword" placeholder="请输入当前密码">
+            </div>
+            <div class="input-group">
+                <div class="input-label">新密码</div>
+                <input type="password" class="input-field" id="newPassword" placeholder="请输入新密码" onkeyup="validatePassword()">
+                <div class="error-text" id="passwordError">密码长度至少为8位，包含字母和数字</div>
+            </div>
+            <div class="input-group">
+                <div class="input-label">确认新密码</div>
+                <input type="password" class="input-field" id="confirmPassword" placeholder="请再次输入新密码" onkeyup="validatePassword()">
+                <div class="error-text" id="confirmError">两次输入的密码不一致</div>
+            </div>
+            <button class="submit-btn" id="updatePasswordBtn" onclick="updatePassword()" disabled>确认修改</button>
+        </div>
+    </div>
+
+    <script>
+        // 显示弹窗
+        function showModal(type) {
+            document.getElementById(type + 'Modal').style.display = 'block';
+        }
+
+        // 隐藏弹窗
+        function hideModal(type) {
+            document.getElementById(type + 'Modal').style.display = 'none';
+            // 清空输入框
+            if (type === 'password') {
+                document.getElementById('currentPassword').value = '';
+                document.getElementById('newPassword').value = '';
+                document.getElementById('confirmPassword').value = '';
+                document.getElementById('passwordError').style.display = 'none';
+                document.getElementById('confirmError').style.display = 'none';
+                document.getElementById('updatePasswordBtn').disabled = true;
+            } else {
+                document.getElementById('newUsername').value = '';
+            }
+        }
+
+        // 验证密码
+        function validatePassword() {
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const passwordError = document.getElementById('passwordError');
+            const confirmError = document.getElementById('confirmError');
+            const updateBtn = document.getElementById('updatePasswordBtn');
+            
+            // 验证密码强度
+            const isPasswordValid = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(newPassword);
+            
+            if (!isPasswordValid) {
+                passwordError.style.display = 'block';
+            } else {
+                passwordError.style.display = 'none';
+            }
+
+            // 验证密码一致性
+            if (confirmPassword && newPassword !== confirmPassword) {
+                confirmError.style.display = 'block';
+            } else {
+                confirmError.style.display = 'none';
+            }
+
+            // 启用/禁用提交按钮
+            updateBtn.disabled = !isPasswordValid || !confirmPassword || newPassword !== confirmPassword;
+        }
+
+        // 更新用户名
+        function updateUsername() {
+            const newUsername = document.getElementById('newUsername').value;
+            if (newUsername.trim()) {
+                // TODO: 调用接口更新用户名
+                alert('用户名修改成功！');
+                hideModal('username');
+            }
+        }
+
+        // 更新密码
+        function updatePassword() {
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            
+            if (currentPassword && newPassword) {
+                // TODO: 调用接口更新密码
+                alert('密码修改成功！');
+                hideModal('password');
+            }
+        }
+    </script>
+</body>
+</html> 
