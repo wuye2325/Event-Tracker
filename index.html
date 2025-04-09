@@ -104,6 +104,34 @@
             font-size: 18px;
             line-height: 1.6;
         }
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-tertiary) 100%);
+            padding: 0;
+            justify-content: center; /* 使内容垂直居中 */
+        }
+        .login-content {
+            margin: 0 32rpx;
+            background: #fff;
+            border-radius: 24rpx;
+            box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+        page {
+            /* 颜色 */
+            --primary-color: #3B82F6;
+            --secondary-color: #EC4899;
+            --text-color-primary: #333333;
+            --text-color-secondary: #666666;
+            --text-color-gray: #999999;
+            --border-color: #E5E5E5;
+            --bg-light: #F5F7FA;
+            --bg-tertiary: #E4ECFB;
+            
+            /* 确保其他变量也正确定义...*/
+        }
     </style>
 </head>
 <body>
