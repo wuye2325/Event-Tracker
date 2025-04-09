@@ -1,0 +1,14 @@
+<svg width="420" height="420" viewBox="0 0 420 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <linearGradient id="blue-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%" stop-color="#2D6AE0"/>
+    <stop offset="100%" stop-color="#1E88E5"/>
+  </linearGradient>
+</defs>
+<path d="M160 55C160 24.6243 184.624 0 215 0V0C245.376 0 270 24.6243 270 55V55C270 85.3757 245.376 110 215 110H160V55Z" fill="url(#blue-gradient)"/>
+<path d="M0 110H160V200H50C22.3858 200 0 177.614 0 150V110Z" fill="url(#blue-gradient)"/>
+<path d="M160 290H0V380H110C137.614 380 160 357.614 160 330V290Z" fill="url(#blue-gradient)"/>
+<path d="M164.354 290.144L160 290V200C281.503 200 380 298.497 380 420H290C290 349.91 234.406 292.453 164.354 290.144Z" fill="url(#blue-gradient)"/>
+<path d="M340 66C315.147 66 295 86.1472 295 111L295 236L330 236C354.853 236 375 215.853 375 191L375 66L340 66Z" fill="url(#blue-gradient)"/>
+<path d="M420 156C420 131.147 399.853 111 375 111H250V146C250 170.853 270.147 191 295 191H420V156Z" fill="url(#blue-gradient)"/>
+</svg>
