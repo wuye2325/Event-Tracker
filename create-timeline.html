@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>创建新进展 - 大事小事追踪</title>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles.css">
+    <style>
+        .type-selector {
+            display: flex;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-lg);
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .type-item {
+            flex: 1;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-xs);
+            color: var(--text-secondary);
+        }
+        
+        .type-item i {
+            font-size: 20px;
+        }
+        
+        .type-item:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            background: var(--primary-light);
+            transform: translateY(-2px);
+        }
+        
+        .type-item.active {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            background: var(--primary-light);
+        }
+        
+        .content-input {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .content-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            resize: vertical;
+            font-size: 16px;
+            transition: all var(--transition-fast);
+            background: var(--bg-light);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .content-textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .image-upload-area {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-sm);
+        }
+        
+        .image-upload-item {
+            aspect-ratio: 1;
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            background: var(--bg-light);
+            color: var(--text-secondary);
+        }
+        
+        .image-upload-item:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .image-preview {
+            position: relative;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+        
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .image-preview .remove-btn {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .image-preview .remove-btn:hover {
+            background: rgba(0, 0, 0, 0.7);
+        }
+        
+        .action-buttons {
+            position: fixed;
+            bottom: var(--spacing-lg);
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: var(--spacing-md);
+            width: calc(100% - 32px);
+            max-width: 358px;
+            z-index: 100;
+        }
+        
+        .action-button {
+            flex: 1;
+            height: 44px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all var(--transition-fast);
+        }
+        
+        .action-button.draft {
+            background: var(--bg-light);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+        
+        .action-button.publish {
+            background: var(--primary-gradient);
+            color: white;
+        }
+        
+        .action-button:active {
+            transform: scale(0.98);
+        }
+        
+        .action-button i {
+            margin-right: var(--spacing-sm);
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-back" onclick="window.location.href='event-detail.html'">
+            <i class="fas fa-chevron-left"></i>
+        </div>
+        <div class="navbar-title">创建新进展</div>
+        <div class="navbar-action"></div>
+    </div>
+    
+    <div class="content">
+        <!-- 类型选择器 -->
+        <div class="type-selector">
+            <div class="type-item active" onclick="selectType('update')">
+                <i class="fas fa-history"></i>
+                <span>动态</span>
+            </div>
+            <div class="type-item" onclick="selectType('vote')">
+                <i class="fas fa-vote-yea"></i>
+                <span>投票</span>
+            </div>
+            <div class="type-item" onclick="selectType('complaint')">
+                <i class="fas fa-exclamation-circle"></i>
+                <span>投诉</span>
+            </div>
+            <div class="type-item" onclick="selectType('announcement')">
+                <i class="fas fa-bullhorn"></i>
+                <span>公告</span>
+            </div>
+        </div>
+        
+        <!-- 内容输入区域 -->
+        <div class="content-input">
+            <textarea class="content-textarea" placeholder="请输入进展内容..."></textarea>
+            <div class="image-upload-area">
+                <div class="image-upload-item" onclick="uploadImage()">
+                    <i class="fas fa-plus"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部按钮 -->
+    <div class="action-buttons">
+        <button class="action-button draft" onclick="saveDraft()">
+            <i class="far fa-save"></i>
+            保存草稿
+        </button>
+        <button class="action-button publish" onclick="publishTimeline()">
+            <i class="fas fa-paper-plane"></i>
+            发布
+        </button>
+    </div>
+    
+    <script>
+        let selectedType = 'update';
+        let timelineImages = [];
+        
+        function selectType(type) {
+            selectedType = type;
+            document.querySelectorAll('.type-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+        }
+        
+        function uploadImage() {
+            if (timelineImages.length >= 9) {
+                alert('最多只能上传9张图片');
+                return;
+            }
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        timelineImages.push(e.target.result);
+                        updateImagePreview();
+                    }
+                    reader.readAsDataURL(file);
+                }
+            }
+            input.click();
+        }
+        
+        function updateImagePreview() {
+            const uploadArea = document.querySelector('.image-upload-area');
+            uploadArea.innerHTML = '';
+            
+            timelineImages.forEach((img, index) => {
+                const div = document.createElement('div');
+                div.className = 'image-preview';
+                div.innerHTML = `
+                    <img src="${img}" alt="预览图片">
+                    <div class="remove-btn" onclick="removeImage(${index})">
+                        <i class="fas fa-times"></i>
+                    </div>
+                `;
+                uploadArea.appendChild(div);
+            });
+            
+            if (timelineImages.length < 9) {
+                const upload = document.createElement('div');
+                upload.className = 'image-upload-item';
+                upload.onclick = uploadImage;
+                upload.innerHTML = '<i class="fas fa-plus"></i>';
+                uploadArea.appendChild(upload);
+            }
+        }
+        
+        function removeImage(index) {
+            timelineImages.splice(index, 1);
+            updateImagePreview();
+        }
+        
+        function saveDraft() {
+            alert('保存草稿成功');
+        }
+        
+        function publishTimeline() {
+            const content = document.querySelector('.content-textarea').value.trim();
+            if (!content) {
+                alert('请输入进展内容');
+                return;
+            }
+            alert('发布成功');
+            window.location.href = 'event-detail.html';
+        }
+    </script>
+</body>
+</html>

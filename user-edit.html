@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>编辑个人信息</title>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2D6AE0;
+            --primary-dark: #357ABD;
+            --primary-light: #F5F5F5;
+            --success-color: #34C759;
+            --warning-color: #FF9500;
+            --error-color: #FF3B30;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 12px;
+            --spacing-lg: 16px;
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #fff;
+        }
+        .nav-header {
+            height: 44px;
+            background: #fff;
+            border-bottom: 1px solid #eee;
+        }
+        .avatar-upload {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .avatar-upload:hover {
+            opacity: 0.8;
+        }
+        .form-input {
+            border: none;
+            border-bottom: 1px solid #eee;
+            padding: 12px 0;
+            width: 100%;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        .form-input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+        .save-btn {
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 0;
+            border-radius: 8px;
+            width: 100%;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .save-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .role-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-xs);
+        }
+
+        .role-option {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        .role-option i {
+            font-size: 12px;
+        }
+
+        .role-option.selected {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .role-option:not(.selected):hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-sm);
+            padding-top: var(--spacing-lg);
+        }
+
+        .section-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-md);
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-header flex items-center justify-between px-4">
+        <button class="text-gray-600" onclick="history.back()">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <span class="font-medium">编辑个人信息</span>
+        <div class="w-8"></div>
+    </div>
+
+    <div class="p-4">
+        <div class="flex flex-col items-center mb-8">
+            <div class="avatar-upload mb-2 flex items-center justify-center">
+                <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" 
+                     alt="用户头像" 
+                     class="w-full h-full object-cover">
+                <input type="file" class="hidden" accept="image/*">
+            </div>
+            <span class="text-sm text-gray-500">点击更换头像</span>
+        </div>
+
+        <div class="space-y-6">
+            <div class="form-group">
+                <label class="text-sm text-gray-500 mb-1 block">昵称</label>
+                <input type="text" class="form-input" value="张三" placeholder="请输入昵称">
+            </div>
+
+            <div class="form-group">
+                <label class="text-sm text-gray-500 mb-1 block">个人简介</label>
+                <textarea class="form-input" rows="3" placeholder="介绍一下自己吧">热爱生活，关注社区发展</textarea>
+            </div>
+
+            <div class="form-group">
+                <div class="section-title">身份角色</div>
+                <div class="section-desc">请选择您在小区中的身份，用于社区身份认证</div>
+                <div class="role-selector">
+                    <div class="role-option selected">
+                        <i class="fas fa-home"></i>
+                        <span>业主</span>
+                    </div>
+                    <div class="role-option">
+                        <i class="fas fa-house-user"></i>
+                        <span>住户</span>
+                    </div>
+                    <div class="role-option">
+                        <i class="fas fa-key"></i>
+                        <span>租户</span>
+                    </div>
+                    <div class="role-option">
+                        <i class="fas fa-users"></i>
+                        <span>业委会</span>
+                    </div>
+                    <div class="role-option">
+                        <i class="fas fa-building"></i>
+                        <span>物业</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="text-sm text-gray-500 mb-1 block">所在小区</label>
+                <input type="text" class="form-input" value="阳光花园" readonly>
+            </div>
+
+            <div class="form-group">
+                <label class="text-sm text-gray-500 mb-1 block">房号信息</label>
+                <input type="text" class="form-input" value="8栋2单元303" readonly>
+            </div>
+        </div>
+
+        <button class="save-btn mt-8">
+            保存修改
+        </button>
+    </div>
+
+    <script>
+        // 角色选择功能
+        document.querySelectorAll('.role-option').forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.role-option').forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+            });
+        });
+    </script>
+</body>
+</html> 

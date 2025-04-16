@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>事件详情 - 大事小事追踪</title>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles.css">
+    <style>
+        .event-container {
+            max-width: 390px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: linear-gradient(180deg, var(--bg-light) 0%, #ffffff 100%);
+            padding-bottom: 80px;
+        }
+        
+        .event-header {
+            padding: var(--spacing-lg);
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: var(--spacing-md);
+            border-radius: var(--radius-lg);
+            margin: 0 0 var(--spacing-md) 0;
+        }
+        
+        .event-body {
+            padding: var(--spacing-lg);
+            background-color: var(--bg-card);
+            margin: var(--spacing-md) 0;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-normal);
+        }
+        
+        .event-image-gallery {
+            margin: var(--spacing-lg) 0;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .event-image-gallery::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.1) 100%);
+            opacity: 0;
+            transition: opacity var(--transition-fast);
+        }
+        
+        .event-image-gallery:hover::after {
+            opacity: 1;
+        }
+        
+        .event-image-gallery img {
+            width: 100%;
+            max-height: 240px;
+            object-fit: cover;
+            transition: transform var(--transition-normal);
+        }
+        
+        .event-image-gallery:hover img {
+            transform: scale(1.02);
+        }
+        
+        .timeline-section {
+            margin: var(--spacing-xl) 0;
+            background-color: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .timeline-title {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-weight: 500;
+            margin-bottom: var(--spacing-lg);
+            padding-left: var(--spacing-sm);
+            border-left: 4px solid var(--primary-color);
+            color: var(--text-primary);
+            font-size: 16px;
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: var(--spacing-xl);
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 1px;
+            top: 16px;
+            height: calc(100% - 32px);
+            width: 2px;
+            background: linear-gradient(180deg, var(--primary-color) 0%, var(--border-color) 100%);
+            bottom: auto;
+        }
+        
+        .timeline-node {
+            position: relative;
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .timeline-node::before {
+            content: '';
+            position: absolute;
+            left: -38px;
+            top: 8px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            z-index: 1;
+            transition: all var(--transition-fast);
+            box-shadow: 0 0 0 4px rgba(47, 128, 237, 0.1);
+        }
+        
+        .timeline-node-header {
+            position: relative;
+            height: 26px;
+            margin-bottom: 12px;
+        }
+        
+        .timeline-node .node-time {
+            position: absolute;
+            left: -52px;
+            transform: translateX(54px);
+            color: var(--text-secondary);
+            font-size: 14px;
+            white-space: nowrap;
+            line-height: 26px;
+        }
+        
+        .timeline-node .status-ongoing {
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 26px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .timeline-card {
+            margin-top: 12px;
+            background-color: var(--bg-card);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            transition: all var(--transition-normal);
+            border: 1px solid var(--border-color);
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .timeline-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .timeline-card:active {
+            transform: scale(0.98);
+        }
+        
+        .timeline-header {
+            padding: var(--spacing-sm) var(--spacing-lg);
+            border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(90deg, var(--bg-light) 0%, #ffffff 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .timeline-body {
+            padding: var(--spacing-lg);
+            min-height: 120px;
+        }
+        
+        .timeline-footer {
+            padding: var(--spacing-sm) var(--spacing-lg);
+            background: linear-gradient(90deg, var(--bg-light) 0%, #ffffff 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .action-buttons {
+            position: fixed;
+            bottom: var(--spacing-lg);
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: var(--spacing-md);
+            width: calc(100% - 32px);
+            max-width: 358px;
+            z-index: 100;
+            padding: 0 var(--spacing-md);
+        }
+        
+        .action-button {
+            flex: 1;
+            padding: var(--spacing-md);
+            border-radius: var(--radius-lg);
+            text-align: center;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-md);
+            transition: all var(--transition-fast);
+            font-size: 14px;
+        }
+        
+        .action-button:active {
+            transform: scale(0.98);
+        }
+        
+        .action-button i {
+            margin-right: var(--spacing-sm);
+            font-size: 16px;
+        }
+        
+        .action-primary {
+            background: var(--primary-gradient);
+            color: white;
+        }
+        
+        .action-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .action-secondary {
+            background-color: white;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+        
+        .action-secondary:hover {
+            background-color: var(--primary-light);
+        }
+        
+        .timeline-node .avatar-sm {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: var(--shadow-sm);
+            flex-shrink: 0;
+        }
+        
+        .timeline-node .tag {
+            padding: 2px var(--spacing-sm);
+            font-size: 12px;
+            border-radius: var(--radius-sm);
+            display: inline-block;
+            margin-top: 4px;
+        }
+        
+        .timeline-header .user-info {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--spacing-sm);
+        }
+        
+        .timeline-header .user-info .text-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .timeline-header .user-info .font-bold {
+            font-size: 16px;
+            line-height: 1.2;
+            height: 20px;
+            overflow: hidden;
+        }
+        
+        .timeline-images {
+            display: grid;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-md);
+        }
+        
+        .timeline-images.count-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .timeline-images.count-4 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .timeline-images.count-6 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        
+        .timeline-images.count-9 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        
+        .timeline-images img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: var(--radius-md);
+            transition: transform var(--transition-fast);
+        }
+        
+        .timeline-images img:hover {
+            transform: scale(1.05);
+            cursor: pointer;
+        }
+        
+        .timeline-images.first-large img:first-child {
+            grid-column: span 2;
+            grid-row: span 2;
+        }
+        
+        .status-ongoing {
+            height: 26px;
+            display: flex;
+            align-items: center;
+        }
+        
+        /* 特殊进展卡片样式 */
+        .timeline-card.announcement {
+            border-left: 4px solid var(--primary-color);
+            box-shadow: 0 2px 8px rgba(45, 106, 224, 0.1);
+        }
+        
+        .timeline-card.vote {
+            border-left: 4px solid var(--success-color);
+            box-shadow: 0 2px 8px rgba(52, 199, 89, 0.1);
+        }
+        
+        .timeline-card.complaint {
+            border-left: 4px solid var(--error-color);
+            box-shadow: 0 2px 8px rgba(255, 59, 48, 0.1);
+        }
+        
+        .timeline-card.update {
+            border-left: 4px solid var(--warning-color);
+            box-shadow: 0 2px 8px rgba(255, 149, 0, 0.1);
+        }
+        
+        .timeline-type-tag {
+            position: absolute;
+            top: var(--spacing-sm);
+            right: var(--spacing-sm);
+            padding: 2px var(--spacing-sm);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            color: white;
+            z-index: 1;
+        }
+        
+        .announcement-level {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            padding: 2px var(--spacing-sm);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .announcement-level.important {
+            background: var(--error-light);
+            color: var(--error-color);
+        }
+        
+        .announcement-level.normal {
+            background: var(--primary-light);
+            color: var(--primary-color);
+        }
+        
+        .announcement-level.reminder {
+            background: var(--warning-light);
+            color: var(--warning-color);
+        }
+        
+        .announcement-target {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .announcement-options {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .announcement-option {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .vote-link {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm);
+            background: var(--bg-light);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .vote-link i {
+            color: var(--success-color);
+        }
+        
+        .vote-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            word-break: break-all;
+        }
+        
+        .complaint-type {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            padding: 2px var(--spacing-sm);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            background: var(--error-light);
+            color: var(--error-color);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .event-menu {
+            position: relative;
+            display: inline-block;
+        }
+
+        .event-menu-btn {
+            padding: var(--spacing-xs);
+            color: var(--text-secondary);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .event-menu-btn:hover {
+            background: var(--bg-light);
+            color: var(--text-primary);
+        }
+
+        .event-menu-content {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: var(--spacing-xs);
+            min-width: 160px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .event-menu-content.show {
+            display: block;
+            animation: slideIn 0.2s ease;
+        }
+
+        .menu-item {
+            padding: var(--spacing-sm) var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            color: var(--text-primary);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .menu-item:hover {
+            background: var(--bg-light);
+        }
+
+        .menu-item.danger {
+            color: var(--error-color);
+        }
+
+        .menu-item.danger:hover {
+            background: var(--error-light);
+        }
+
+        .status-selector {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-lg);
+            transform: translateY(100%);
+            transition: transform var(--transition-normal);
+            z-index: 1000;
+        }
+
+        .status-selector.show {
+            transform: translateY(0);
+        }
+
+        .status-option {
+            padding: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .status-option:hover {
+            background: var(--bg-light);
+        }
+
+        .status-option.selected {
+            background: var(--primary-light);
+            color: var(--primary-color);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-back" onclick="window.location.href='home.html'">
+            <i class="fas fa-chevron-left"></i>
+        </div>
+        <div class="navbar-title">事件详情</div>
+        <div class="navbar-action">
+            <i class="fas fa-share-alt"></i>
+        </div>
+    </div>
+    
+    <div class="content">
+        <!-- 事件完整信息 -->
+        <div class="event-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="font-bold font-lg">消防安全演习通知</h1>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="status-ongoing">进行中</span>
+                    <div class="event-menu">
+                        <div class="event-menu-btn" onclick="toggleEventMenu()">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </div>
+                        <div class="event-menu-content" id="eventMenu">
+                            <div class="menu-item" onclick="showStatusSelector()">
+                                <i class="fas fa-exchange-alt"></i>
+                                <span>修改状态</span>
+                            </div>
+                            <div class="menu-item danger" onclick="reportEvent()">
+                                <i class="fas fa-flag"></i>
+                                <span>举报事件</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="text-secondary font-sm mt-1">2023-03-18 10:30 · 物业管理处</p>
+            <div class="d-flex justify-content-between mt-2">
+                <div class="d-flex">
+                    <span class="tag tag-primary mr-2">物业通知</span>
+                    <span class="tag tag-warning mr-2">安全演练</span>
+                    <span class="tag tag-primary">全员参与</span>
+                </div>
+                <a href="event-relations.html" class="d-flex align-items-center" style="color: #666; text-decoration: none;">
+                    <i class="fas fa-project-diagram"></i>
+                    <span class="text-xs ml-1">关联图谱</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- 状态选择器 -->
+        <div class="status-selector" id="statusSelector">
+            <div class="form-section-title mb-4">修改事件状态</div>
+            <div class="status-option" onclick="updateStatus('ongoing')">
+                <i class="fas fa-circle" style="color: var(--primary-color)"></i>
+                <span>进行中</span>
+            </div>
+            <div class="status-option" onclick="updateStatus('completed')">
+                <i class="fas fa-check-circle" style="color: var(--success-color)"></i>
+                <span>已完成</span>
+            </div>
+            <div class="status-option" onclick="updateStatus('cancelled')">
+                <i class="fas fa-times-circle" style="color: var(--error-color)"></i>
+                <span>已取消</span>
+            </div>
+            <button class="btn btn-text w-full mt-4" onclick="hideStatusSelector()">取消</button>
+        </div>
+        
+        <div class="event-body">
+            <div class="event-image-gallery" onclick="previewImage(this)">
+                <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="事件图片">
+            </div>
+            
+            <p class="mb-4">
+                为提高小区居民的消防安全意识和自救能力，物业将于本周六上午10点在小区南广场组织消防安全演习活动，请各位业主积极参与。
+            </p>
+            
+            <p class="mb-4">
+                演习内容：
+                <br>1. 消防器材使用讲解与实操
+                <br>2. 火灾自救与互救技能培训
+                <br>3. 疏散逃生路线演练
+            </p>
+            
+            <p class="mb-4">
+                相关安排：
+                <br>- 集合时间：2023年3月20日上午10:00
+                <br>- 集合地点：小区南广场
+                <br>- 预计时长：2小时
+                <br>- 参与对象：全体业主（每户至少1人）
+            </p>
+            
+            <p class="text-danger">
+                注：请各位业主准时参加，穿着舒适运动装，保障参与安全。
+            </p>
+            
+            <div class="d-flex justify-content-between mt-4">
+                <span><i class="far fa-comment mr-1"></i> 12条评论</span>
+                <span><i class="far fa-eye mr-1"></i> 153次浏览</span>
+            </div>
+        </div>
+        
+        <!-- 时间线部分 -->
+        <div class="timeline-section">
+            <h2 class="timeline-title">事件时间线</h2>
+            
+            <div class="timeline">
+                <div class="timeline-node">
+                    <div class="timeline-node-header">
+                        <div class="node-time">2023-03-18 10:30</div>
+                        <div class="status-ongoing">进行中</div>
+                    </div>
+                    <div class="timeline-card announcement" onclick="window.location.href='announcement-comment.html'">
+                        <div class="timeline-type-tag" style="background: var(--primary-color)">公告</div>
+                        <div class="timeline-header">
+                            <div class="user-info">
+                                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="头像" class="avatar-sm">
+                                <div class="text-info">
+                                    <div class="font-bold">王物业</div>
+                                    <span class="tag tag-primary font-xs">物业管理员</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-body">
+                            <p>正式发布消防安全演习通知，请各位业主提前安排好时间参加！</p>
+                            <div class="timeline-images count-4">
+                                <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="演习图片1" onclick="previewImage(event, this)">
+                                <img src="https://images.unsplash.com/photo-1504813184591-01572f98c85f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="演习图片2" onclick="previewImage(event, this)">
+                                <img src="https://images.unsplash.com/photo-1517457373958-b7bdd4587205?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="演习图片3" onclick="previewImage(event, this)">
+                                <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="演习图片4" onclick="previewImage(event, this)">
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-footer">
+                            <div>
+                                <span class="mr-3"><i class="far fa-thumbs-up mr-1"></i> 24</span>
+                                <span><i class="far fa-comment mr-1"></i> 8</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="timeline-node">
+                    <div class="timeline-node-header">
+                        <div class="node-time">2023-03-19 14:15</div>
+                        <div class="status-ongoing">进行中</div>
+                    </div>
+                    <div class="timeline-card vote" onclick="window.location.href='vote-comment.html'">
+                        <div class="timeline-type-tag" style="background: var(--success-color)">投票</div>
+                        <div class="timeline-header">
+                            <div class="user-info">
+                                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="头像" class="avatar-sm">
+                                <div class="text-info">
+                                    <div class="font-bold">王物业</div>
+                                    <span class="tag tag-primary font-xs">物业管理员</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-body">
+                            <p>关于小区绿化改造方案的投票，请各位业主积极参与！</p>
+                        </div>
+                        
+                        <div class="timeline-footer">
+                            <div>
+                                <span class="mr-3"><i class="far fa-thumbs-up mr-1"></i> 12</span>
+                                <span><i class="far fa-comment mr-1"></i> 4</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="timeline-node">
+                    <div class="timeline-node-header">
+                        <div class="node-time">2023-03-19 16:30</div>
+                        <div class="status-ongoing">进行中</div>
+                    </div>
+                    <div class="timeline-card complaint" onclick="window.location.href='complaint-comment.html'">
+                        <div class="timeline-type-tag" style="background: var(--error-color)">投诉</div>
+                        <div class="timeline-header">
+                            <div class="user-info">
+                                <img src="https://randomuser.me/api/portraits/women/45.jpg" alt="头像" class="avatar-sm">
+                                <div class="text-info">
+                                    <div class="font-bold">李业主</div>
+                                    <span class="tag tag-primary font-xs">业主</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-body">
+                            <p>2号楼电梯经常出现故障，已经连续三天出现卡顿现象，请物业尽快处理！</p>
+                            <div class="timeline-images count-9">
+                                <img src="https://images.unsplash.com/photo-1504813184591-01572f98c85f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="故障图片1" onclick="previewImage(event, this)">
+                                <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="故障图片2" onclick="previewImage(event, this)">
+                                <img src="https://images.unsplash.com/photo-1517457373958-b7bdd4587205?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="故障图片3" onclick="previewImage(event, this)">
+                                <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="故障图片4" onclick="previewImage(event, this)">
+                                <img src="https://images.unsplash.com/photo-1504813184591-01572f98c85f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="故障图片5" onclick="previewImage(event, this)">
+                                <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="故障图片6" onclick="previewImage(event, this)">
+                                <img src="https://images.unsplash.com/photo-1517457373958-b7bdd4587205?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="故障图片7" onclick="previewImage(event, this)">
+                                <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="故障图片8" onclick="previewImage(event, this)">
+                                <img src="https://images.unsplash.com/photo-1504813184591-01572f98c85f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="故障图片9" onclick="previewImage(event, this)">
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-footer">
+                            <div>
+                                <span class="mr-3"><i class="far fa-thumbs-up mr-1"></i> 8</span>
+                                <span><i class="far fa-comment mr-1"></i> 3</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="timeline-node">
+                    <div class="timeline-node-header">
+                        <div class="node-time">2023-03-19 18:45</div>
+                        <div class="status-ongoing">进行中</div>
+                    </div>
+                    <div class="timeline-card update" onclick="window.location.href='update-comment.html'">
+                        <div class="timeline-type-tag" style="background: var(--warning-color)">动态</div>
+                        <div class="timeline-header">
+                            <div class="user-info">
+                                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="头像" class="avatar-sm">
+                                <div class="text-info">
+                                    <div class="font-bold">王物业</div>
+                                    <span class="tag tag-primary font-xs">物业管理员</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-body">
+                            <p>电梯维修工程师已到达现场，正在进行故障检修。预计2小时内可以修复完成，请大家耐心等待。</p>
+                            <div class="timeline-images count-2">
+                                <img src="https://images.unsplash.com/photo-1504813184591-01572f98c85f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="检修图片1" onclick="previewImage(event, this)">
+                                <img src="https://images.unsplash.com/photo-1582560475093-ba66accbc424?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="检修图片2" onclick="previewImage(event, this)">
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-footer">
+                            <div>
+                                <span class="mr-3"><i class="far fa-thumbs-up mr-1"></i> 15</span>
+                                <span><i class="far fa-comment mr-1"></i> 6</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部操作按钮 -->
+    <div class="action-buttons">
+        <button class="action-button action-secondary" onclick="followEvent()">
+            <i class="far fa-star"></i> 关注事件
+        </button>
+        <button class="action-button action-primary" onclick="window.location.href='create-timeline.html'">
+            <i class="fas fa-plus"></i>
+            <span>创建新进展</span>
+        </button>
+    </div>
+    
+    <script>
+        function followEvent() {
+            const btn = document.querySelector('.action-secondary');
+            if (btn.innerHTML.includes('关注事件')) {
+                btn.innerHTML = '<i class="fas fa-star"></i> 已关注';
+                btn.classList.add('action-primary');
+                btn.classList.remove('action-secondary');
+            } else {
+                btn.innerHTML = '<i class="far fa-star"></i> 关注事件';
+                btn.classList.remove('action-primary');
+                btn.classList.add('action-secondary');
+            }
+        }
+        
+        function previewImage(event, element) {
+            event.stopPropagation(); // 阻止事件冒泡，这样点击图片时不会触发卡片的点击事件
+            // 原有的预览图片逻辑
+            const preview = document.createElement('div');
+            preview.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.9);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+                opacity: 0;
+                transition: opacity var(--transition-normal);
+            `;
+            
+            const img = document.createElement('img');
+            img.src = element.src;
+            img.style.cssText = `
+                max-width: 90%;
+                max-height: 90vh;
+                object-fit: contain;
+                border-radius: var(--radius-lg);
+                transform: scale(0.9);
+                transition: transform var(--transition-normal);
+            `;
+            
+            const close = document.createElement('div');
+            close.innerHTML = '<i class="fas fa-times"></i>';
+            close.style.cssText = `
+                position: absolute;
+                top: var(--spacing-lg);
+                right: var(--spacing-lg);
+                color: white;
+                font-size: 24px;
+                cursor: pointer;
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 50%;
+                transition: all var(--transition-fast);
+            `;
+            
+            close.onmouseover = () => {
+                close.style.background = 'rgba(255, 255, 255, 0.2)';
+            };
+            
+            close.onmouseout = () => {
+                close.style.background = 'rgba(255, 255, 255, 0.1)';
+            };
+            
+            preview.onclick = close.onclick = () => {
+                preview.style.opacity = '0';
+                img.style.transform = 'scale(0.9)';
+                setTimeout(() => preview.remove(), 300);
+            };
+            
+            img.onclick = (e) => {
+                e.stopPropagation();
+            };
+            
+            preview.appendChild(img);
+            preview.appendChild(close);
+            document.body.appendChild(preview);
+            
+            setTimeout(() => {
+                preview.style.opacity = '1';
+                img.style.transform = 'scale(1)';
+            }, 10);
+        }
+
+        function toggleEventMenu() {
+            const menu = document.getElementById('eventMenu');
+            menu.classList.toggle('show');
+            
+            // 点击其他地方关闭菜单
+            document.addEventListener('click', function closeMenu(e) {
+                if (!e.target.closest('.event-menu')) {
+                    menu.classList.remove('show');
+                    document.removeEventListener('click', closeMenu);
+                }
+            });
+        }
+
+        function showStatusSelector() {
+            document.getElementById('statusSelector').classList.add('show');
+            document.getElementById('eventMenu').classList.remove('show');
+        }
+
+        function hideStatusSelector() {
+            document.getElementById('statusSelector').classList.remove('show');
+        }
+
+        function updateStatus(status) {
+            const statusMap = {
+                'ongoing': { text: '进行中', class: 'status-ongoing' },
+                'completed': { text: '已完成', class: 'status-completed' },
+                'cancelled': { text: '已取消', class: 'status-cancelled' }
+            };
+
+            const statusElement = document.querySelector('.status-ongoing, .status-completed, .status-cancelled');
+            statusElement.textContent = statusMap[status].text;
+            statusElement.className = statusMap[status].class;
+            
+            hideStatusSelector();
+        }
+
+        function reportEvent() {
+            if (confirm('确定要举报该事件吗？举报后将由社区管理员进行审核。')) {
+                alert('举报已提交，感谢您的反馈！');
+            }
+        }
+    </script>
+</body>
+</html> 

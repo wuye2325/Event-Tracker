@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>事件关联图谱 - 事件追踪</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        .graph-container {
+            width: 100%;
+            height: 400px;
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .node-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .node-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .relation-line {
+            position: relative;
+            height: 1px;
+            background-color: #e5e7eb;
+            margin: 12px 0;
+        }
+        
+        .tabbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #fff;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            max-width: 390px;
+            margin: 0 auto;
+            z-index: 100;
+        }
+        
+        .tabbar-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #666;
+            font-size: 20px;
+            text-decoration: none;
+        }
+        
+        .tabbar-item span {
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        
+        .tabbar-item.active {
+            color: #2D6AE0;
+        }
+        
+        .publish-fab {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 48px;
+            height: 48px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: var(--shadow-lg);
+            z-index: 101;
+            transition: all var(--transition-fast);
+        }
+        
+        .publish-fab i {
+            font-size: 24px;
+        }
+        
+        .publish-fab:active {
+            transform: translateX(-50%) scale(0.95);
+        }
+        
+        .relation-line:after {
+            content: "";
+            position: absolute;
+            top: -3px;
+            left: 50%;
+            width: 6px;
+            height: 6px;
+            background-color: #2D6AE0;
+            border-radius: 50%;
+            transform: translateX(-50%);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800" style="max-width: 390px; margin: 0 auto;">
+    <!-- 顶部导航 -->
+    <header class="bg-white p-4 shadow-sm sticky top-0 z-10">
+        <div class="flex items-center justify-between">
+            <button class="text-gray-600" onclick="history.back()">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <h1 class="text-lg font-medium">事件关联图谱</h1>
+            <div class="w-6"></div> <!-- 占位保持对称 -->
+        </div>
+    </header>
+
+    <main class="p-4 pb-20">
+        <!-- 图谱可视化区域 -->
+        <div class="mb-6">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-base font-medium">事件关联网络</h2>
+                <div class="flex space-x-2">
+                    <button class="text-xs bg-gray-100 px-2 py-1 rounded" onclick="changeLayout('force')">
+                        <i class="fas fa-project-diagram mr-1"></i>力导向
+                    </button>
+                    <button class="text-xs bg-gray-100 px-2 py-1 rounded" onclick="changeLayout('circular')">
+                        <i class="fas fa-circle-notch mr-1"></i>环形
+                    </button>
+                </div>
+            </div>
+            <div id="graph" class="graph-container"></div>
+        </div>
+
+        <!-- 关联事件列表
+        <div class="mb-6">
+            <h2 class="text-base font-medium mb-3">关联事件 (5)</h2>
+            <div class="space-y-4">
+                <div class="bg-white p-4 rounded-lg shadow-sm node-card border-l-4 border-blue-500">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-medium">小区电梯维修进度更新</h3>
+                        <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">主事件</span>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-3">3号楼电梯维修进展跟踪，物业已联系维修公司...</p>
+                    <div class="flex justify-between text-xs text-gray-500">
+                        <span><i class="fas fa-calendar-alt mr-1"></i>2023-10-15</span>
+                        <span><i class="fas fa-user mr-1"></i>张先生</span>
+                        <span><i class="fas fa-tag mr-1"></i>维修</span>
+                    </div>
+                </div>
+
+                <div class="relation-line"></div>
+
+                <div class="bg-white p-4 rounded-lg shadow-sm node-card" onclick="focusNode(1)">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-medium">电梯维修费用公示</h3>
+                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">费用</span>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-3">本次电梯维修费用明细公示，共计8500元...</p>
+                    <div class="flex justify-between text-xs text-gray-500">
+                        <span><i class="fas fa-calendar-alt mr-1"></i>2023-10-18</span>
+                        <span><i class="fas fa-user mr-1"></i>物业中心</span>
+                        <span><i class="fas fa-tag mr-1"></i>公告</span>
+                    </div>
+                </div>
+
+                <div class="relation-line"></div>
+
+                <div class="bg-white p-4 rounded-lg shadow-sm node-card" onclick="focusNode(2)">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-medium">关于电梯维修的业主投票</h3>
+                        <span class="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">投票</span>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-3">是否同意使用公共维修基金支付电梯维修费用...</p>
+                    <div class="flex justify-between text-xs text-gray-500">
+                        <span><i class="fas fa-calendar-alt mr-1"></i>2023-10-20</span>
+                        <span><i class="fas fa-user mr-1"></i>业委会</span>
+                        <span><i class="fas fa-tag mr-1"></i>投票</span>
+                    </div>
+                </div>
+
+                <div class="relation-line"></div>
+
+                <div class="bg-white p-4 rounded-lg shadow-sm node-card" onclick="focusNode(3)">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-medium">电梯维修进度照片</h3>
+                        <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">图片</span>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-3">维修人员正在更换电梯配件，预计本周完成...</p>
+                    <div class="flex justify-between text-xs text-gray-500">
+                        <span><i class="fas fa-calendar-alt mr-1"></i>2023-10-22</span>
+                        <span><i class="fas fa-user mr-1"></i>李女士</span>
+                        <span><i class="fas fa-tag mr-1"></i>更新</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        -->
+
+        <!-- 关联分析 -->
+        <!-- <div class="bg-white p-4 rounded-lg shadow-sm">
+            <h2 class="text-base font-medium mb-3">关联分析</h2>
+            <div class="space-y-3">
+                <div class="flex items-start">
+                    <div class="bg-blue-100 text-blue-800 p-2 rounded-full mr-3">
+                        <i class="fas fa-link text-sm"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium">关键词匹配</p>
+                        <p class="text-xs text-gray-600">"电梯维修"、"3号楼"等关键词匹配度较高</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <div class="bg-green-100 text-green-800 p-2 rounded-full mr-3">
+                        <i class="fas fa-users text-sm"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium">参与人员关联</p>
+                        <p class="text-xs text-gray-600">张先生、李女士均为3号楼业主</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <div class="bg-purple-100 text-purple-800 p-2 rounded-full mr-3">
+                        <i class="fas fa-calendar-day text-sm"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium">时间线关联</p>
+                        <p class="text-xs text-gray-600">事件集中在10月中下旬，时间关联性强</p>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </main>
+
+    <!-- 底部导航栏 -->
+    <div class="tabbar">
+        <a href="home.html" class="tabbar-item">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </a>
+        <a href="notification.html" class="tabbar-item">
+            <i class="fas fa-bell"></i>
+            <span>通知</span>
+        </a>
+        <a href="profile.html" class="tabbar-item">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </a>
+    </div>
+    
+    <!-- 发布按钮 -->
+    <a href="publish.html" class="publish-fab">
+        <i class="fas fa-plus"></i>
+    </a>
+
+    <script>
+        // 初始化图表
+        let myChart = echarts.init(document.getElementById('graph'));
+        
+        // 图表数据
+        let graphData = {
+            nodes: [
+                {id: 0, name: '电梯维修进度', symbolSize: 40, itemStyle: {color: '#DBEAFE'}, category: 0},
+                {id: 1, name: '维修费用公示', symbolSize: 30, itemStyle: {color: '#ffc107'}, category: 1},
+                {id: 2, name: '业主投票', symbolSize: 30, itemStyle: {color: '#34C759'}, category: 2},
+                {id: 3, name: '维修照片', symbolSize: 30, itemStyle: {color: '#FF3B30'}, category: 3},
+                {id: 4, name: '3号楼', symbolSize: 20, itemStyle: {color: '#2d6ae0'}, category: 4},
+                {id: 5, name: '公共维修基金', symbolSize: 20, itemStyle: {color: '#2d6ae0'}, category: 4}
+            ],
+            links: [
+                {source: 0, target: 1, value: '费用关联'},
+                {source: 0, target: 2, value: '决策关联'},
+                {source: 0, target: 3, value: '进展关联'},
+                {source: 0, target: 4, value: '位置'},
+                {source: 1, target: 5, value: '资金来源'},
+                {source: 2, target: 5, value: '投票内容'}
+            ],
+            categories: [
+                {name: '主事件', itemStyle: {color: '#DBEAFE'}},
+                {name: '动态', itemStyle: {color: '#ffc107'}},
+                {name: '投票', itemStyle: {color: '#34C759'}},
+                {name: '投诉', itemStyle: {color: '#FF3B30'}},
+                {name: '公告', itemStyle: {color: '#2d6ae0'}}
+            ]
+        };
+        
+        // 图表配置
+        let option = {
+            tooltip: {},
+            legend: {
+                data: ['主事件', '动态', '投票', '投诉', '公告'],
+                right: 10,
+                top: 10
+            },
+            series: [{
+                type: 'graph',
+                layout: 'force',
+                data: graphData.nodes,
+                links: graphData.links,
+                categories: graphData.categories,
+                roam: true,
+                label: {
+                    show: true,
+                    position: 'right',
+                    formatter: '{b}'
+                },
+                lineStyle: {
+                    color: 'source',
+                    curveness: 0.3
+                },
+                emphasis: {
+                    focus: 'adjacency',
+                    lineStyle: {
+                        width: 2
+                    }
+                },
+                force: {
+                    repulsion: 200,
+                    edgeLength: 100
+                }
+            }]
+        };
+        
+        // 使用配置项显示图表
+        myChart.setOption(option);
+        
+        // 窗口大小变化时重绘图表
+        window.addEventListener('resize', function() {
+            myChart.resize();
+        });
+        
+        // 切换布局
+        function changeLayout(type) {
+            if (type === 'force') {
+                option.series[0].layout = 'force';
+                option.series[0].force = {
+                    repulsion: 200,
+                    edgeLength: 100
+                };
+            } else if (type === 'circular') {
+                option.series[0].layout = 'circular';
+                option.series[0].circular = {
+                    rotateLabel: true
+                };
+            }
+            myChart.setOption(option);
+        }
+        
+        // 聚焦节点
+        function focusNode(nodeId) {
+            myChart.dispatchAction({
+                type: 'focusNodeAdjacency',
+                seriesIndex: 0,
+                dataIndex: nodeId
+            });
+        }
+    </script>
+</body>
+</html>

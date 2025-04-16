@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录/注册 - 事件追踪器</title>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/styles.css">
+    <style>
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-tertiary) 100%);
+            max-width: 390px;
+            margin: 0 auto;
+        }
+        .login-header {
+            text-align: center;
+            padding: var(--spacing-xl) var(--spacing-lg) var(--spacing-xl);
+        }
+        .login-logo {
+            margin-bottom: var(--spacing-xl);
+            animation: float 6s ease-in-out infinite;
+            display: flex;
+            justify-content: center;
+        }
+        .login-logo i {
+            font-size: 48px;
+            color: var(--primary-color);
+            text-shadow: var(--shadow-sm);
+        }
+        .login-tabs {
+            display: flex;
+            margin-bottom: var(--spacing-xl);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .login-tab {
+            flex: 1;
+            text-align: center;
+            padding: var(--spacing-md);
+            font-weight: 600;
+            color: var(--text-secondary);
+            position: relative;
+            transition: all var(--transition-fast);
+            cursor: pointer;
+        }
+        .login-tab:hover:not(.active) {
+            color: var(--text-primary);
+        }
+        .login-tab.active {
+            color: var(--primary-color);
+        }
+        .login-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 25%;
+            right: 25%;
+            height: 3px;
+            background-color: var(--primary-color);
+            border-radius: 3px 3px 0 0;
+            animation: slideIn 0.3s ease-out;
+        }
+        .login-form {
+            padding: 0 var(--spacing-xl);
+        }
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+        .form-label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .icon-input {
+            position: relative;
+        }
+        .icon-input i {
+            position: absolute;
+            left: var(--spacing-lg);
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            transition: color var(--transition-fast);
+        }
+        .icon-input .form-input {
+            padding-left: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            transition: all var(--transition-fast);
+        }
+        .icon-input .form-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-md);
+        }
+        .icon-input .form-input:focus + i {
+            color: var(--primary-color);
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: scaleX(0);
+            }
+            to {
+                transform: scaleX(1);
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <div class="login-logo">
+                <img src="assets/icons/fa-building-blue.svg" alt="Building Icon" style="width: 60px; height: 60px;">
+            </div>
+            <h1 class="text-primary font-xl font-bold">事件追踪器</h1>
+            <p class="text-secondary mt-2">「记录即治理」</p>
+        </div>
+        
+        <div class="login-content">
+            <div class="login-tabs">
+                <div class="login-tab active" id="login-tab">登录</div>
+                <div class="login-tab" id="register-tab">注册</div>
+            </div>
+            
+            <div class="login-form-container">
+                <!-- 登录表单 -->
+                <form id="login-form" class="login-form fade-in">
+                    <div class="form-group">
+                        <label class="form-label">用户名</label>
+                        <div class="icon-input">
+                            <i class="fas fa-user"></i>
+                            <input type="text" class="form-input" placeholder="请输入用户名" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">密码</label>
+                        <div class="icon-input">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" class="form-input" placeholder="请输入密码" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary btn-block" onclick="login()">
+                            <span class="btn-text">登录</span>
+                            <div class="loading-spinner"></div>
+                        </button>
+                    </div>
+                    
+                    <div class="text-center mt-3">
+                        <a href="#" class="text-primary font-sm">忘记密码？</a>
+                    </div>
+                </form>
+                
+                <!-- 注册表单 -->
+                <form id="register-form" class="login-form fade-in" style="display: none;">
+                    <div class="form-group">
+                        <label class="form-label">用户名</label>
+                        <div class="icon-input">
+                            <i class="fas fa-user"></i>
+                            <input type="text" class="form-input" placeholder="请设置用户名（仅支持字母和数字）" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">密码</label>
+                        <div class="icon-input">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" class="form-input" placeholder="请设置密码（不少于6位）" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">确认密码</label>
+                        <div class="icon-input">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" class="form-input" placeholder="请再次输入密码" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <button type="button" class="btn btn-secondary btn-block" onclick="register()">注册</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 切换登录和注册表单
+        document.getElementById('login-tab').addEventListener('click', function() {
+            this.classList.add('active');
+            document.getElementById('register-tab').classList.remove('active');
+            document.getElementById('login-form').style.display = 'block';
+            document.getElementById('register-form').style.display = 'none';
+        });
+
+        document.getElementById('register-tab').addEventListener('click', function() {
+            this.classList.add('active');
+            document.getElementById('login-tab').classList.remove('active');
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('register-form').style.display = 'block';
+        });
+
+        // 登录逻辑
+        function login() {
+            // 显示加载状态
+            const loginBtn = document.querySelector('.btn-primary');
+            const btnText = loginBtn.querySelector('.btn-text');
+            const spinner = loginBtn.querySelector('.loading-spinner');
+            
+            btnText.style.display = 'none';
+            spinner.style.display = 'block';
+            loginBtn.disabled = true;
+            
+            // 模拟登录流程
+            setTimeout(() => {
+                // 跳转到小区绑定页面
+                window.location.href = 'estate-binding.html';
+            }, 1500);
+        }
+        
+        // 注册逻辑
+        function register() {
+            // 模拟注册流程
+            const loading = document.createElement('div');
+            loading.className = 'loading';
+            loading.innerHTML = '<div class="loading-spinner"></div>';
+            document.querySelector('.login-content').appendChild(loading);
+            
+            setTimeout(() => {
+                loading.remove();
+                // 显示注册成功信息
+                alert('注册成功，请登录');
+                // 切换到登录页面
+                document.getElementById('login-tab').click();
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
