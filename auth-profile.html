@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>欢迎 - 事件追踪器</title>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/styles.css">
+    <style>
+        .auth-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-tertiary) 100%);
+            max-width: 390px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .auth-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: var(--spacing-xl);
+        }
+        
+        .auth-modal {
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 320px;
+            padding: var(--spacing-xl);
+            text-align: center;
+            animation: fadeInUp 0.5s ease-out;
+        }
+        
+        .auth-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto var(--spacing-lg);
+            background-color: var(--bg-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .auth-icon i {
+            font-size: 40px;
+            color: var(--primary-color);
+        }
+        
+        .auth-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .auth-desc {
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-lg);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .auth-note {
+            color: var(--text-tertiary);
+            font-size: 13px;
+            background-color: rgba(59, 130, 246, 0.1);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            text-align: left;
+            line-height: 1.5;
+        }
+        
+        .welcome-msg {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .btn-continue {
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: var(--spacing-sm) var(--spacing-lg);
+            height: 50px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .btn-continue:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .btn-skip {
+            width: 100%;
+            background-color: transparent;
+            color: var(--text-secondary);
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+            padding: var(--spacing-sm);
+            transition: all var(--transition-fast);
+        }
+        
+        .btn-skip:hover {
+            color: var(--text-primary);
+        }
+        
+        /* 模拟微信原生授权弹窗样式 - 仅用于原型展示 */
+        .wx-auth-modal {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 16px 16px 0 0;
+            padding: 24px 16px;
+            box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            max-width: 390px;
+            margin: 0 auto;
+        }
+        
+        .wx-auth-modal.show {
+            transform: translateY(0);
+        }
+        
+        .wx-auth-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .wx-auth-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background-color: #07C160;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+        }
+        
+        .wx-auth-icon i {
+            color: white;
+            font-size: 24px;
+        }
+        
+        .wx-auth-app {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .wx-auth-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        
+        .wx-auth-desc {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 24px;
+        }
+        
+        .wx-auth-buttons {
+            display: flex;
+            gap: 16px;
+        }
+        
+        .wx-btn {
+            flex: 1;
+            height: 44px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .wx-btn-cancel {
+            background-color: #F2F2F2;
+            color: #333;
+        }
+        
+        .wx-btn-allow {
+            background-color: #07C160;
+            color: white;
+        }
+        
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .modal-backdrop.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-content">
+            <div class="auth-modal">
+                <div class="auth-icon">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="welcome-msg">欢迎加入!</div>
+                <h2 class="auth-title">您已成功登录事件追踪器</h2>
+                <p class="auth-desc">为了提供更好的服务体验，我们需要获取您的微信头像和昵称信息，这将用于显示您的个人资料和社区互动。</p>
+                
+                <div class="auth-note">
+                    点击"继续"后，将通过微信官方弹窗向您请求授权。您可以选择允许或拒绝，拒绝授权也可以继续使用大部分功能。
+                </div>
+                
+                <button class="btn-continue" onclick="showWxAuthModal()">继续</button>
+                <button class="btn-skip" onclick="skipAuthorization()">跳过并继续</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 模拟微信原生授权弹窗 - 仅用于原型展示 -->
+    <div class="modal-backdrop" id="modal-backdrop"></div>
+    <div class="wx-auth-modal" id="wx-auth-modal">
+        <div class="wx-auth-header">
+            <div class="wx-auth-icon">
+                <i class="fab fa-weixin"></i>
+            </div>
+            <div class="wx-auth-app">事件追踪器</div>
+        </div>
+        <div class="wx-auth-title">申请获取你的微信信息</div>
+        <div class="wx-auth-desc">事件追踪器申请获取你的昵称、头像，用于展示你的个人资料</div>
+        <div class="wx-auth-buttons">
+            <div class="wx-btn wx-btn-cancel" onclick="handleWxCancel()">拒绝</div>
+            <div class="wx-btn wx-btn-allow" onclick="handleWxAllow()">允许</div>
+        </div>
+    </div>
+
+    <script>
+        // 显示模拟的微信授权弹窗
+        function showWxAuthModal() {
+            document.getElementById('modal-backdrop').classList.add('show');
+            document.getElementById('wx-auth-modal').classList.add('show');
+            
+            // 真实微信小程序中，这里应该调用:
+            // wx.getUserProfile({
+            //     desc: '用于显示您的个人资料和社区互动',
+            //     success: (res) => {
+            //         // 获取用户信息成功，处理用户信息
+            //         console.log(res.userInfo); 
+            //         // 跳转到下一页
+            //         wx.navigateTo({url: '/pages/estate-binding/index'});
+            //     },
+            //     fail: (err) => {
+            //         // 用户拒绝授权，提供降级服务
+            //         console.log(err);
+            //         // 仍然跳转到下一页
+            //         wx.navigateTo({url: '/pages/estate-binding/index'});
+            //     }
+            // });
+        }
+        
+        // 处理微信授权弹窗"允许"按钮
+        function handleWxAllow() {
+            closeWxAuthModal();
+            // 模拟授权成功
+            setTimeout(() => {
+                // 跳转到小区绑定页面
+                window.location.href = 'estate-binding.html';
+            }, 1000);
+        }
+        
+        // 处理微信授权弹窗"拒绝"按钮
+        function handleWxCancel() {
+            closeWxAuthModal();
+            // 模拟降级处理
+            setTimeout(() => {
+                // 即便拒绝也跳转到小区绑定页面
+                window.location.href = 'estate-binding.html';
+            }, 1000);
+        }
+        
+        // 关闭微信授权弹窗
+        function closeWxAuthModal() {
+            document.getElementById('modal-backdrop').classList.remove('show');
+            document.getElementById('wx-auth-modal').classList.remove('show');
+        }
+        
+        // 跳过授权逻辑
+        function skipAuthorization() {
+            // 显示提示
+            const skipBtn = document.querySelector('.btn-skip');
+            skipBtn.disabled = true;
+            skipBtn.textContent = '正在跳过...';
+            
+            // 模拟跳过流程
+            setTimeout(() => {
+                // 跳转到小区绑定页面
+                window.location.href = 'estate-binding.html';
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
