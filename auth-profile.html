@@ -42,16 +42,16 @@
             width: 80px;
             height: 80px;
             margin: 0 auto var(--spacing-lg);
-            background-color: var(--bg-light);
-            border-radius: 50%;
+            background-color: transparent;
+            border-radius: 0;
             display: flex;
             align-items: center;
             justify-content: center;
         }
         
-        .auth-icon i {
-            font-size: 40px;
-            color: var(--primary-color);
+        .auth-icon img {
+            width: 80%;
+            height: 80%;
         }
         
         .auth-title {
@@ -241,7 +241,7 @@
         <div class="auth-content">
             <div class="auth-modal">
                 <div class="auth-icon">
-                    <i class="fas fa-user-circle"></i>
+                    <img src="assets/icons/fa-building-blue.svg" alt="建筑图标">
                 </div>
                 <div class="welcome-msg">欢迎加入!</div>
                 <h2 class="auth-title">您已成功登录事件追踪器</h2>
