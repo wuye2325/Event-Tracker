@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>删除进展确认 - 大事小事追踪</title>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles.css">
+    <style>
+        /* 基础样式 */
+        :root {
+            --primary-color: #2D6AE0;
+            --primary-dark: #357ABD;
+            --primary-light: #F5F5F5;
+            --success-color: #34C759;
+            --warning-color: #FF9500;
+            --error-color: #FF3B30;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --text-light: #8C8C8C;
+            --bg-light: #F5F5F5;
+            --bg-card: #FFFFFF;
+            --border-color: #E8E8E8;
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 16px;
+            --radius-full: 9999px;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+            --transition-fast: 0.2s ease;
+            --transition-normal: 0.3s ease;
+            --primary-gradient: linear-gradient(135deg, #2D6AE0 0%, #357ABD 100%);
+            --error-light: rgba(255, 59, 48, 0.1);
+        }
+
+        body {
+            font-family: "Noto Sans SC", sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+        
+        /* 事件卡片样式 */
+        .event-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-normal);
+        }
+        
+        /* 删除进展确认弹窗样式 */
+        .delete-progress-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        
+        .delete-progress-content {
+            width: 85%;
+            max-width: 320px;
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-lg);
+            animation: slideUpFade 0.3s ease forwards;
+        }
+        
+        @keyframes slideUpFade {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .delete-progress-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: var(--error-light);
+            color: var(--error-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--spacing-lg);
+        }
+        
+        .delete-progress-icon i {
+            font-size: 32px;
+        }
+        
+        .delete-progress-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .delete-progress-message {
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .delete-progress-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-md);
+        }
+        
+        .delete-progress-btn {
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            font-size: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .delete-progress-btn.cancel {
+            background: var(--bg-light);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+        
+        .delete-progress-btn.cancel:hover {
+            background: var(--border-color);
+            color: var(--text-primary);
+        }
+        
+        .delete-progress-btn.confirm {
+            background: var(--error-color);
+            color: white;
+            border: none;
+        }
+        
+        .delete-progress-btn.confirm:hover {
+            background: #ff4d4f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 34, 45, 0.2);
+        }
+        
+        .delete-progress-btn:active {
+            transform: scale(0.98);
+        }
+        
+        /* 导航栏样式 */
+        .navbar {
+            background: white;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .navbar-back {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+        
+        .navbar-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .navbar-action {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+        }
+        
+        .content {
+            padding: 16px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        /* 淡入淡出动画 */
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
+        
+        /* 成功提示样式 */
+        .success-toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            z-index: 2000;
+            display: none;
+        }
+        
+        .success-toast.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-back" onclick="goBack()">
+            <i class="fas fa-chevron-left"></i>
+        </div>
+        <div class="navbar-title">删除进展确认</div>
+        <div class="navbar-action"></div>
+    </div>
+    
+    <div class="content">
+        <!-- 事件详情卡片 -->
+        <div class="event-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h2 class="text-lg font-bold mb-2">社区消防安全演练活动</h2>
+                    <div class="d-flex items-center gap-4 text-secondary text-sm">
+                        <span>2024-03-20 14:00</span>
+                        <span class="status-ongoing">
+                            <i class="fas fa-circle" style="color: var(--primary-color); margin-right: 4px;"></i>
+                            进行中
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <p class="mt-4 text-secondary">
+                为提高社区居民的消防安全意识和自救能力，特组织本次消防安全演练活动。活动包括消防知识讲解、灭火器使用演示、疏散演练等环节。
+            </p>
+            
+            <div class="d-flex justify-content-between mt-4 pt-4 border-t border-gray-200">
+                <div class="d-flex items-center text-secondary">
+                    <i class="far fa-comment mr-2"></i>
+                    <span>32条评论</span>
+                </div>
+                <button class="btn-secondary text-error" onclick="showDeleteProgressModal()">
+                    <i class="fas fa-trash mr-1"></i>
+                    <span>删除进展</span>
+                </button>
+            </div>
+        </div>
+        
+        <div class="text-center text-secondary mt-8">
+            <p>点击"删除进展"按钮查看删除确认弹窗</p>
+        </div>
+    </div>
+    
+    <!-- 删除进展确认弹窗 -->
+    <div class="delete-progress-modal" id="deleteProgressModal" style="display: none;">
+        <div class="delete-progress-content">
+            <div class="delete-progress-icon">
+                <i class="fas fa-trash"></i>
+            </div>
+            <div class="delete-progress-title">删除进展</div>
+            <div class="delete-progress-message">确定要删除这条进展吗？此操作不可恢复，删除后相关的评论也将一并删除。</div>
+            <div class="delete-progress-actions">
+                <div class="delete-progress-btn cancel" onclick="hideDeleteProgressModal()">取消</div>
+                <div class="delete-progress-btn confirm" onclick="confirmDeleteProgress()">删除</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 成功提示 -->
+    <div class="success-toast" id="successToast">
+        <i class="fas fa-check-circle mr-2"></i> 进展已删除
+    </div>
+    
+    <script>
+        // 返回上一页
+        function goBack() {
+            window.location.href = 'event-detail.html';
+        }
+        
+        // 显示删除进展确认弹窗
+        function showDeleteProgressModal() {
+            const modal = document.getElementById('deleteProgressModal');
+            modal.style.display = 'flex';
+            
+            // 阻止滚动
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // 隐藏删除进展确认弹窗
+        function hideDeleteProgressModal() {
+            const modal = document.getElementById('deleteProgressModal');
+            modal.style.display = 'none';
+            
+            // 恢复滚动
+            document.body.style.overflow = '';
+        }
+        
+        // 确认删除进展
+        function confirmDeleteProgress() {
+            // 添加删除动画
+            const eventCard = document.querySelector('.event-card');
+            eventCard.style.animation = 'fadeOut 0.5s ease forwards';
+            
+            // 显示删除中状态
+            const confirmBtn = document.querySelector('.delete-progress-btn.confirm');
+            const originalText = confirmBtn.textContent;
+            confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 删除中';
+            confirmBtn.style.pointerEvents = 'none';
+            
+            // 模拟删除请求
+            setTimeout(() => {
+                hideDeleteProgressModal();
+                
+                // 显示成功提示
+                const successToast = document.getElementById('successToast');
+                successToast.classList.add('show');
+                
+                // 2秒后跳转
+                setTimeout(() => {
+                    window.location.href = 'event-detail.html';
+                }, 1500);
+            }, 1000);
+        }
+        
+        // 页面加载后自动显示弹窗
+        window.addEventListener('DOMContentLoaded', () => {
+            // 延迟显示弹窗，让页面先加载完成
+            setTimeout(() => {
+                showDeleteProgressModal();
+            }, 500);
+        });
+    </script>
+</body>
+</html> 
