@@ -171,8 +171,14 @@
             transform: scale(0.98);
         }
         
-        .action-button i {
+        .action-button i, .action-button .button-icon {
             margin-right: var(--spacing-sm);
+            width: 16px;
+            height: 16px;
+        }
+
+        .action-button.draft:active .button-icon {
+            content: url('assets/icons/fa-save-active.png');
         }
     </style>
 </head>
@@ -220,7 +226,7 @@
     <!-- 底部按钮 -->
     <div class="action-buttons">
         <button class="action-button draft" onclick="saveDraft()">
-            <i class="far fa-save"></i>
+            <img src="assets/icons/fa-save.png" class="button-icon" id="save-icon" alt="保存">
             保存草稿
         </button>
         <button class="action-button publish" onclick="publishTimeline()">
