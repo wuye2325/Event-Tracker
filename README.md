@@ -33,6 +33,7 @@ graph TD
   N[事件关联图谱 event-relations.html]
   O[删除进展确认 delete-progress-confirm.html]
   P[编辑事件 edit-event.html]
+  Q[事件详情（发起者）event-detail-owner.html]
 
   A --> B
   B --> C
@@ -50,6 +51,9 @@ graph TD
   G --> O
   H --> O
   E --> P
+  D --> Q
+  Q --> P
+  Q --> G
 ```
 
 ## 主要页面功能说明
@@ -57,7 +61,8 @@ graph TD
 - **auth-profile.html**：微信授权弹窗
 - **estate-binding.html**：绑定小区
 - **home.html**：事件分类、搜索、TabBar、发布入口
-- **event-detail.html**：事件详情、进展、评论
+- **event-detail.html**：事件详情、进展、评论（普通用户视角）
+- **event-detail-owner.html**：事件详情（发起者视角），含编辑、删除、邀请协作者、修改状态等操作
 - **publish.html**：事件发布、图片、标签
 - **create-timeline.html**：添加进展
 - **update-comment.html**：评论、状态切换、删除进展
@@ -83,7 +88,8 @@ graph TD
 ├── login.html                # 登录/注册
 ├── auth-profile.html         # 微信授权
 ├── estate-binding.html       # 小区绑定
-├── event-detail.html         # 事件详情
+├── event-detail.html         # 事件详情（普通用户）
+├── event-detail-owner.html   # 事件详情（发起者视角），含邀请编辑等
 ├── publish.html              # 发布事件
 ├── create-timeline.html      # 创建进展
 ├── update-comment.html       # 评论/进展互动
@@ -108,3 +114,5 @@ graph TD
   - [publish.html] 发布事件页面新增"事件开始时间"卡片，支持用户录入事件的开始时间。
   - [create-timeline.html] 创建新进展页面新增"进展开始时间"卡片，支持用户录入进展的开始时间。
   - [edit-event.html] 新增编辑事件页面，支持事件内容的二次编辑与保存，event-detail.html 菜单增加"编辑"入口。
+  - [event-detail.html] 修改为普通用户视角，移除事件操作菜单。
+  - [event-detail-owner.html] 新增事件发起者视角详情页，支持邀请协作者、编辑事件、删除事件等操作。

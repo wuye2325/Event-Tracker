@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>事件详情 - 大事小事追踪</title>
+    <title>事件详情（发起者） - 事件脉络追踪</title>
     <link rel="stylesheet" href="https://cdn.staticfile.org/tailwindcss/2.2.19/tailwind.min.css">
     <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -650,6 +650,103 @@
                 transform: translateY(0);
             }
         }
+
+        /* 邀请弹窗样式 */
+        .invite-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .invite-modal.show {
+            display: flex;
+        }
+        .invite-modal-content {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            width: 90%;
+            max-width: 360px;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideIn 0.3s ease;
+        }
+        .invite-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+        }
+        .invite-modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .invite-modal-close {
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+        .role-selector {
+            margin-bottom: var(--spacing-md);
+        }
+        .role-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+        }
+        .role-option {
+            padding: var(--spacing-xs) var(--spacing-md);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        .role-option.selected {
+            background: var(--primary-light);
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .user-input {
+            margin-bottom: var(--spacing-md);
+        }
+        .collaborator-list {
+            margin-top: var(--spacing-lg);
+            padding-top: var(--spacing-lg);
+            border-top: 1px solid var(--border-color);
+        }
+        .collaborator-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-sm) 0;
+        }
+        .collaborator-info {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        .collaborator-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+        .collaborator-details {
+            font-size: 14px;
+        }
+        .collaborator-role {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        .remove-collaborator-btn {
+            color: var(--error-color);
+            cursor: pointer;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -657,7 +754,7 @@
         <div class="navbar-back" onclick="window.location.href='home.html'">
             <i class="fas fa-chevron-left"></i>
         </div>
-        <div class="navbar-title">事件详情</div>
+        <div class="navbar-title">事件详情（发起者）</div>
         <div class="navbar-action">
             <i class="fas fa-share-alt"></i>
         </div>
@@ -670,6 +767,25 @@
                 <h1 class="font-bold font-lg">消防安全演习通知</h1>
                 <div class="d-flex align-items-center gap-2">
                     <span class="status-ongoing">进行中</span>
+                    <div class="event-menu">
+                        <div class="event-menu-btn" onclick="toggleEventMenu()">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </div>
+                        <div class="event-menu-content" id="eventMenu">
+                            <div class="menu-item" onclick="showStatusSelector()">
+                                <i class="fas fa-exchange-alt"></i>
+                                <span>修改状态</span>
+                            </div>
+                            <div class="menu-item" id="editEventBtn" onclick="editEvent()">
+                                <i class="fas fa-edit"></i>
+                                <span>编辑</span>
+                            </div>
+                            <div class="menu-item danger" onclick="deleteEvent()">
+                                <i class="fas fa-trash"></i>
+                                <span>删除</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <p class="text-secondary font-sm mt-1">2023-03-18 10:30 · 物业管理处</p>
@@ -903,8 +1019,8 @@
     
     <!-- 底部操作按钮 -->
     <div class="action-buttons">
-        <button class="action-button action-secondary" onclick="followEvent()">
-            <i class="far fa-star"></i> 关注事件
+        <button class="action-button action-secondary" onclick="showInviteModal()">
+            <i class="fas fa-user-plus"></i> 邀请编辑
         </button>
         <button class="action-button action-primary" onclick="window.location.href='create-timeline.html'">
             <i class="fas fa-plus"></i>
@@ -912,99 +1028,135 @@
         </button>
     </div>
     
+    <!-- 邀请编辑弹窗 -->
+    <div class="invite-modal" id="inviteModal">
+        <div class="invite-modal-content">
+            <div class="invite-modal-header">
+                <div class="invite-modal-title">邀请协作者</div>
+                <div class="invite-modal-close" onclick="hideInviteModal()"><i class="fas fa-times"></i></div>
+            </div>
+            
+            <div class="role-selector">
+            
+            <div class="user-input">
+                <input type="text" class="form-input" id="user-info-input" placeholder="输入手机号邀请">
+            </div>
+            
+            <button class="btn btn-primary w-100" onclick="sendInvitation()">发送邀请</button>
+
+            <div class="collaborator-list">
+                <h4 class="font-medium mb-2">已邀请</h4>
+                <div id="invited-list">
+                    <!-- 已邀请列表由 JS 动态生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <script>
-        function followEvent() {
-            const btn = document.querySelector('.action-secondary');
-            if (btn.innerHTML.includes('关注事件')) {
-                btn.innerHTML = '<i class="fas fa-star"></i> 已关注';
-                btn.classList.add('action-primary');
-                btn.classList.remove('action-secondary');
-            } else {
-                btn.innerHTML = '<i class="far fa-star"></i> 关注事件';
-                btn.classList.remove('action-primary');
-                btn.classList.add('action-secondary');
+        // 模拟协作者数据
+        let collaborators = [
+            { id: 2, name: '李业主', role: '业主', avatar: 'https://randomuser.me/api/portraits/women/45.jpg' },
+            { id: 3, name: '张物业', role: '物业', avatar: 'https://randomuser.me/api/portraits/men/33.jpg' }
+        ];
+        let selectedRole = null;
+
+        // 渲染协作者列表
+        function renderCollaborators() {
+            const invitedList = document.getElementById('invited-list');
+            invitedList.innerHTML = '';
+
+            if (collaborators.length === 0) {
+                invitedList.innerHTML = '<div class="text-secondary font-sm">暂无协作者</div>';
+                return;
             }
+
+            collaborators.forEach(c => {
+                const itemHTML = `
+                    <div class="collaborator-info">
+                        <img src="${c.avatar}" alt="${c.name}" class="collaborator-avatar">
+                        <div class="collaborator-details">
+                            <div class="font-medium">${c.name}</div>
+                            <div class="collaborator-role">${c.role}</div>
+                        </div>
+                    </div>
+                    <div class="remove-collaborator-btn" onclick="removeCollaborator(${c.id})">移除</div>
+                `;
+                const modalItem = document.createElement('div');
+                modalItem.className = 'collaborator-item';
+                modalItem.innerHTML = itemHTML;
+                invitedList.appendChild(modalItem);
+            });
         }
-        
-        function previewImage(event, element) {
-            event.stopPropagation(); // 阻止事件冒泡，这样点击图片时不会触发卡片的点击事件
-            // 原有的预览图片逻辑
-            const preview = document.createElement('div');
-            preview.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0, 0, 0, 0.9);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 1000;
-                opacity: 0;
-                transition: opacity var(--transition-normal);
-            `;
-            
-            const img = document.createElement('img');
-            img.src = element.src;
-            img.style.cssText = `
-                max-width: 90%;
-                max-height: 90vh;
-                object-fit: contain;
-                border-radius: var(--radius-lg);
-                transform: scale(0.9);
-                transition: transform var(--transition-normal);
-            `;
-            
-            const close = document.createElement('div');
-            close.innerHTML = '<i class="fas fa-times"></i>';
-            close.style.cssText = `
-                position: absolute;
-                top: var(--spacing-lg);
-                right: var(--spacing-lg);
-                color: white;
-                font-size: 24px;
-                cursor: pointer;
-                width: 40px;
-                height: 40px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                background: rgba(255, 255, 255, 0.1);
-                border-radius: 50%;
-                transition: all var(--transition-fast);
-            `;
-            
-            close.onmouseover = () => {
-                close.style.background = 'rgba(255, 255, 255, 0.2)';
+
+        // 移除协作者
+        function removeCollaborator(id) {
+            collaborators = collaborators.filter(c => c.id !== id);
+            renderCollaborators();
+            alert('已移除协作者');
+        }
+
+        // 显示/隐藏邀请弹窗
+        function showInviteModal() {
+            document.getElementById('inviteModal').classList.add('show');
+        }
+        function hideInviteModal() {
+            document.getElementById('inviteModal').classList.remove('show');
+        }
+
+        // 选择角色
+        document.querySelectorAll('.role-option').forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.role-option').forEach(o => o.classList.remove('selected'));
+                option.classList.add('selected');
+                selectedRole = option.dataset.role;
+            });
+        });
+
+        // 发送邀请
+        function sendInvitation() {
+            const userInfo = document.getElementById('user-info-input').value.trim();
+            if (!selectedRole) {
+                alert('请选择角色');
+                return;
+            }
+            if (!userInfo) {
+                alert('请输入用户信息');
+                return;
+            }
+            // 模拟邀请成功
+            const newCollaborator = {
+                id: Date.now(), // 简单生成ID
+                name: userInfo.substring(0, 5), // 模拟昵称
+                role: selectedRole,
+                avatar: `https://randomuser.me/api/portraits/${Math.random() > 0.5 ? 'men' : 'women'}/${Math.floor(Math.random() * 99)}.jpg`
             };
+            collaborators.push(newCollaborator);
+            renderCollaborators();
+            alert(`已邀请 ${userInfo} 作为 ${selectedRole}`);
+            // 清空输入
+            document.getElementById('user-info-input').value = '';
+            document.querySelectorAll('.role-option').forEach(o => o.classList.remove('selected'));
+            selectedRole = null;
+        }
+
+        // 事件菜单相关
+        function toggleEventMenu() {
+            const menu = document.getElementById('eventMenu');
+            menu.classList.toggle('show');
             
-            close.onmouseout = () => {
-                close.style.background = 'rgba(255, 255, 255, 0.1)';
-            };
-            
-            preview.onclick = close.onclick = () => {
-                preview.style.opacity = '0';
-                img.style.transform = 'scale(0.9)';
-                setTimeout(() => preview.remove(), 300);
-            };
-            
-            img.onclick = (e) => {
-                e.stopPropagation();
-            };
-            
-            preview.appendChild(img);
-            preview.appendChild(close);
-            document.body.appendChild(preview);
-            
-            setTimeout(() => {
-                preview.style.opacity = '1';
-                img.style.transform = 'scale(1)';
-            }, 10);
+            // 点击其他地方关闭菜单
+            document.addEventListener('click', function closeMenu(e) {
+                if (!e.target.closest('.event-menu')) {
+                    menu.classList.remove('show');
+                    document.removeEventListener('click', closeMenu);
+                }
+            });
         }
 
         function showStatusSelector() {
             document.getElementById('statusSelector').classList.add('show');
+            document.getElementById('eventMenu').classList.remove('show');
         }
 
         function hideStatusSelector() {
@@ -1059,6 +1211,20 @@
                 alert('事件已删除');
                 window.location.href = 'home.html';
             }
+        }
+
+        // 编辑事件跳转
+        function editEvent() {
+            // 假设当前事件 id 为 1，实际应从数据中获取
+            const eventId = '1'; // 示例 ID，需要替换为实际逻辑获取
+            window.location.href = `edit-event.html?id=${eventId}`;
+            document.getElementById('eventMenu').classList.remove('show');
+        }
+
+        // 页面初始化
+        window.onload = function() {
+            renderCollaborators();
+            // 其他初始化...
         }
     </script>
 </body>
