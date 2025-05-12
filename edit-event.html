@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>发布事件 - 大事小事追踪</title>
+    <title>编辑事件 - 事件脉络追踪</title>
     <link rel="stylesheet" href="https://cdn.staticfile.org/tailwindcss/2.2.19/tailwind.min.css">
     <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -234,42 +234,32 @@
 </head>
 <body>
     <div class="navbar">
-        <div class="navbar-back" onclick="window.location.href='home.html'">
+        <div class="navbar-back" onclick="window.location.href='event-detail.html'">
             <i class="fas fa-chevron-left"></i>
         </div>
-        <div class="navbar-title">发布事件</div>
+        <div class="navbar-title">编辑事件</div>
         <div class="navbar-action"></div>
     </div>
     
     <div class="content">
         <div class="form-section">
             <div class="form-section-title">事件标题</div>
-            <input type="text" class="form-input" placeholder="请输入标题（2-20字）" maxlength="20">
+            <input type="text" class="form-input" id="event-title" placeholder="请输入标题（2-20字）" maxlength="20">
         </div>
         
         <div class="form-section">
             <div class="form-section-title">事件内容</div>
-            <textarea class="textarea" placeholder="请详细描述事件的内容（10-500字）..."></textarea>
+            <textarea class="textarea" id="event-content" placeholder="请详细描述事件的内容（10-500字）..."></textarea>
         </div>
         
         <div class="form-section">
             <div class="form-section-title">添加图片</div>
             <p class="text-secondary font-sm mb-3">最多上传9张图片</p>
-            <div class="upload-area">
-                <div class="upload-preview">
-                    <img src="https://images.unsplash.com/photo-1496979551903-46e46589a88b?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" alt="预览图">
-                    <div class="remove-btn">
-                        <i class="fas fa-times"></i>
-                    </div>
-                </div>
-                
-                <div class="upload-item">
-                    <i class="fas fa-plus"></i>
-                </div>
+            <div class="upload-area" id="upload-area">
+                <!-- 图片预览与上传按钮由 JS 动态生成 -->
             </div>
         </div>
         
-        <!-- 新增：事件开始时间卡片 -->
         <div class="form-section">
             <div class="form-section-title">事件开始时间</div>
             <input type="datetime-local" class="form-input" id="event-start-time" placeholder="请选择事件开始时间">
@@ -278,22 +268,8 @@
         <div class="form-section">
             <div class="form-section-title">选择标签</div>
             <p class="text-secondary font-sm mb-3">最多选择5个标签</p>
-            <div class="tags-container">
-                <div class="tag-item" onclick="toggleTag(this)">
-                    <i class="fas fa-building"></i> 物业通知
-                </div>
-                <div class="tag-item" onclick="toggleTag(this)">
-                    <i class="fas fa-fire-extinguisher"></i> 安全演练
-                </div>
-                <div class="tag-item selected" onclick="toggleTag(this)">
-                    <i class="fas fa-users"></i> 全员参与
-                </div>
-                <div class="tag-item" onclick="toggleTag(this)">
-                    <i class="fas fa-dumbbell"></i> 基础设施
-                </div>
-                <div class="tag-item" onclick="toggleTag(this)">
-                    <i class="fas fa-leaf"></i> 环保行动
-                </div>
+            <div class="tags-container" id="tags-container">
+                <!-- 标签由 JS 动态生成 -->
                 <div class="custom-tag-input">
                     <input type="text" placeholder="添加自定义标签" maxlength="10" onkeypress="handleCustomTagKeyPress(event)">
                     <i class="fas fa-plus add-btn" onclick="addCustomTag()"></i>
@@ -303,109 +279,158 @@
     </div>
     
     <div class="action-buttons">
-        <button class="action-button draft" onclick="saveDraft()">
-            <i class="far fa-save"></i>
-            保存草稿
-        </button>
-        <button class="action-button publish" onclick="publishEvent()">
-            <i class="fas fa-paper-plane"></i>
-            发布事件
+        <button class="action-button publish" onclick="saveEdit()">
+            <i class="fas fa-save"></i>
+            保存修改
         </button>
     </div>
     
     <script>
+        // 模拟事件数据（实际应通过接口获取）
+        const mockEventData = {
+            '1': {
+                title: '消防安全演习通知',
+                content: '为提高小区居民的消防安全意识和自救能力，物业将于本周六上午10点在小区南广场组织消防安全演习活动，请各位业主积极参与。',
+                images: [
+                    'https://images.unsplash.com/photo-1496979551903-46e46589a88b?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80'
+                ],
+                startTime: '2023-03-18T10:30',
+                tags: ['物业通知', '安全演练', '全员参与']
+            }
+            // 可扩展更多事件
+        };
+
+        // 获取 URL 参数
+        function getQueryParam(name) {
+            const url = window.location.search;
+            const params = new URLSearchParams(url);
+            return params.get(name);
+        }
+
+        // 预填充表单
+        function fillForm(data) {
+            document.getElementById('event-title').value = data.title || '';
+            document.getElementById('event-content').value = data.content || '';
+            document.getElementById('event-start-time').value = data.startTime || '';
+            // 图片
+            renderImages(data.images || []);
+            // 标签
+            renderTags(data.tags || []);
+        }
+
+        // 渲染图片
+        function renderImages(images) {
+            const area = document.getElementById('upload-area');
+            area.innerHTML = '';
+            images.forEach((img, idx) => {
+                const div = document.createElement('div');
+                div.className = 'upload-preview';
+                div.innerHTML = `<img src="${img}" alt="预览图"><div class='remove-btn' onclick='removeImage(${idx})'><i class='fas fa-times'></i></div>`;
+                area.appendChild(div);
+            });
+            if (images.length < 9) {
+                const upload = document.createElement('div');
+                upload.className = 'upload-item';
+                upload.onclick = uploadImage;
+                upload.innerHTML = '<i class="fas fa-plus"></i>';
+                area.appendChild(upload);
+            }
+        }
+        // 图片操作
+        let editImages = [];
+        function uploadImage() {
+            if (editImages.length >= 9) {
+                alert('最多只能上传9张图片');
+                return;
+            }
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        editImages.push(e.target.result);
+                        renderImages(editImages);
+                    }
+                    reader.readAsDataURL(file);
+                }
+            }
+            input.click();
+        }
+        function removeImage(idx) {
+            editImages.splice(idx, 1);
+            renderImages(editImages);
+        }
+        // 渲染标签
+        const allTags = ['物业通知', '安全演练', '全员参与', '基础设施', '环保行动'];
+        function renderTags(selected) {
+            const container = document.getElementById('tags-container');
+            // 保留自定义输入框
+            const customInput = container.querySelector('.custom-tag-input');
+            container.innerHTML = '';
+            allTags.forEach(tag => {
+                const div = document.createElement('div');
+                div.className = 'tag-item' + (selected.includes(tag) ? ' selected' : '');
+                div.innerHTML = `<i class='fas fa-tag'></i> ${tag}`;
+                div.onclick = function() { toggleTag(this); };
+                container.appendChild(div);
+            });
+            container.appendChild(customInput);
+            // 选中标签
+            selectedTags = [...selected];
+        }
+        // 标签操作
+        let selectedTags = [];
         function toggleTag(element) {
-            // 获取已选中的标签数量
-            const selectedTags = document.querySelectorAll('.tag-item.selected').length;
-            
-            if (!element.classList.contains('selected') && selectedTags >= 5) {
+            const tag = element.textContent.trim();
+            if (!element.classList.contains('selected') && selectedTags.length >= 5) {
                 alert('最多只能选择5个标签');
                 return;
             }
-            
             element.classList.toggle('selected');
+            if (element.classList.contains('selected')) {
+                selectedTags.push(tag);
+            } else {
+                selectedTags = selectedTags.filter(t => t !== tag);
+            }
         }
-        
         function handleCustomTagKeyPress(event) {
             if (event.key === 'Enter') {
                 event.preventDefault();
                 addCustomTag();
             }
         }
-        
         function addCustomTag() {
             const input = document.querySelector('.custom-tag-input input');
             const tagText = input.value.trim();
-            
             if (!tagText) return;
-            
-            // 检查标签数量限制
-            const selectedTags = document.querySelectorAll('.tag-item.selected').length;
-            if (selectedTags >= 5) {
+            if (selectedTags.length >= 5) {
                 alert('最多只能选择5个标签');
                 return;
             }
-            
-            // 检查标签是否已存在
-            const existingTags = Array.from(document.querySelectorAll('.tag-item')).map(tag => 
-                tag.textContent.trim()
-            );
-            if (existingTags.includes(tagText)) {
+            if (allTags.includes(tagText) || selectedTags.includes(tagText)) {
                 alert('该标签已存在');
                 return;
             }
-            
-            // 创建新标签
-            const newTag = document.createElement('div');
-            newTag.className = 'tag-item selected';
-            newTag.onclick = function() { toggleTag(this); };
-            newTag.innerHTML = `<i class="fas fa-tag"></i> ${tagText}`;
-            
-            // 插入到输入框前面
-            const customTagInput = document.querySelector('.custom-tag-input');
-            customTagInput.parentNode.insertBefore(newTag, customTagInput);
-            
-            // 清空输入框
+            allTags.push(tagText);
+            selectedTags.push(tagText);
+            renderTags(selectedTags);
             input.value = '';
         }
-        
-        function saveDraft() {
-            alert('保存草稿成功');
+        // 保存修改
+        function saveEdit() {
+            // 可扩展表单校验与保存逻辑
+            alert('修改已保存！');
+            window.location.href = 'event-detail.html';
         }
-        
-        function publishEvent() {
-            // 表单验证
-            const title = document.querySelector('.form-input').value;
-            const content = document.querySelector('.textarea').value;
-            
-            if (title.length < 2 || title.length > 20) {
-                alert('标题长度需要在2-20字之间');
-                return;
-            }
-            
-            if (content.length < 10 || content.length > 500) {
-                alert('内容长度需要在10-500字之间');
-                return;
-            }
-            
-            // 显示加载状态
-            const publishBtn = document.querySelector('.action-button.publish');
-            const btnText = publishBtn.querySelector('span');
-            const spinner = document.createElement('div');
-            spinner.className = 'loading-spinner';
-            spinner.style.width = '20px';
-            spinner.style.height = '20px';
-            spinner.style.margin = '0 auto';
-            
-            btnText.style.display = 'none';
-            publishBtn.appendChild(spinner);
-            publishBtn.disabled = true;
-            
-            // 模拟发布
-            setTimeout(() => {
-                alert('发布成功！');
-                window.location.href = 'home.html';
-            }, 1500);
+        // 页面初始化
+        window.onload = function() {
+            const id = getQueryParam('id') || '1';
+            const data = mockEventData[id] || mockEventData['1'];
+            editImages = [...(data.images || [])];
+            fillForm(data);
         }
     </script>
 </body>

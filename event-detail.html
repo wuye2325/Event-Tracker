@@ -679,6 +679,10 @@
                                 <i class="fas fa-exchange-alt"></i>
                                 <span>修改状态</span>
                             </div>
+                            <div class="menu-item" id="editEventBtn" style="display:none" onclick="editEvent()">
+                                <i class="fas fa-edit"></i>
+                                <span>编辑</span>
+                            </div>
                             <div class="menu-item danger" onclick="deleteEvent()">
                                 <i class="fas fa-trash"></i>
                                 <span>删除</span>
@@ -1088,6 +1092,22 @@
                 alert('事件已删除');
                 window.location.href = 'home.html';
             }
+        }
+
+        // 判断是否为事件发布者，模拟逻辑
+        window.onload = function() {
+            // ...原有初始化逻辑...
+            // 假设当前用户是发布者
+            var isPublisher = true;
+            if(isPublisher) {
+                document.getElementById('editEventBtn').style.display = '';
+            }
+        }
+        // 编辑事件跳转
+        function editEvent() {
+            // 假设当前事件 id 为 1
+            window.location.href = 'edit-event.html?id=1';
+            document.getElementById('eventMenu').classList.remove('show');
         }
     </script>
 </body>
