@@ -116,3 +116,4 @@ graph TD
   - [edit-event.html] 新增编辑事件页面，支持事件内容的二次编辑与保存，event-detail.html 菜单增加"编辑"入口。
   - [event-detail.html] 修改为普通用户视角，移除事件操作菜单。
   - [event-detail-owner.html] 新增事件发起者视角详情页，支持邀请协作者、编辑事件、删除事件等操作。
+  - [event-detail.html, event-detail-owner.html] 事件时间线新增排序功能，支持按时间正序和倒序排列，按钮使用图标并提供悬浮提示。

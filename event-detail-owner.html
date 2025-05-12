@@ -870,10 +870,20 @@
         
         <!-- 时间线部分 -->
         <div class="timeline-section">
-            <h2 class="timeline-title">事件时间线</h2>
-            
-            <div class="timeline">
-                <div class="timeline-node">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="timeline-title" style="margin-bottom: 0;">事件时间线</h2>
+                <div class="d-flex gap-2">
+                    <button id="sort-desc-btn" class="sort-btn active" onclick="sortTimeline('desc')" title="最新在前">
+                        <i class="fas fa-arrow-down-wide-short"></i>
+                    </button>
+                    <button id="sort-asc-btn" class="sort-btn" onclick="sortTimeline('asc')" title="最早在前">
+                        <i class="fas fa-arrow-up-wide-short"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="timeline" id="timeline-container">
+                <div class="timeline-node" data-timestamp="2023-03-18 10:30">
                     <div class="timeline-node-header">
                         <div class="node-time">2023-03-18 10:30</div>
                         <div class="status-ongoing">进行中</div>
@@ -909,7 +919,7 @@
                     </div>
                 </div>
                 
-                <div class="timeline-node">
+                <div class="timeline-node" data-timestamp="2023-03-19 14:15">
                     <div class="timeline-node-header">
                         <div class="node-time">2023-03-19 14:15</div>
                         <div class="status-ongoing">进行中</div>
@@ -939,7 +949,7 @@
                     </div>
                 </div>
                 
-                <div class="timeline-node">
+                <div class="timeline-node" data-timestamp="2023-03-19 16:30">
                     <div class="timeline-node-header">
                         <div class="node-time">2023-03-19 16:30</div>
                         <div class="status-ongoing">进行中</div>
@@ -980,7 +990,7 @@
                     </div>
                 </div>
                 
-                <div class="timeline-node">
+                <div class="timeline-node" data-timestamp="2023-03-19 18:45">
                     <div class="timeline-node-header">
                         <div class="node-time">2023-03-19 18:45</div>
                         <div class="status-ongoing">进行中</div>
@@ -1225,7 +1235,55 @@
         window.onload = function() {
             renderCollaborators();
             // 其他初始化...
+
+            // 初始化时间线排序
+            document.querySelectorAll('.timeline-node').forEach(node => {
+                if (!node.dataset.timestamp) {
+                    const timeText = node.querySelector('.node-time')?.textContent;
+                    if (timeText) {
+                        node.dataset.timestamp = timeText;
+                    }
+                }
+            });
+            // 默认执行一次倒序排序
+            sortTimeline('desc');
         }
+
+        // --- 时间线排序功能 --- 
+        function parseTimestamp(timeString) {
+            // 解析 "YYYY-MM-DD HH:mm" 格式的时间字符串为 Date 对象
+            return new Date(timeString);
+        }
+
+        function sortTimeline(order) {
+            const timelineContainer = document.getElementById('timeline-container');
+            if (!timelineContainer) return; // 添加保护，防止容器不存在
+            const nodes = Array.from(timelineContainer.querySelectorAll('.timeline-node'));
+
+            nodes.sort((a, b) => {
+                const timeA = parseTimestamp(a.dataset.timestamp || a.querySelector('.node-time')?.textContent || '1970-01-01 00:00');
+                const timeB = parseTimestamp(b.dataset.timestamp || b.querySelector('.node-time')?.textContent || '1970-01-01 00:00');
+
+                if (order === 'asc') {
+                    return timeA - timeB; // 正序
+                } else {
+                    return timeB - timeA; // 倒序
+                }
+            });
+
+            // 清空容器并重新插入排序后的节点
+            timelineContainer.innerHTML = '';
+            nodes.forEach(node => timelineContainer.appendChild(node));
+
+            // 更新按钮激活状态
+            document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.remove('active'));
+            const activeButton = document.getElementById(`sort-${order}-btn`);
+            if (activeButton) {
+                activeButton.classList.add('active');
+            }
+        }
+        // --- 时间线排序功能结束 ---
+
     </script>
 </body>
 </html> 
