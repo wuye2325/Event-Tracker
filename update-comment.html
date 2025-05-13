@@ -946,16 +946,19 @@
         <div class="event-card fade-in">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <h2 class="event-title">社区消防安全演练活动</h2>
+                    <div class="user-info d-flex align-items-center mb-3">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="头像" class="avatar-sm mr-2" style="border-radius: 50%; width: 40px; height: 40px; object-fit: cover;">
+                        <div class="text-info">
+                            <div class="font-bold">王物业</div>
+                            <span class="tag tag-primary font-xs">物业管理员</span>
+                        </div>
+                    </div>
                     <div class="event-meta">
                         <span>2024-03-20 14:00</span>
-                        <span class="status-ongoing">进行中</span>
                     </div>
                 </div>
                 <div class="d-flex align-items-center gap-2" style="height: 30px;">
-                    <div class="event-type-tag type-update">
-                        <span>动态</span>
-                    </div>
+                    <span class="status-ongoing">进行中</span>
                     <div class="event-menu">
                         <div class="event-menu-btn" onclick="toggleEventMenu()">
                             <i class="fas fa-ellipsis-v"></i>
@@ -972,21 +975,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <div class="event-tags">
-                <span class="event-tag">
-                    <i class="fas fa-fire-extinguisher"></i>
-                    安全演练
-                </span>
-                <span class="event-tag">
-                    <i class="fas fa-users"></i>
-                    社区活动
-                </span>
-                <span class="event-tag">
-                    <i class="fas fa-book"></i>
-                    消防知识
-                </span>
             </div>
             
             <p class="event-content">
@@ -1009,6 +997,9 @@
                 <div class="d-flex align-items-center text-secondary">
                     <i class="far fa-comment mr-2"></i>
                     <span>32条评论</span>
+                </div>
+                <div class="event-type-tag type-update">
+                    <span>动态</span>
                 </div>
             </div>
         </div>
@@ -1042,16 +1033,16 @@
                             </div>
                             <div class="flex items-center gap-4 mt-3">
                                 <button class="btn-secondary" onclick="likeComment(this)">
-                                    <i class="fas fa-heart"></i>
-                                    <span>点赞</span>
+                                    <i class="fas fa-thumbs-up"></i>
+                                </button>
+                                <button class="btn-secondary" onclick="dislikeComment(this)">
+                                    <i class="fas fa-thumbs-down"></i>
                                 </button>
                                 <button class="btn-secondary" onclick="replyComment(this)">
                                     <i class="fas fa-reply"></i>
-                                    <span>回复</span>
                                 </button>
                                 <button class="btn-secondary text-error" onclick="showDeleteConfirm(this)">
                                     <i class="fas fa-trash"></i>
-                                    <span>删除</span>
                                 </button>
                             </div>
                         </div>
@@ -1070,12 +1061,13 @@
                                 <p class="reply-text">这是回复内容。</p>
                                 <div class="reply-actions">
                                     <span class="reply-action" onclick="likeReply(this)">
-                                        <i class="fas fa-heart"></i>
-                                        <span>点赞</span>
+                                        <i class="fas fa-thumbs-up"></i>
+                                    </span>
+                                    <span class="reply-action" onclick="dislikeReply(this)">
+                                        <i class="fas fa-thumbs-down"></i>
                                     </span>
                                     <span class="reply-action" onclick="replyToReply(this)">
                                         <i class="fas fa-reply"></i>
-                                        <span>回复</span>
                                     </span>
                                 </div>
                             </div>
@@ -1084,7 +1076,7 @@
                         <!-- 展开更多回复 -->
                         <div class="expand-replies">
                             <i class="fas fa-chevron-down"></i>
-                            <span>展开更多回复</span>
+                            <span>展开</span>
                         </div>
                     </div>
                 </div>
@@ -1101,16 +1093,16 @@
                             <p class="text-gray-800 mb-3">这个活动很有意义，我会带着孩子一起参加，让他们也学习一下消防安全知识。</p>
                             <div class="flex items-center gap-4 mt-3">
                                 <button class="btn-secondary" onclick="likeComment(this)">
-                                    <i class="fas fa-heart"></i>
-                                    <span>点赞</span>
+                                    <i class="fas fa-thumbs-up"></i>
+                                </button>
+                                <button class="btn-secondary" onclick="dislikeComment(this)">
+                                    <i class="fas fa-thumbs-down"></i>
                                 </button>
                                 <button class="btn-secondary" onclick="replyComment(this)">
                                     <i class="fas fa-reply"></i>
-                                    <span>回复</span>
                                 </button>
                                 <button class="btn-secondary text-error" onclick="showDeleteConfirm(this)">
                                     <i class="fas fa-trash"></i>
-                                    <span>删除</span>
                                 </button>
                             </div>
                         </div>
@@ -1209,6 +1201,46 @@
         function shareEvent() {
             // 实现分享功能
             alert('分享功能开发中...');
+        }
+        
+        // 踩评论
+        function dislikeComment(btn) {
+            // 检查是否已经踩过
+            if (btn.classList.contains('active')) {
+                btn.classList.remove('active');
+                btn.style.color = '';
+                btn.style.background = '';
+            } else {
+                btn.classList.add('active');
+                btn.style.color = '#ff3b30';
+                btn.style.background = 'rgba(255, 59, 48, 0.1)';
+                
+                // 如果已经点赞，取消点赞
+                const likeBtn = btn.previousElementSibling;
+                if (likeBtn && likeBtn.classList.contains('active')) {
+                    likeBtn.classList.remove('active');
+                    likeBtn.style.color = '';
+                    likeBtn.style.background = '';
+                }
+            }
+        }
+        
+        // 踩回复
+        function dislikeReply(element) {
+            // 检查是否已经踩过
+            if (element.classList.contains('active')) {
+                element.classList.remove('active');
+            } else {
+                element.classList.add('active');
+                element.style.color = '#ff3b30';
+                
+                // 如果已经点赞，取消点赞
+                const likeElement = element.previousElementSibling;
+                if (likeElement && likeElement.classList.contains('active')) {
+                    likeElement.classList.remove('active');
+                    likeElement.style.color = '';
+                }
+            }
         }
         
         // 预览图片

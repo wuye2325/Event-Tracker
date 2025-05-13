@@ -1,5 +1,82 @@
-# 事件追踪器微信小程序原型
+# HTML截图工具
 
+这是一个根据iPhone 13 mini屏幕尺寸(375x812)截取HTML页面的工具。工具会自动处理整个页面的滚动部分，生成完整的页面截图。
+
+## 特点
+
+- 设置浏览器视窗大小为iPhone 13 mini (375x812)
+- 支持截取完整页面，包括需要滚动才能看到的部分
+- 支持批量处理目录中的多个HTML文件
+- 自动创建输出目录
+
+## 安装
+
+1. 确保已安装Node.js (建议12.0.0或更高版本)
+2. 克隆或下载本仓库
+3. 在项目目录中执行以下命令安装依赖：
+
+```bash
+npm install
+```
+
+## 使用方法
+
+### 截取单个HTML文件
+
+```bash
+node screenshot.js --file <HTML文件路径> --output <输出目录>
+```
+
+例如：
+
+```bash
+node screenshot.js --file home.html --output screenshots
+```
+
+### 批量处理目录下的所有HTML文件
+
+```bash
+node screenshot.js --dir <HTML文件目录> --output <输出目录>
+```
+
+例如：
+
+```bash
+node screenshot.js --dir ./ --output screenshots
+```
+
+### 通过npm脚本运行
+
+```bash
+# 单个文件
+npm run screenshot -- --file <HTML文件路径> --output <输出目录>
+
+# 批量处理
+npm run screenshot -- --dir <HTML文件目录> --output <输出目录>
+```
+
+## 注意事项
+
+- 截图会以原HTML文件名保存为PNG格式
+- 对于本地文件，工具会自动添加`file://`前缀
+- 工具使用Puppeteer的无头浏览器模式，不会显示界面
+- 设置了设备缩放比例(deviceScaleFactor)为2，以提高截图质量
+
+## 故障排除
+
+如果遇到问题，请检查：
+
+1. Node.js版本是否满足要求
+2. 是否正确安装了依赖
+3. HTML文件路径是否正确
+4. 是否有权限创建输出目录
+5. 页面是否含有需等待加载的资源
+
+## 许可证
+
+MIT
+
+# 事件追踪器微信小程序原型
 
 ## 项目简介
 
@@ -102,15 +179,76 @@ graph TD
 ├── delete-progress-confirm.html # 删除进展确认
 ├── edit-event.html           # 编辑事件（表单预填充，二次编辑）
 ├── assets/                   # 静态资源（图片、样式等）
+├── screenshot/               # 截图工具目录
+│   ├── screenshot.js         # 截图脚本
+│   └── package.json          # 截图工具依赖
 ```
 
 ## 预览方式
 1. 使用现代浏览器（推荐 Chrome）打开 `index.html`，即可预览全部原型页面。
 2. 所有页面均为静态 HTML，无需后端环境。
 
+## 截图工具使用说明
+
+为方便原型页面的截图保存，项目提供了一个按照iPhone 13 mini尺寸(375x812)截取HTML页面的工具。
+
+### 截图工具安装
+
+1. 确保已安装Node.js (建议12.0.0或更高版本)
+2. 在项目目录执行以下命令安装依赖：
+
+```bash
+npm install
+```
+
+### 截图工具使用方法
+
+#### 截取单个HTML文件
+
+```bash
+node screenshot.js --file <HTML文件路径> --output <输出目录>
+```
+
+例如：
+
+```bash
+node screenshot.js --file home.html --output screenshots
+```
+
+#### 批量处理目录下的所有HTML文件
+
+```bash
+node screenshot.js --dir <HTML文件目录> --output <输出目录>
+```
+
+例如：
+
+```bash
+node screenshot.js --dir ./ --output screenshots
+```
+
+截图将以PNG格式保存，命名与原HTML文件相同。
 
 ## 更新日志
-- 2024-06-09：
+
+- 2025-05-14:
+  - 新增基于Node.js和Puppeteer的HTML页面截图工具，按照iPhone 13 mini尺寸(375x812)截取页面。
+  - 支持单个页面截图和批量处理功能，自动保存为PNG格式。
+
+- 2025-05-13：
+  - [event-detail.html] 
+    - 重新设计时间线UI，优化布局和信息展示
+    - 调整类型标签和互动区位置，统一视觉风格
+    - 修改颜色方案，用户名和互动图标改为灰色
+    - 修复内容溢出问题，优化容器显示
+    - 实现微信小程序分享链接自动复制功能，支持复制事件标题与小程序路径
+    - 新增分享弹窗，采用动画过渡效果，显示完整分享内容
+  - [update-comment.html]
+    - 优化界面结构，新增用户信息展示
+    - 调整标签位置，简化按钮和文本显示
+    - 统一互动功能，新增"踩"按钮，更改点赞图标
+
+- 2025-05-12：
   - [publish.html] 发布事件页面新增"事件开始时间"卡片，支持用户录入事件的开始时间。
   - [create-timeline.html] 创建新进展页面新增"进展开始时间"卡片，支持用户录入进展的开始时间。
   - [edit-event.html] 新增编辑事件页面，支持事件内容的二次编辑与保存，event-detail.html 菜单增加"编辑"入口。

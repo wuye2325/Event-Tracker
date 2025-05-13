@@ -1,0 +1,29 @@
+{
+  "name": "html-screenshot",
+  "version": "1.0.0",
+  "description": "根据iPhone 13 mini尺寸截取HTML页面",
+  "main": "screenshot.js",
+  "scripts": {
+    "screenshot": "node screenshot.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "screenshot",
+    "html",
+    "puppeteer",
+    "iphone"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "puppeteer": "^21.3.8"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wuye2325/Event-Tracker.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wuye2325/Event-Tracker/issues"
+  },
+  "homepage": "https://github.com/wuye2325/Event-Tracker#readme"
+}
