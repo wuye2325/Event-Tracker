@@ -77,7 +77,12 @@
             background-color: var(--bg-card);
             border-radius: var(--radius-lg);
             padding: var(--spacing-lg);
+            padding-right: var(--spacing-lg);
             box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            box-sizing: border-box;
         }
         
         .timeline-title {
@@ -88,20 +93,23 @@
             border-left: 4px solid var(--primary-color);
             color: var(--text-primary);
             font-size: 16px;
+            margin-left: -6px;
         }
         
         .timeline {
             position: relative;
-            padding-left: 24px;
+            padding-left: 18px;
+            width: 100%;
+            box-sizing: border-box;
         }
         
         .timeline::before {
             content: '';
             position: absolute;
-            left: 1px;
+            left: -5px;
             top: 16px;
             height: calc(100% - 32px);
-            width: 2px;
+            width: 1.5px;
             background: linear-gradient(180deg, var(--primary-color) 0%, var(--border-color) 100%);
             bottom: auto;
         }
@@ -109,20 +117,22 @@
         .timeline-node {
             position: relative;
             margin-bottom: var(--spacing-xl);
+            margin-left: -4px;
+            width: calc(100% + 4px);
         }
         
         .timeline-node::before {
             content: '';
             position: absolute;
-            left: -28px;
+            left: -22px;
             top: 8px;
-            width: 12px;
-            height: 12px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             background: var(--primary-gradient);
             z-index: 1;
             transition: all var(--transition-fast);
-            box-shadow: 0 0 0 4px rgba(47, 128, 237, 0.1);
+            box-shadow: 0 0 0 2px rgba(47, 128, 237, 0.1);
         }
         
         .timeline-node-header {
@@ -146,7 +156,7 @@
         
         .timeline-node .user-name {
             position: relative;
-            color: var(--text-primary);
+            color: #666666;
             font-weight: 500;
             font-size: 14px;
             margin-left: 8px;
@@ -186,6 +196,41 @@
         .timeline-card:active {
             transform: scale(0.98);
         }
+
+        /* 新增样式：直接显示内容不使用卡片 */
+        .timeline-content-direct {
+            margin-top: 12px;
+            position: relative;
+            transition: all var(--transition-normal);
+            cursor: pointer;
+            margin-right: 0;
+            width: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        
+        .timeline-content-direct:hover {
+            transform: translateY(-2px);
+        }
+        
+        .timeline-content-direct:active {
+            transform: scale(0.98);
+        }
+        
+        .timeline-content-direct .timeline-body {
+            padding: 0;
+            min-height: auto;
+        }
+        
+        .timeline-content-direct .timeline-footer {
+            margin-top: 8px;
+            padding: var(--spacing-sm) 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: none;
+            background: none;
+        }
         
         .timeline-header {
             padding: var(--spacing-sm) var(--spacing-lg);
@@ -198,8 +243,10 @@
         }
         
         .timeline-body {
-            padding: 12px;
             min-height: 120px;
+            padding: 0 var(--spacing-sm) 0 0;
+            box-sizing: border-box;
+            width: 100%;
         }
         
         .timeline-footer {
@@ -306,6 +353,9 @@
             display: grid;
             gap: var(--spacing-sm);
             margin-top: var(--spacing-md);
+            width: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
         }
         
         .timeline-images.count-2 {
@@ -330,6 +380,7 @@
             object-fit: cover;
             border-radius: var(--radius-md);
             transition: transform var(--transition-fast);
+            max-width: 100%;
         }
         
         .timeline-images img:hover {
@@ -694,6 +745,7 @@
         .interaction-buttons span {
             cursor: pointer;
             transition: color var(--transition-fast);
+            color: #999999;
         }
 
         .interaction-buttons span:hover {
@@ -702,6 +754,40 @@
 
         .interaction-buttons span:nth-child(2):hover {
             color: var(--error-color);
+        }
+
+        /* 添加直接显示的内容类型标签样式 */
+        .content-type-tag {
+            display: inline-block;
+            padding: 2px var(--spacing-sm);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            color: white;
+            margin-bottom: 8px;
+        }
+        
+        .content-type-tag.announcement {
+            background: var(--warning-color);
+        }
+        
+        .content-type-tag.vote {
+            background: var(--success-color);
+        }
+        
+        .content-type-tag.complaint {
+            background: var(--error-color);
+        }
+        
+        .content-type-tag.update {
+            background: var(--primary-color);
+        }
+        
+        /* 使timeline-footer中的content-type-tag上下居中对齐 */
+        .timeline-footer .content-type-tag {
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+            height: 20px;
         }
     </style>
 </head>
@@ -826,7 +912,8 @@
                         <div class="user-name">王业主</div>
                         <div class="status-ongoing">进行中</div>
                     </div>
-                    <div class="timeline-card announcement" onclick="window.location.href='announcement-comment.html'">
+                    <!-- 替换卡片为直接显示内容 -->
+                    <div class="timeline-content-direct" onclick="window.location.href='announcement-comment.html'">
                         <div class="timeline-body">
                             <p>物业公司查看安装电瓶车门禁系统位置</p>
                             <div class="timeline-images count-4">
@@ -843,7 +930,7 @@
                                 <span class="mr-3"><i class="far fa-thumbs-down mr-1"></i> 0</span>
                                 <span><i class="far fa-comment mr-1"></i> 8</span>
                             </div>
-                            <div class="timeline-type-tag footer-tag" style="background: var(--warning-color)">公告</div>
+                            <div class="content-type-tag announcement">公告</div>
                         </div>
                     </div>
                 </div>
@@ -854,7 +941,8 @@
                         <div class="user-name">李业主</div>
                         <div class="status-ongoing">进行中</div>
                     </div>
-                    <div class="timeline-card vote" onclick="window.location.href='vote-comment.html'">
+                    <div class="timeline-content-direct" onclick="window.location.href='vote-comment.html'">
+                        
                         <div class="timeline-body">
                             <p>物业组织业主代表与街道/社区商讨解决非机动车停车与充电问题进行沟通。
                                 结论：
@@ -872,7 +960,7 @@
                                 <span class="mr-3"><i class="far fa-thumbs-down mr-1"></i> 4</span>
                                 <span><i class="far fa-comment mr-1"></i> 4</span>
                             </div>
-                            <div class="timeline-type-tag footer-tag" style="background: var(--success-color)">投票</div>
+                            <div class="content-type-tag vote">投票</div>
                         </div>
                     </div>
                 </div>
@@ -883,7 +971,8 @@
                         <div class="user-name">张业主</div>
                         <div class="status-ongoing">进行中</div>
                     </div>
-                    <div class="timeline-card complaint" onclick="window.location.href='complaint-comment.html'">
+                    <div class="timeline-content-direct" onclick="window.location.href='complaint-comment.html'">
+                       
                         <div class="timeline-body">
                             <p>2号楼电梯经常出现故障，已经连续三天出现卡顿现象，请物业尽快处理！</p>
                             <div class="timeline-images count-9">
@@ -905,7 +994,7 @@
                                 <span class="mr-3"><i class="far fa-thumbs-down mr-1"></i> 3</span>
                                 <span><i class="far fa-comment mr-1"></i> 3</span>
                             </div>
-                            <div class="timeline-type-tag footer-tag" style="background: var(--error-color)">投诉</div>
+                            <div class="content-type-tag complaint">投诉</div>
                         </div>
                     </div>
                 </div>
@@ -916,7 +1005,8 @@
                         <div class="user-name">王物业</div>
                         <div class="status-ongoing">进行中</div>
                     </div>
-                    <div class="timeline-card update" onclick="window.location.href='update-comment.html'">
+                    <div class="timeline-content-direct" onclick="window.location.href='update-comment.html'">
+                        
                         <div class="timeline-body">
                             <p>电梯维修工程师已到达现场，正在进行故障检修。预计2小时内可以修复完成，请大家耐心等待。</p>
                             <div class="timeline-images count-2">
@@ -931,7 +1021,7 @@
                                 <span class="mr-3"><i class="far fa-thumbs-down mr-1"></i> 2</span>
                                 <span><i class="far fa-comment mr-1"></i> 6</span>
                             </div>
-                            <div class="timeline-type-tag footer-tag" style="background: var(--primary-color)">动态</div>
+                            <div class="content-type-tag update">动态</div>
                         </div>
                     </div>
                 </div>
