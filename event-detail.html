@@ -92,7 +92,7 @@
         
         .timeline {
             position: relative;
-            padding-left: var(--spacing-xl);
+            padding-left: 24px;
         }
         
         .timeline::before {
@@ -114,10 +114,10 @@
         .timeline-node::before {
             content: '';
             position: absolute;
-            left: -38px;
+            left: -28px;
             top: 8px;
-            width: 16px;
-            height: 16px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
             background: var(--primary-gradient);
             z-index: 1;
@@ -129,16 +129,30 @@
             position: relative;
             height: 26px;
             margin-bottom: 12px;
+            display: flex;
+            align-items: center;
         }
         
         .timeline-node .node-time {
-            position: absolute;
-            left: -52px;
-            transform: translateX(54px);
+            position: relative;
+            left: auto;
+            transform: none;
             color: var(--text-secondary);
             font-size: 14px;
             white-space: nowrap;
             line-height: 26px;
+            order: 0;
+        }
+        
+        .timeline-node .user-name {
+            position: relative;
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 14px;
+            margin-left: 8px;
+            white-space: nowrap;
+            line-height: 26px;
+            order: 1;
         }
         
         .timeline-node .status-ongoing {
@@ -148,6 +162,8 @@
             height: 26px;
             display: flex;
             align-items: center;
+            margin-left: auto;
+            order: 2;
         }
         
         .timeline-card {
@@ -173,7 +189,8 @@
         
         .timeline-header {
             padding: var(--spacing-sm) var(--spacing-lg);
-            border-bottom: 1px solid var(--border-color);
+            border-top: 1px solid var(--border-color);
+            border-bottom: none;
             background: linear-gradient(90deg, var(--bg-light) 0%, #ffffff 100%);
             display: flex;
             justify-content: space-between;
@@ -181,7 +198,7 @@
         }
         
         .timeline-body {
-            padding: var(--spacing-lg);
+            padding: 12px;
             min-height: 120px;
         }
         
@@ -333,8 +350,8 @@
         
         /* 特殊进展卡片样式 */
         .timeline-card.announcement {
-            border-left: 4px solid var(--primary-color);
-            box-shadow: 0 2px 8px rgba(45, 106, 224, 0.1);
+            border-left: 4px solid var(--warning-color);
+            box-shadow: 0 2px 8px rgba(255, 149, 0, 0.1);
         }
         
         .timeline-card.vote {
@@ -348,8 +365,8 @@
         }
         
         .timeline-card.update {
-            border-left: 4px solid var(--warning-color);
-            box-shadow: 0 2px 8px rgba(255, 149, 0, 0.1);
+            border-left: 4px solid var(--primary-color);
+            box-shadow: 0 2px 8px rgba(45, 106, 224, 0.1);
         }
         
         .timeline-type-tag {
@@ -361,6 +378,12 @@
             font-size: 12px;
             color: white;
             z-index: 1;
+        }
+        
+        .timeline-type-tag.footer-tag {
+            position: static;
+            margin-left: auto;
+            display: inline-block;
         }
         
         .announcement-level {
@@ -650,6 +673,36 @@
                 transform: translateY(0);
             }
         }
+
+        .user-meta {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .font-sm.text-secondary {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: normal;
+        }
+
+        .interaction-buttons {
+            display: flex;
+            align-items: center;
+        }
+
+        .interaction-buttons span {
+            cursor: pointer;
+            transition: color var(--transition-fast);
+        }
+
+        .interaction-buttons span:hover {
+            color: var(--primary-color);
+        }
+
+        .interaction-buttons span:nth-child(2):hover {
+            color: var(--error-color);
+        }
     </style>
 </head>
 <body>
@@ -770,22 +823,12 @@
                 <div class="timeline-node" data-timestamp="2023-03-18 10:30">
                     <div class="timeline-node-header">
                         <div class="node-time">2023-03-18 10:30</div>
+                        <div class="user-name">王业主</div>
                         <div class="status-ongoing">进行中</div>
                     </div>
                     <div class="timeline-card announcement" onclick="window.location.href='announcement-comment.html'">
-                        <div class="timeline-type-tag" style="background: var(--primary-color)">公告</div>
-                        <div class="timeline-header">
-                            <div class="user-info">
-                                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="头像" class="avatar-sm">
-                                <div class="text-info">
-                                    <div class="font-bold">王物业</div>
-                                    <span class="tag tag-primary font-xs">物业管理员</span>
-                                </div>
-                            </div>
-                        </div>
-                        
                         <div class="timeline-body">
-                            <p>正式发布消防安全演习通知，请各位业主提前安排好时间参加！</p>
+                            <p>物业公司查看安装电瓶车门禁系统位置</p>
                             <div class="timeline-images count-4">
                                 <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="演习图片1" onclick="previewImage(event, this)">
                                 <img src="https://images.unsplash.com/photo-1504813184591-01572f98c85f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="演习图片2" onclick="previewImage(event, this)">
@@ -795,10 +838,12 @@
                         </div>
                         
                         <div class="timeline-footer">
-                            <div>
+                            <div class="interaction-buttons">
                                 <span class="mr-3"><i class="far fa-thumbs-up mr-1"></i> 24</span>
+                                <span class="mr-3"><i class="far fa-thumbs-down mr-1"></i> 0</span>
                                 <span><i class="far fa-comment mr-1"></i> 8</span>
                             </div>
+                            <div class="timeline-type-tag footer-tag" style="background: var(--warning-color)">公告</div>
                         </div>
                     </div>
                 </div>
@@ -806,29 +851,28 @@
                 <div class="timeline-node" data-timestamp="2023-03-19 14:15">
                     <div class="timeline-node-header">
                         <div class="node-time">2023-03-19 14:15</div>
+                        <div class="user-name">李业主</div>
                         <div class="status-ongoing">进行中</div>
                     </div>
                     <div class="timeline-card vote" onclick="window.location.href='vote-comment.html'">
-                        <div class="timeline-type-tag" style="background: var(--success-color)">投票</div>
-                        <div class="timeline-header">
-                            <div class="user-info">
-                                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="头像" class="avatar-sm">
-                                <div class="text-info">
-                                    <div class="font-bold">王物业</div>
-                                    <span class="tag tag-primary font-xs">物业管理员</span>
-                                </div>
-                            </div>
-                        </div>
-                        
                         <div class="timeline-body">
-                            <p>关于小区绿化改造方案的投票，请各位业主积极参与！</p>
+                            <p>物业组织业主代表与街道/社区商讨解决非机动车停车与充电问题进行沟通。
+                                结论：
+                                1. 2024-08-16 物业会恢复F1、2、4栋用电
+                                2. 根据各栋电动车数量对各栋充电桩数量进行合理规划和调整，并针对F3、F5电动车进行到其他楼栋的合理分配
+                                3. 各栋加装充电门禁
+                                4. 物业增加警铃防控预警
+                                5. 物业重新划分每栋充电位和停放位
+                                6. 物业针对僵尸车辆进行统一位置停放管理 </p>
                         </div>
                         
                         <div class="timeline-footer">
-                            <div>
+                            <div class="interaction-buttons">
                                 <span class="mr-3"><i class="far fa-thumbs-up mr-1"></i> 12</span>
+                                <span class="mr-3"><i class="far fa-thumbs-down mr-1"></i> 4</span>
                                 <span><i class="far fa-comment mr-1"></i> 4</span>
                             </div>
+                            <div class="timeline-type-tag footer-tag" style="background: var(--success-color)">投票</div>
                         </div>
                     </div>
                 </div>
@@ -836,20 +880,10 @@
                 <div class="timeline-node" data-timestamp="2023-03-19 16:30">
                     <div class="timeline-node-header">
                         <div class="node-time">2023-03-19 16:30</div>
+                        <div class="user-name">张业主</div>
                         <div class="status-ongoing">进行中</div>
                     </div>
                     <div class="timeline-card complaint" onclick="window.location.href='complaint-comment.html'">
-                        <div class="timeline-type-tag" style="background: var(--error-color)">投诉</div>
-                        <div class="timeline-header">
-                            <div class="user-info">
-                                <img src="https://randomuser.me/api/portraits/women/45.jpg" alt="头像" class="avatar-sm">
-                                <div class="text-info">
-                                    <div class="font-bold">李业主</div>
-                                    <span class="tag tag-primary font-xs">业主</span>
-                                </div>
-                            </div>
-                        </div>
-                        
                         <div class="timeline-body">
                             <p>2号楼电梯经常出现故障，已经连续三天出现卡顿现象，请物业尽快处理！</p>
                             <div class="timeline-images count-9">
@@ -866,10 +900,12 @@
                         </div>
                         
                         <div class="timeline-footer">
-                            <div>
+                            <div class="interaction-buttons">
                                 <span class="mr-3"><i class="far fa-thumbs-up mr-1"></i> 8</span>
+                                <span class="mr-3"><i class="far fa-thumbs-down mr-1"></i> 3</span>
                                 <span><i class="far fa-comment mr-1"></i> 3</span>
                             </div>
+                            <div class="timeline-type-tag footer-tag" style="background: var(--error-color)">投诉</div>
                         </div>
                     </div>
                 </div>
@@ -877,20 +913,10 @@
                 <div class="timeline-node" data-timestamp="2023-03-19 18:45">
                     <div class="timeline-node-header">
                         <div class="node-time">2023-03-19 18:45</div>
+                        <div class="user-name">王物业</div>
                         <div class="status-ongoing">进行中</div>
                     </div>
                     <div class="timeline-card update" onclick="window.location.href='update-comment.html'">
-                        <div class="timeline-type-tag" style="background: var(--warning-color)">动态</div>
-                        <div class="timeline-header">
-                            <div class="user-info">
-                                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="头像" class="avatar-sm">
-                                <div class="text-info">
-                                    <div class="font-bold">王物业</div>
-                                    <span class="tag tag-primary font-xs">物业管理员</span>
-                                </div>
-                            </div>
-                        </div>
-                        
                         <div class="timeline-body">
                             <p>电梯维修工程师已到达现场，正在进行故障检修。预计2小时内可以修复完成，请大家耐心等待。</p>
                             <div class="timeline-images count-2">
@@ -900,10 +926,12 @@
                         </div>
                         
                         <div class="timeline-footer">
-                            <div>
+                            <div class="interaction-buttons">
                                 <span class="mr-3"><i class="far fa-thumbs-up mr-1"></i> 15</span>
+                                <span class="mr-3"><i class="far fa-thumbs-down mr-1"></i> 2</span>
                                 <span><i class="far fa-comment mr-1"></i> 6</span>
                             </div>
+                            <div class="timeline-type-tag footer-tag" style="background: var(--primary-color)">动态</div>
                         </div>
                     </div>
                 </div>
@@ -953,166 +981,112 @@
                 z-index: 1000;
                 opacity: 0;
                 transition: opacity var(--transition-normal);
-            `;
+            `
+            
+            document.body.appendChild(preview);
             
             const img = document.createElement('img');
             img.src = element.src;
             img.style.cssText = `
                 max-width: 90%;
-                max-height: 90vh;
-                object-fit: contain;
+                max-height: 90%;
                 border-radius: var(--radius-lg);
-                transform: scale(0.9);
-                transition: transform var(--transition-normal);
+                box-shadow: var(--shadow-lg);
+                opacity: 0;
+                transition: all var(--transition-normal);
             `;
-            
-            const close = document.createElement('div');
-            close.innerHTML = '<i class="fas fa-times"></i>';
-            close.style.cssText = `
-                position: absolute;
-                top: var(--spacing-lg);
-                right: var(--spacing-lg);
-                color: white;
-                font-size: 24px;
-                cursor: pointer;
-                width: 40px;
-                height: 40px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                background: rgba(255, 255, 255, 0.1);
-                border-radius: 50%;
-                transition: all var(--transition-fast);
-            `;
-            
-            close.onmouseover = () => {
-                close.style.background = 'rgba(255, 255, 255, 0.2)';
-            };
-            
-            close.onmouseout = () => {
-                close.style.background = 'rgba(255, 255, 255, 0.1)';
-            };
-            
-            preview.onclick = close.onclick = () => {
-                preview.style.opacity = '0';
-                img.style.transform = 'scale(0.9)';
-                setTimeout(() => preview.remove(), 300);
-            };
-            
-            img.onclick = (e) => {
-                e.stopPropagation();
-            };
             
             preview.appendChild(img);
-            preview.appendChild(close);
-            document.body.appendChild(preview);
             
+            // 允许点击关闭预览
+            preview.addEventListener('click', () => {
+                img.style.opacity = 0;
+                preview.style.opacity = 0;
+                setTimeout(() => {
+                    document.body.removeChild(preview);
+                }, 300);
+            });
+            
+            // 添加动画效果
             setTimeout(() => {
-                preview.style.opacity = '1';
-                img.style.transform = 'scale(1)';
+                preview.style.opacity = 1;
+                img.style.opacity = 1;
             }, 10);
         }
-
+        
         function showStatusSelector() {
             document.getElementById('statusSelector').classList.add('show');
         }
-
+        
         function hideStatusSelector() {
             document.getElementById('statusSelector').classList.remove('show');
         }
-
-        function selectOption(element) {
-            // 移除所有选中样式
-            document.querySelectorAll('.status-option').forEach(opt => {
+        
+        function updateStatus(status) {
+            const statusElement = document.querySelector('.status-ongoing');
+            
+            if (status === 'ongoing') {
+                statusElement.innerHTML = '进行中';
+            } else if (status === 'completed') {
+                statusElement.innerHTML = '已结束';
+                statusElement.style.color = '#999999';
+            }
+            
+            hideStatusSelector();
+        }
+        
+        function selectOption(option) {
+            const options = document.querySelectorAll('.status-option');
+            options.forEach(opt => {
                 opt.classList.remove('selected');
             });
             
-            // 添加选中样式
-            element.classList.add('selected');
+            option.classList.add('selected');
         }
-
-        function updateStatus(status) {
-            const statusMap = {
-                'ongoing': { 
-                    text: '进行中', 
-                    class: 'status-ongoing',
-                    icon: '<i class="fas fa-circle" style="color: var(--primary-color); margin-right: 4px;"></i>'
-                },
-                'completed': { 
-                    text: '已结束', 
-                    class: 'status-completed',
-                    icon: '<i class="fas fa-check-circle" style="color: #999999; margin-right: 4px;"></i>'
-                }
-            };
-
-            // 更新主状态显示
-            const statusElement = document.querySelector('.status-ongoing, .status-completed');
-            const newStatus = statusMap[status];
-            statusElement.innerHTML = newStatus.icon + newStatus.text;
-            statusElement.className = newStatus.class;
-            
-            // 更新时间线上的所有状态
-            const timelineStatuses = document.querySelectorAll('.timeline-node .status-ongoing, .timeline-node .status-completed');
-            timelineStatuses.forEach(el => {
-                el.innerHTML = newStatus.icon + newStatus.text;
-                el.className = newStatus.class;
-            });
-            
-            // 延迟关闭状态选择器，提供反馈时间
-            setTimeout(() => {
-                hideStatusSelector();
-            }, 300);
-        }
-
-        function deleteEvent() {
-            if (confirm('确定要删除该事件吗？删除后将无法恢复。')) {
-                alert('事件已删除');
-                window.location.href = 'home.html';
-            }
-        }
-
-        function parseTimestamp(timeString) {
-            // 解析 "YYYY-MM-DD HH:mm" 格式的时间字符串为 Date 对象
-            return new Date(timeString);
-        }
-
+        
         function sortTimeline(order) {
-            const timelineContainer = document.getElementById('timeline-container');
-            const nodes = Array.from(timelineContainer.querySelectorAll('.timeline-node'));
-
+            const container = document.getElementById('timeline-container');
+            const nodes = Array.from(container.querySelectorAll('.timeline-node'));
+            
+            // 更新排序按钮状态
+            document.getElementById('sort-desc-btn').classList.toggle('active', order === 'desc');
+            document.getElementById('sort-asc-btn').classList.toggle('active', order === 'asc');
+            
             nodes.sort((a, b) => {
-                const timeA = parseTimestamp(a.dataset.timestamp || a.querySelector('.node-time').textContent);
-                const timeB = parseTimestamp(b.dataset.timestamp || b.querySelector('.node-time').textContent);
-
-                if (order === 'asc') {
-                    return timeA - timeB; // 正序
-                } else {
-                    return timeB - timeA; // 倒序
-                }
+                const dateA = new Date(a.dataset.timestamp);
+                const dateB = new Date(b.dataset.timestamp);
+                
+                return order === 'desc' ? dateB - dateA : dateA - dateB;
             });
-
-            // 清空容器并重新插入排序后的节点
-            timelineContainer.innerHTML = '';
-            nodes.forEach(node => timelineContainer.appendChild(node));
-
-            // 更新按钮激活状态
-            document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`sort-${order}-btn`).classList.add('active');
+            
+            // 清空容器并按新顺序添加节点
+            container.innerHTML = '';
+            nodes.forEach(node => {
+                container.appendChild(node);
+            });
         }
-
-        // 页面加载时，确保每个节点都有 data-timestamp 属性
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.timeline-node').forEach(node => {
-                if (!node.dataset.timestamp) {
-                    const timeText = node.querySelector('.node-time')?.textContent;
-                    if (timeText) {
-                        node.dataset.timestamp = timeText;
-                    }
+        
+        // 初始化事件菜单
+        document.addEventListener('click', function(e) {
+            const menuBtns = document.querySelectorAll('.event-menu-btn');
+            const menuContents = document.querySelectorAll('.event-menu-content');
+            
+            menuBtns.forEach(btn => {
+                if (e.target === btn || btn.contains(e.target)) {
+                    const menu = btn.nextElementSibling;
+                    menu.classList.toggle('show');
                 }
             });
-            // 默认执行一次倒序排序
-            sortTimeline('desc');
+            
+            menuContents.forEach(content => {
+                if (!content.classList.contains('show')) return;
+                
+                if (!content.contains(e.target) && 
+                    !Array.from(menuBtns).some(btn => btn === e.target || btn.contains(e.target))) {
+                    content.classList.remove('show');
+                }
+            });
         });
     </script>
 </body>
-</html> 
+</html>
