@@ -6,6 +6,7 @@
     <title>编辑个人信息</title>
     <link rel="stylesheet" href="https://cdn.staticfile.org/tailwindcss/2.2.19/tailwind.min.css">
     <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/styles.css">
     <style>
         :root {
             --primary-color: #2D6AE0;
@@ -134,7 +135,7 @@
 
     <div class="p-4">
         <div class="flex flex-col items-center mb-8">
-            <div class="avatar-upload mb-2 flex items-center justify-center">
+            <div class="avatar-upload mb-2 flex items-center justify-center" style="width:100px;height:100px;border-radius:50%;background:var(--primary-light);overflow:hidden;cursor:pointer;">
                 <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" 
                      alt="用户头像" 
                      class="w-full h-full object-cover">
@@ -155,26 +156,26 @@
             </div>
 
             <div class="form-group">
-                <div class="section-title">身份角色</div>
-                <div class="section-desc">请选择您在小区中的身份，用于社区身份认证</div>
-                <div class="role-selector">
-                    <div class="role-option selected">
+                <div class="section-title font-medium text-base text-primary mb-1 pt-4">身份角色</div>
+                <div class="section-desc text-xs text-gray-500 mb-3">请选择您在小区中的身份，用于社区身份认证</div>
+                <div class="role-selector flex flex-wrap gap-2 mt-1">
+                    <div class="role-option selected flex items-center gap-1 px-3 py-2 rounded-full border text-sm font-medium cursor-pointer transition border-gray-200 text-gray-500 bg-white" style="background:var(--primary-color);color:#fff;border-color:var(--primary-color);">
                         <i class="fas fa-home"></i>
                         <span>业主</span>
                     </div>
-                    <div class="role-option">
+                    <div class="role-option flex items-center gap-1 px-3 py-2 rounded-full border text-sm font-medium cursor-pointer transition border-gray-200 text-gray-500 bg-white">
                         <i class="fas fa-house-user"></i>
                         <span>住户</span>
                     </div>
-                    <div class="role-option">
+                    <div class="role-option flex items-center gap-1 px-3 py-2 rounded-full border text-sm font-medium cursor-pointer transition border-gray-200 text-gray-500 bg-white">
                         <i class="fas fa-key"></i>
                         <span>租户</span>
                     </div>
-                    <div class="role-option">
+                    <div class="role-option flex items-center gap-1 px-3 py-2 rounded-full border text-sm font-medium cursor-pointer transition border-gray-200 text-gray-500 bg-white">
                         <i class="fas fa-users"></i>
                         <span>业委会</span>
                     </div>
-                    <div class="role-option">
+                    <div class="role-option flex items-center gap-1 px-3 py-2 rounded-full border text-sm font-medium cursor-pointer transition border-gray-200 text-gray-500 bg-white">
                         <i class="fas fa-building"></i>
                         <span>物业</span>
                     </div>
@@ -183,7 +184,10 @@
 
             <div class="form-group">
                 <label class="text-sm text-gray-500 mb-1 block">所在小区</label>
-                <input type="text" class="form-input" value="阳光花园" readonly>
+                <button type="button" class="form-input flex items-center justify-between bg-gray-50 cursor-pointer hover:bg-blue-50 transition rounded-md" style="border:none; border-bottom:1px solid #eee; padding:12px 0; width:100%; font-size:16px;" onclick="window.location.href='estate-binding.html'">
+                    <span class="text-gray-800">阳光花园</span>
+                    <span class="text-blue-500 text-sm flex items-center gap-1"><i class="fas fa-pen mr-1"></i>更换</span>
+                </button>
             </div>
 
             <div class="form-group">
@@ -192,7 +196,7 @@
             </div>
         </div>
 
-        <button class="save-btn mt-8">
+        <button class="save-btn mt-8 btn btn-primary btn-block">
             保存修改
         </button>
     </div>
@@ -203,6 +207,11 @@
             option.addEventListener('click', () => {
                 document.querySelectorAll('.role-option').forEach(opt => opt.classList.remove('selected'));
                 option.classList.add('selected');
+                // 选中态样式
+                document.querySelectorAll('.role-option').forEach(opt => opt.style.background = '');
+                document.querySelectorAll('.role-option').forEach(opt => opt.style.color = '');
+                option.style.background = 'var(--primary-color)';
+                option.style.color = '#fff';
             });
         });
     </script>
