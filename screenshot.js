@@ -40,24 +40,13 @@ async function captureScreenshot(htmlPath, outputDir) {
     // 打开HTML页面
     await page.goto(fileUrl, { waitUntil: 'networkidle0' });
 
-    // 获取页面全高
-    const pageHeight = await page.evaluate(() => {
-      return document.documentElement.scrollHeight;
-    });
-
     // 截取完整页面
     const fileName = path.basename(htmlPath, '.html') + '.png';
     const outputPath = path.join(outputDir, fileName);
 
     await page.screenshot({
       path: outputPath,
-      fullPage: true,
-      clip: {
-        x: 0,
-        y: 0,
-        width: IPHONE_13_MINI_WIDTH,
-        height: pageHeight,
-      },
+      fullPage: true
     });
 
     console.log(`已保存截图到: ${outputPath}`);
