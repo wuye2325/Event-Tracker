@@ -184,10 +184,20 @@
 
             <div class="form-group">
                 <label class="text-sm text-gray-500 mb-1 block">所在小区</label>
-                <button type="button" class="form-input flex items-center justify-between bg-gray-50 cursor-pointer hover:bg-blue-50 transition rounded-md" style="border:none; border-bottom:1px solid #eee; padding:12px 0; width:100%; font-size:16px;" onclick="window.location.href='estate-binding.html'">
-                    <span class="text-gray-800">阳光花园</span>
-                    <span class="text-blue-500 text-sm flex items-center gap-1"><i class="fas fa-pen mr-1"></i>编辑</span>
-                </button>
+                <div class="flex items-center">
+                    <div class="relative flex-1">
+                        <select id="estate-select" class="form-input bg-gray-50 rounded-md appearance-none w-full pr-8" style="border:none; border-bottom:1px solid #eee; padding:12px; width:100%; font-size:16px; height:48px;">
+                            <option value="阳光花园">阳光花园</option>
+                            <option value="丽景华庭">丽景华庭</option>
+                            <option value="青山绿水">青山绿水</option>
+                            <option value="和谐家园">和谐家园</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2">
+                            <i class="fas fa-chevron-down text-gray-400"></i>
+                        </div>
+                    </div>
+                    <a href="#" class="text-blue-500 text-sm hover:text-blue-600 transition ml-3" id="add-new-estate">新增小区</a>
+                </div>
             </div>
 
             <div class="form-group">
@@ -199,6 +209,28 @@
         <button class="save-btn mt-8 btn btn-primary btn-block">
             保存修改
         </button>
+    </div>
+
+    <!-- 新增小区对话框 -->
+    <div id="new-estate-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-lg w-5/6 max-w-md overflow-hidden transform translate-y-4 transition-transform duration-300">
+            <div class="p-4 border-b">
+                <h3 class="font-medium text-lg">新增小区</h3>
+            </div>
+            <div class="p-4">
+                <div class="mb-4">
+                    <label class="text-sm text-gray-500 mb-1 block">小区名称</label>
+                    <input id="new-estate-name" type="text" class="form-input bg-gray-50 rounded-md" style="padding:12px;" placeholder="请输入小区名称">
+                </div>
+                <div class="text-xs text-gray-500 mb-4">
+                    <i class="fas fa-info-circle mr-1"></i>请确认小区名称正确，提交后将添加到小区列表
+                </div>
+            </div>
+            <div class="p-4 border-t flex justify-end space-x-3">
+                <button id="cancel-estate" class="px-4 py-2 text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition">取消</button>
+                <button id="confirm-estate" class="px-4 py-2 text-white rounded-md hover:bg-blue-600 transition" style="background:var(--primary-color)">确认</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -213,6 +245,73 @@
                 option.style.background = 'var(--primary-color)';
                 option.style.color = '#fff';
             });
+        });
+
+        // 新增小区功能
+        const addNewEstateBtn = document.getElementById('add-new-estate');
+        const newEstateModal = document.getElementById('new-estate-modal');
+        const cancelEstateBtn = document.getElementById('cancel-estate');
+        const confirmEstateBtn = document.getElementById('confirm-estate');
+        const newEstateNameInput = document.getElementById('new-estate-name');
+        const estateSelect = document.getElementById('estate-select');
+
+        // 打开对话框
+        addNewEstateBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            newEstateModal.classList.remove('hidden');
+            // 使用setTimeout确保过渡效果生效
+            setTimeout(() => {
+                newEstateModal.classList.add('opacity-100');
+                newEstateModal.querySelector('.bg-white').classList.remove('translate-y-4');
+            }, 10);
+            newEstateNameInput.focus();
+        });
+
+        // 关闭对话框函数
+        function closeModal() {
+            newEstateModal.classList.remove('opacity-100');
+            newEstateModal.querySelector('.bg-white').classList.add('translate-y-4');
+            setTimeout(() => {
+                newEstateModal.classList.add('hidden');
+                newEstateNameInput.value = '';
+            }, 300); // 等待过渡完成
+        }
+
+        // 关闭对话框
+        cancelEstateBtn.addEventListener('click', closeModal);
+
+        // 确认添加新小区
+        confirmEstateBtn.addEventListener('click', () => {
+            const estateName = newEstateNameInput.value.trim();
+            if (estateName) {
+                // 创建新选项并添加到下拉框
+                const newOption = document.createElement('option');
+                newOption.value = estateName;
+                newOption.textContent = estateName;
+                estateSelect.appendChild(newOption);
+                
+                // 选中新添加的小区
+                estateSelect.value = estateName;
+                
+                // 关闭对话框
+                closeModal();
+            } else {
+                alert('请输入小区名称');
+            }
+        });
+
+        // 点击空白区域关闭对话框
+        newEstateModal.addEventListener('click', (e) => {
+            if (e.target === newEstateModal) {
+                closeModal();
+            }
+        });
+
+        // 按ESC键关闭对话框
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !newEstateModal.classList.contains('hidden')) {
+                closeModal();
+            }
         });
     </script>
 </body>
