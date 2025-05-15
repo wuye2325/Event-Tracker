@@ -921,38 +921,6 @@
             </div>
         </div>
         
-        <!-- 状态选择器 -->
-        <div class="status-selector" id="statusSelector">
-            <div class="status-selector-header">
-                <div class="status-selector-title">修改事件状态</div>
-                <div class="status-selector-close" onclick="hideStatusSelector()">
-                    <i class="fas fa-times"></i>
-                </div>
-            </div>
-            
-            <div class="status-options-container">
-                <div class="status-option" onclick="updateStatus('ongoing'); selectOption(this);">
-                    <div class="status-icon status-ongoing-icon">
-                        <i class="fas fa-circle"></i>
-                    </div>
-                    <div class="status-text">
-                        <div class="status-label">进行中</div>
-                    </div>
-                </div>
-                
-                <div class="status-option" onclick="updateStatus('completed'); selectOption(this);">
-                    <div class="status-icon status-completed-icon">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <div class="status-text">
-                        <div class="status-label">已结束</div>
-                    </div>
-                </div>
-            </div>
-            
-            <button class="status-cancel-btn" onclick="hideStatusSelector()">取消</button>
-        </div>
-        
         <div class="event-body">
             <div class="event-image-gallery" onclick="previewImage(this)">
                 <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="事件图片">
@@ -960,21 +928,6 @@
             
             <p class="mb-4">
                 为提高小区居民的消防安全意识和自救能力，物业将于本周六上午10点在小区南广场组织消防安全演习活动，请各位业主积极参与。
-            </p>
-            
-            <p class="mb-4">
-                演习内容：
-                <br>1. 消防器材使用讲解与实操
-                <br>2. 火灾自救与互救技能培训
-                <br>3. 疏散逃生路线演练
-            </p>
-            
-            <p class="mb-4">
-                相关安排：
-                <br>- 集合时间：2023年3月20日上午10:00
-                <br>- 集合地点：小区南广场
-                <br>- 预计时长：2小时
-                <br>- 参与对象：全体业主（每户至少1人）
             </p>
             
             <p class="text-danger">
@@ -1011,10 +964,13 @@
                         <div class="user-name">王业主</div>
                         <div class="status-ongoing">进行中</div>
                     </div>
-                    <!-- 替换卡片为直接显示内容 -->
                     <div class="timeline-content-direct" onclick="window.location.href='announcement-comment.html'">
                         <div class="timeline-body">
-                            <p>物业公司查看安装电瓶车门禁系统位置</p>
+                            <p><strong>物业公司查看安装电瓶车门禁系统位置</strong></p>
+                            <p>
+                                详情请参考<a href="https://property.example.com/notice/123" target="_blank" style="color:#1890ff;text-decoration:underline;">《小区电瓶车管理规定》</a>进行了解。
+                                <br>现场勘查确定了电瓶车门禁系统的最佳安装位置，将于下周开始施工。
+                            </p>
                             <div class="timeline-images count-4">
                                 <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="演习图片1" onclick="previewImage(event, this)">
                                 <img src="https://images.unsplash.com/photo-1504813184591-01572f98c85f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="演习图片2" onclick="previewImage(event, this)">
@@ -1043,14 +999,17 @@
                     <div class="timeline-content-direct" onclick="window.location.href='vote-comment.html'">
                         
                         <div class="timeline-body">
-                            <p>物业组织业主代表与街道/社区商讨解决非机动车停车与充电问题进行沟通。
-                                结论：
-                                1. 2024-08-16 物业会恢复F1、2、4栋用电
-                                2. 根据各栋电动车数量对各栋充电桩数量进行合理规划和调整，并针对F3、F5电动车进行到其他楼栋的合理分配
-                                3. 各栋加装充电门禁
-                                4. 物业增加警铃防控预警
-                                5. 物业重新划分每栋充电位和停放位
-                                6. 物业针对僵尸车辆进行统一位置停放管理 </p>
+                            <p><strong>物业与业主代表讨论非机动车充电解决方案</strong></p>
+                            <p>
+                                物业组织业主代表与街道/社区商讨解决非机动车停车与充电问题进行沟通。
+                                <br><br>结论：
+                                <br>1. 2024-08-16 物业会恢复F1、2、4栋用电
+                                <br>2. 根据各栋电动车数量对各栋充电桩数量进行合理规划和调整
+                                <br>3. 各栋加装<a href="https://security.example.com/door" target="_blank" style="color:#1890ff;text-decoration:underline;">充电门禁系统</a>
+                                <br>4. 物业增加警铃防控预警
+                                <br>5. 物业重新划分每栋充电位和停放位
+                                <br>6. 物业针对僵尸车辆进行统一位置停放管理
+                            </p>
                         </div>
                         
                         <div class="timeline-footer">
@@ -1073,7 +1032,15 @@
                     <div class="timeline-content-direct" onclick="window.location.href='complaint-comment.html'">
                        
                         <div class="timeline-body">
-                            <p>2号楼电梯经常出现故障，已经连续三天出现卡顿现象，请物业尽快处理！</p>
+                            <p><strong>2号楼电梯故障投诉</strong></p>
+                            <p>
+                                该电梯已经连续三天出现卡顿现象，属于严重安全隐患。
+                                <br><br>具体问题：
+                                <br>1. 电梯运行时有明显抖动
+                                <br>2. 按键反应迟钝，有时需按多次
+                                <br>3. 到达楼层时常有错位现象
+                                <br><br>请物业尽快处理！可以联系<a href="tel:12345678" style="color:#1890ff;text-decoration:underline;">电梯维修专线</a>。
+                            </p>
                             <div class="timeline-images count-9">
                                 <img src="https://images.unsplash.com/photo-1504813184591-01572f98c85f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="故障图片1" onclick="previewImage(event, this)">
                                 <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="故障图片2" onclick="previewImage(event, this)">
@@ -1107,7 +1074,16 @@
                     <div class="timeline-content-direct" onclick="window.location.href='update-comment.html'">
                         
                         <div class="timeline-body">
-                            <p>电梯维修工程师已到达现场，正在进行故障检修。预计2小时内可以修复完成，请大家耐心等待。</p>
+                            <p><strong>电梯维修工作已经启动</strong></p>
+                            <p>
+                                维修工程师已经到达现场，初步诊断为控制系统故障。
+                                <br><br>处理进度：
+                                <br>1. 更换了电梯控制板
+                                <br>2. 调整了平层传感器
+                                <br>3. 更新了电梯操作系统
+                                <br><br>预计2小时内可以修复完成，请大家耐心等待。
+                                <br>维修进度可在<a href="https://repair.example.com/status" target="_blank" style="color:#1890ff;text-decoration:underline;">物业维修状态查询系统</a>实时查看。
+                            </p>
                             <div class="timeline-images count-2">
                                 <img src="https://images.unsplash.com/photo-1504813184591-01572f98c85f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="检修图片1" onclick="previewImage(event, this)">
                                 <img src="https://images.unsplash.com/photo-1582560475093-ba66accbc424?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="检修图片2" onclick="previewImage(event, this)">

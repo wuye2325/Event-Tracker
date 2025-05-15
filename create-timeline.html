@@ -180,6 +180,84 @@
         .action-button.draft:active .button-icon {
             content: url('assets/icons/fa-save-active.png');
         }
+
+        /* 格式化工具栏样式 */
+        .format-toolbar {
+            border-bottom: 1px solid #eee;
+            background-color: #f9f9f9;
+        }
+
+        .format-btn {
+            transition: all 0.2s;
+        }
+
+        .format-btn.active {
+            background-color: #e6f0ff;
+            color: #1890ff;
+        }
+
+        /* 链接弹窗样式 */
+        .link-modal {
+            transition: opacity 0.3s;
+        }
+
+        /* 调整文本域样式 */
+        .content-textarea {
+            min-height: 120px;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            resize: vertical;
+            outline: none;
+            font-size: 14px;
+        }
+
+        /* 添加富文本编辑器样式 */
+        .rich-editor-container {
+            position: relative;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .rich-editor {
+            min-height: 180px;
+            width: 100%;
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-color);
+            border-top: none;
+            border-radius: 0 0 var(--radius-md) var(--radius-md);
+            font-size: 16px;
+            transition: all var(--transition-fast);
+            background: var(--bg-light);
+            overflow-y: auto;
+            outline: none;
+        }
+
+        .rich-editor:focus {
+            border-color: var(--primary-color);
+            border-top: none;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .rich-editor:empty:before {
+            content: attr(placeholder);
+            color: #999;
+            pointer-events: none;
+        }
+
+        .rich-editor b, .rich-editor strong {
+            font-weight: bold;
+        }
+
+        .rich-editor a {
+            color: #1890ff;
+            text-decoration: underline;
+            border-radius: 2px;
+            transition: all 0.2s;
+        }
+        
+        .rich-editor a:hover {
+            color: #40a9ff;
+        }
     </style>
 </head>
 <body>
@@ -220,7 +298,22 @@
 
         <!-- 内容输入区域 -->
         <div class="content-input">
-            <textarea class="content-textarea" placeholder="请输入进展内容..."></textarea>
+            <!-- 格式化工具栏 -->
+            <div class="format-toolbar flex items-center p-2 border-b border-gray-200 bg-gray-50 rounded-t-lg">
+                <button class="format-btn p-1.5 mx-1 text-gray-600 hover:bg-gray-200 rounded" data-command="bold" title="加粗">
+                    <i class="fas fa-bold"></i>
+                </button>
+                <div class="h-4 mx-2 border-r border-gray-300"></div>
+                <button class="format-btn p-1.5 mx-1 text-gray-600 hover:bg-gray-200 rounded" data-command="createLink" title="添加链接">
+                    <i class="fas fa-link"></i>
+                </button>
+            </div>
+            
+            <div class="rich-editor-container">
+                <div class="rich-editor" contenteditable="true" placeholder="请输入进展内容..."></div>
+                <textarea class="hidden-textarea hidden" name="content"></textarea>
+            </div>
+            
             <div class="image-upload-area">
                 <div class="image-upload-item" onclick="uploadImage()">
                     <i class="fas fa-plus"></i>
@@ -239,6 +332,19 @@
             <i class="fas fa-paper-plane"></i>
             发布
         </button>
+    </div>
+    
+    <!-- 添加链接弹窗 -->
+    <div id="linkModal" class="link-modal hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg w-80 p-4 shadow-lg">
+            <h3 class="text-lg font-medium mb-3">添加链接</h3>
+            <input type="text" placeholder="请输入链接文字" class="link-text w-full border border-gray-300 rounded px-3 py-2 mb-2">
+            <input type="url" placeholder="请输入URL地址" class="link-url w-full border border-gray-300 rounded px-3 py-2 mb-4">
+            <div class="flex justify-end">
+                <button class="cancel-btn px-4 py-1.5 mr-2 text-gray-600 hover:bg-gray-100 rounded">取消</button>
+                <button class="confirm-btn px-4 py-1.5 bg-blue-500 text-white rounded hover:bg-blue-600">确定</button>
+            </div>
+        </div>
     </div>
     
     <script>
@@ -305,19 +411,248 @@
             updateImagePreview();
         }
         
-        function saveDraft() {
-            alert('保存草稿成功');
-        }
-        
         function publishTimeline() {
-            const content = document.querySelector('.content-textarea').value.trim();
-            if (!content) {
+            // 同步富文本编辑器内容到隐藏的textarea
+            const editor = document.querySelector('.rich-editor');
+            const hiddenTextarea = document.querySelector('.hidden-textarea');
+            hiddenTextarea.value = editor.innerHTML;
+            
+            const content = hiddenTextarea.value.trim();
+            if (!content || content === '<br>') {
                 alert('请输入进展内容');
                 return;
             }
             alert('发布成功');
             window.location.href = 'event-detail.html';
         }
+
+        function saveDraft() {
+            // 同步富文本编辑器内容到隐藏的textarea
+            const editor = document.querySelector('.rich-editor');
+            const hiddenTextarea = document.querySelector('.hidden-textarea');
+            hiddenTextarea.value = editor.innerHTML;
+            
+            alert('保存草稿成功');
+        }
+
+        // 替换文本编辑相关脚本
+        document.addEventListener('DOMContentLoaded', function() {
+            const editor = document.querySelector('.rich-editor');
+            const hiddenTextarea = document.querySelector('.hidden-textarea');
+            
+            // 确保编辑器有初始内容，避免空内容问题
+            if (!editor.innerHTML.trim()) {
+                editor.innerHTML = '<br>';
+            }
+            
+            // 给编辑器一个初始焦点，然后再失去焦点
+            // 这样可以初始化编辑器的内部状态
+            editor.focus();
+            setTimeout(() => {
+                document.activeElement.blur();
+            }, 100);
+            
+            // 工具栏按钮点击事件
+            document.querySelectorAll('.format-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const command = this.getAttribute('data-command');
+                    
+                    if (command === 'bold') {
+                        document.execCommand('bold', false, null);
+                        editor.focus();
+                    } else if (command === 'createLink') {
+                        // 获取选中文本
+                        const selection = window.getSelection();
+                        const selectedText = selection.toString();
+                        
+                        // 显示链接弹窗
+                        showRichLinkModal(selectedText);
+                    }
+                });
+            });
+            
+            // 显示链接弹窗
+            function showRichLinkModal(text) {
+                const modal = document.getElementById('linkModal');
+                const textInput = modal.querySelector('.link-text');
+                const editor = document.querySelector('.rich-editor');
+                
+                // 提前获取焦点
+                editor.focus();
+                
+                textInput.value = text;
+                modal.classList.remove('hidden');
+                
+                // 设置确认按钮事件
+                modal.querySelector('.confirm-btn').onclick = function() {
+                    const linkText = modal.querySelector('.link-text').value || '链接文字';
+                    const linkUrl = modal.querySelector('.link-url').value;
+                    
+                    if (linkUrl) {
+                        // 确保编辑器有焦点
+                        editor.focus();
+                        const selection = window.getSelection();
+                        
+                        // 如果有选中文本
+                        if (selection.rangeCount > 0 && selection.toString()) {
+                            // 直接创建链接
+                            document.execCommand('createLink', false, linkUrl);
+                            
+                            // 添加属性到新创建的链接
+                            setTimeout(function() {
+                                const links = editor.querySelectorAll(`a[href="${linkUrl}"]`);
+                                if (links.length > 0) {
+                                    const newLink = links[links.length - 1];
+                                    newLink.setAttribute('target', '_blank');
+                                    newLink.setAttribute('rel', 'noopener');
+                                }
+                            }, 0);
+                        } else {
+                            try {
+                                // 如果没有选中文本，直接插入HTML（去掉背景色样式）
+                                const linkHTML = `<a href="${linkUrl}" target="_blank" rel="noopener" style="color:#1890ff;text-decoration:underline;">${linkText}</a>`;
+                                
+                                // 直接使用execCommand插入HTML
+                                document.execCommand('insertHTML', false, linkHTML);
+                            } catch (e) {
+                                console.error('插入链接失败:', e);
+                                // 备用方案：直接添加到编辑器末尾
+                                editor.innerHTML += linkHTML;
+                                // 移动光标到末尾
+                                const range = document.createRange();
+                                range.selectNodeContents(editor);
+                                range.collapse(false);
+                                const selection = window.getSelection();
+                                selection.removeAllRanges();
+                                selection.addRange(range);
+                            }
+                        }
+                        
+                        // 关闭弹窗
+                        modal.classList.add('hidden');
+                        modal.querySelector('.link-url').value = '';
+                    }
+                };
+                
+                // 其他弹窗逻辑保持不变
+                modal.querySelector('.cancel-btn').onclick = function() {
+                    modal.classList.add('hidden');
+                };
+                
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        modal.classList.add('hidden');
+                    }
+                });
+            }
+            
+            // 在提交表单前将编辑器内容同步到隐藏的textarea
+            function syncContent() {
+                hiddenTextarea.value = editor.innerHTML;
+            }
+            
+            // 支持Markdown语法的自动转换
+            editor.addEventListener('input', function() {
+                const selection = window.getSelection();
+                const range = selection.getRangeAt(0);
+                const startOffset = range.startOffset;
+                
+                // 获取当前行文本内容
+                const node = selection.anchorNode;
+                if (node && node.nodeType === 3) { // 文本节点
+                    const text = node.textContent;
+                    
+                    // 处理加粗语法: **text**
+                    if (text.includes('**')) {
+                        const boldMatches = text.match(/\*\*([^*]+)\*\*/g);
+                        if (boldMatches) {
+                            // 保存当前光标位置
+                            const cursorPosition = range.startOffset;
+                            
+                            // 替换加粗语法
+                            let newText = text;
+                            boldMatches.forEach(match => {
+                                const content = match.slice(2, -2);
+                                newText = newText.replace(match, `<b>${content}</b>`);
+                            });
+                            
+                            // 如果有变化，应用HTML
+                            if (newText !== text) {
+                                // 创建一个文档片段来保存新内容
+                                const fragment = document.createRange().createContextualFragment(newText);
+                                
+                                // 替换节点内容
+                                node.parentNode.replaceChild(fragment, node);
+                                
+                                // 尝试恢复光标位置到合理的地方
+                                placeCaretAfterNode(fragment.lastChild);
+                            }
+                        }
+                    }
+                    
+                    // 处理链接语法: [text](url)
+                    if (text.includes('[') && text.includes('](') && text.includes(')')) {
+                        const linkMatches = text.match(/\[([^\]]+)\]\(([^)]+)\)/g);
+                        if (linkMatches) {
+                            // 保存当前光标位置
+                            const cursorPosition = range.startOffset;
+                            
+                            // 替换链接语法
+                            let newText = text;
+                            linkMatches.forEach(match => {
+                                const linkText = match.match(/\[([^\]]+)\]/)[1];
+                                const linkUrl = match.match(/\]\(([^)]+)\)/)[1];
+                                newText = newText.replace(match, `<a href="${linkUrl}" target="_blank">${linkText}</a>`);
+                            });
+                            
+                            // 如果有变化，应用HTML
+                            if (newText !== text) {
+                                // 创建一个文档片段来保存新内容
+                                const fragment = document.createRange().createContextualFragment(newText);
+                                
+                                // 替换节点内容
+                                node.parentNode.replaceChild(fragment, node);
+                                
+                                // 尝试恢复光标位置到合理的地方
+                                placeCaretAfterNode(fragment.lastChild);
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // 帮助函数：将光标放在指定节点后面
+            function placeCaretAfterNode(node) {
+                if (!node) return;
+                
+                const range = document.createRange();
+                const selection = window.getSelection();
+                
+                range.setStartAfter(node);
+                range.collapse(true);
+                
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+            
+            // 在表单提交前同步内容
+            document.querySelector('.action-button.publish').addEventListener('click', function() {
+                syncContent();
+                const content = hiddenTextarea.value.trim();
+                if (!content || content === '<br>') {
+                    alert('请输入进展内容');
+                    return;
+                }
+                alert('发布成功');
+                window.location.href = 'event-detail.html';
+            });
+            
+            document.querySelector('.action-button.draft').addEventListener('click', function() {
+                syncContent();
+                alert('保存草稿成功');
+            });
+        });
     </script>
 </body>
 </html>
