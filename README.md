@@ -152,6 +152,12 @@ node screenshot.js --dir ./ --output screenshots
 截图将以PNG格式保存，命名与原HTML文件相同。
 
 ## 更新日志
+
+- 2025-05-17:
+  - [update-comment.html]
+    - 事件内容区（event-content）支持富文本渲染，样式与 event-detail.html 时间线正文保持一致，支持加粗、超链接、换行等格式。
+    - 优化用户信息区头像与姓名、标签的高度对齐，视觉更整齐美观。
+
 - 2025-05-16:
   - [home.html]
     - 精简首页事件卡片（event-card）结构，移除标签、评论数、浏览数等非核心元素。
@@ -168,6 +174,10 @@ node screenshot.js --dir ./ --output screenshots
     - node-time 和 user-name 字体缩小，颜色统一为 #999999，信息弱化但可读。
     - 优化 node-time 和 user-name 间距，gap 数值可灵活调整。
     - 统一所有进展节点的头部信息风格，提升时间线可读性与美观度。
+    - timeline-footer 互动按钮整体靠右，移除底部内容类型标签（content-type-tag），更符合右手操作习惯。
+    - timeline-body 正文字体统一为 14px，正文默认仅显示 3 行，超出部分自动省略，点击"展开/收起"按钮可切换全部内容，图片部分不受限制。 
+    - event-body 区块字体大小统一为 14px，提升整体观感一致性。
+    
 
 - 2025-05-15:
   - [create-timeline.html]
@@ -208,3 +218,5 @@ node screenshot.js --dir ./ --output screenshots
   - [event-detail.html] 修改为普通用户视角，移除事件操作菜单。
   - [event-detail-owner.html] 新增事件发起者视角详情页，支持邀请协作者、编辑事件、删除事件等操作。
   - [event-detail.html, event-detail-owner.html] 事件时间线新增排序功能，支持按时间正序和倒序排列，按钮使用图标并提供悬浮提示。
+
+

@@ -35,6 +35,7 @@
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-sm);
             transition: all var(--transition-normal);
+            font-size: 14px;
         }
         
         .event-image-gallery {
@@ -252,6 +253,30 @@
             padding: 0 var(--spacing-sm) 0 0;
             box-sizing: border-box;
             width: 100%;
+            font-size: 14px;
+        }
+        /* timeline-body 多行省略，仅正文受限 */
+        .timeline-body .timeline-text {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: all 0.2s;
+        }
+        .timeline-body.expanded .timeline-text {
+            display: block;
+            -webkit-line-clamp: unset;
+            overflow: visible;
+        }
+        .expand-btn {
+            color: var(--primary-color);
+            background: none;
+            border: none;
+            font-size: 13px;
+            cursor: pointer;
+            margin-top: 4px;
+            padding: 0;
         }
         
         .timeline-footer {
@@ -259,7 +284,7 @@
             background: linear-gradient(90deg, var(--bg-light) 0%, #ffffff 100%);
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: flex-end;
             border-top: 1px solid var(--border-color);
         }
         
@@ -789,10 +814,17 @@
         
         /* 使timeline-footer中的content-type-tag上下居中对齐 */
         .timeline-footer .content-type-tag {
+            margin-right: auto;
+            margin-left: 0;
             margin-bottom: 0;
             display: flex;
             align-items: center;
             height: 20px;
+        }
+        .timeline-footer .interaction-buttons {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
         }
     </style>
 </head>
@@ -881,11 +913,14 @@
                     </div>
                     <div class="timeline-content-direct" onclick="window.location.href='announcement-comment.html'">
                         <div class="timeline-body">
-                            <p><strong>物业公司查看安装电瓶车门禁系统位置</strong></p>
-                            <p>
-                                详情请参考<a href="https://property.example.com/notice/123" target="_blank" style="color:#1890ff;text-decoration:underline;">《小区电瓶车管理规定》</a>进行了解。
-                                <br>现场勘查确定了电瓶车门禁系统的最佳安装位置，将于下周开始施工。
-                            </p>
+                            <div class="timeline-text">
+                                <p><strong>物业公司查看安装电瓶车门禁系统位置</strong></p>
+                                <p>
+                                    详情请参考<a href="https://property.example.com/notice/123" target="_blank" style="color:#1890ff;text-decoration:underline;">《小区电瓶车管理规定》</a>进行了解。
+                                    <br>现场勘查确定了电瓶车门禁系统的最佳安装位置，将于下周开始施工。
+                                </p>
+                            </div>
+                            <button class="expand-btn" onclick="toggleExpand(event, this)">展开</button>
                             <div class="timeline-images count-4">
                                 <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="演习图片1" onclick="previewImage(event, this)">
                                 <img src="https://images.unsplash.com/photo-1504813184591-01572f98c85f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="演习图片2" onclick="previewImage(event, this)">
@@ -918,17 +953,20 @@
                     </div>
                     <div class="timeline-content-direct" onclick="window.location.href='vote-comment.html'">
                         <div class="timeline-body">
-                            <p><strong>物业与业主代表讨论非机动车充电解决方案</strong></p>
-                            <p>
-                                物业组织业主代表与街道/社区商讨解决非机动车停车与充电问题进行沟通。
-                                <br><br>结论：
-                                <br>1. 2024-08-16 物业会恢复F1、2、4栋用电
-                                <br>2. 根据各栋电动车数量对各栋充电桩数量进行合理规划和调整
-                                <br>3. 各栋加装<a href="https://security.example.com/door" target="_blank" style="color:#1890ff;text-decoration:underline;">充电门禁系统</a>
-                                <br>4. 物业增加警铃防控预警
-                                <br>5. 物业重新划分每栋充电位和停放位
-                                <br>6. 物业针对僵尸车辆进行统一位置停放管理
-                            </p>
+                            <div class="timeline-text">
+                                <p><strong>物业与业主代表讨论非机动车充电解决方案</strong></p>
+                                <p>
+                                    物业组织业主代表与街道/社区商讨解决非机动车停车与充电问题进行沟通。
+                                    <br><br>结论：
+                                    <br>1. 2024-08-16 物业会恢复F1、2、4栋用电
+                                    <br>2. 根据各栋电动车数量对各栋充电桩数量进行合理规划和调整
+                                    <br>3. 各栋加装<a href="https://security.example.com/door" target="_blank" style="color:#1890ff;text-decoration:underline;">充电门禁系统</a>
+                                    <br>4. 物业增加警铃防控预警
+                                    <br>5. 物业重新划分每栋充电位和停放位
+                                    <br>6. 物业针对僵尸车辆进行统一位置停放管理
+                                </p>
+                            </div>
+                            <button class="expand-btn" onclick="toggleExpand(event, this)">展开</button>
                         </div>
                         <div class="timeline-footer">
                             <div class="interaction-buttons">
@@ -955,15 +993,18 @@
                     </div>
                     <div class="timeline-content-direct" onclick="window.location.href='complaint-comment.html'">
                         <div class="timeline-body">
-                            <p><strong>2号楼电梯故障投诉</strong></p>
-                            <p>
-                                该电梯已经连续三天出现卡顿现象，属于严重安全隐患。
-                                <br><br>具体问题：
-                                <br>1. 电梯运行时有明显抖动
-                                <br>2. 按键反应迟钝，有时需按多次
-                                <br>3. 到达楼层时常有错位现象
-                                <br><br>请物业尽快处理！可以联系<a href="tel:12345678" style="color:#1890ff;text-decoration:underline;">电梯维修专线</a>。
-                            </p>
+                            <div class="timeline-text">
+                                <p><strong>2号楼电梯故障投诉</strong></p>
+                                <p>
+                                    该电梯已经连续三天出现卡顿现象，属于严重安全隐患。
+                                    <br><br>具体问题：
+                                    <br>1. 电梯运行时有明显抖动
+                                    <br>2. 按键反应迟钝，有时需按多次
+                                    <br>3. 到达楼层时常有错位现象
+                                    <br><br>请物业尽快处理！可以联系<a href="tel:12345678" style="color:#1890ff;text-decoration:underline;">电梯维修专线</a>。
+                                </p>
+                            </div>
+                            <button class="expand-btn" onclick="toggleExpand(event, this)">展开</button>
                             <div class="timeline-images count-9">
                                 <img src="https://images.unsplash.com/photo-1504813184591-01572f98c85f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="故障图片1" onclick="previewImage(event, this)">
                                 <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="故障图片2" onclick="previewImage(event, this)">
@@ -1001,16 +1042,19 @@
                     </div>
                     <div class="timeline-content-direct" onclick="window.location.href='update-comment.html'">
                         <div class="timeline-body">
-                            <p><strong>电梯维修工作已经启动</strong></p>
-                            <p>
-                                维修工程师已经到达现场，初步诊断为控制系统故障。
-                                <br><br>处理进度：
-                                <br>1. 更换了电梯控制板
-                                <br>2. 调整了平层传感器
-                                <br>3. 更新了电梯操作系统
-                                <br><br>预计2小时内可以修复完成，请大家耐心等待。
-                                <br>维修进度可在<a href="https://repair.example.com/status" target="_blank" style="color:#1890ff;text-decoration:underline;">物业维修状态查询系统</a>实时查看。
-                            </p>
+                            <div class="timeline-text">
+                                <p><strong>电梯维修工作已经启动</strong></p>
+                                <p>
+                                    维修工程师已经到达现场，初步诊断为控制系统故障。
+                                    <br><br>处理进度：
+                                    <br>1. 更换了电梯控制板
+                                    <br>2. 调整了平层传感器
+                                    <br>3. 更新了电梯操作系统
+                                    <br><br>预计2小时内可以修复完成，请大家耐心等待。
+                                    <br>维修进度可在<a href="https://repair.example.com/status" target="_blank" style="color:#1890ff;text-decoration:underline;">物业维修状态查询系统</a>实时查看。
+                                </p>
+                            </div>
+                            <button class="expand-btn" onclick="toggleExpand(event, this)">展开</button>
                             <div class="timeline-images count-2">
                                 <img src="https://images.unsplash.com/photo-1504813184591-01572f98c85f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="检修图片1" onclick="previewImage(event, this)">
                                 <img src="https://images.unsplash.com/photo-1582560475093-ba66accbc424?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="检修图片2" onclick="previewImage(event, this)">
@@ -1177,6 +1221,13 @@
                 }
             });
         });
+
+        function toggleExpand(event, btn) {
+            event.stopPropagation();
+            const body = btn.closest('.timeline-body');
+            body.classList.toggle('expanded');
+            btn.innerText = body.classList.contains('expanded') ? '收起' : '展开';
+        }
     </script>
 </body>
 </html>
