@@ -152,6 +152,22 @@ node screenshot.js --dir ./ --output screenshots
 截图将以PNG格式保存，命名与原HTML文件相同。
 
 ## 更新日志
+- 2025-05-16:
+  - [home.html]
+    - 精简首页事件卡片（event-card）结构，移除标签、评论数、浏览数等非核心元素。
+    - 卡片顶部仅保留标题和时间，且两者严格顶部对齐。
+    - 事件 meta 信息（如发起人、小区名、进展数）统一移至卡片底部，icon+文字分组间距增大。
+    - 卡片内容区支持最多三张图片网格化展示，图片更紧凑。
+    - 整体卡片 padding 减少，信息密度提升，留白更少。
+    - 优化卡片各区块的间距和排版，提升可读性和视觉紧凑感。
+    - 首页分类标签由"关注/进行中/已结束"调整为"关注/全部/我的小区"。
+  - [event-detail.html]
+    - timeline-node-header 结构重构为三段式（status-ongoing｜node-time+user-name｜content-type-tag），顺序与视觉完全一致。
+    - 移除旧 header 相关样式，彻底解决重叠与错位问题。
+    - node-time 仅显示日期，不显示具体时间。
+    - node-time 和 user-name 字体缩小，颜色统一为 #999999，信息弱化但可读。
+    - 优化 node-time 和 user-name 间距，gap 数值可灵活调整。
+    - 统一所有进展节点的头部信息风格，提升时间线可读性与美观度。
 
 - 2025-05-15:
   - [create-timeline.html]

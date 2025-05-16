@@ -17,7 +17,7 @@
             padding-bottom: 80px;
         }
         
-        .event-header {
+        .event-header { 
             padding: var(--spacing-lg);
             background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(10px);
@@ -29,7 +29,7 @@
         }
         
         .event-body {
-            padding: var(--spacing-lg);
+            padding: 18px 18px;
             background-color: var(--bg-card);
             margin: var(--spacing-md) 0;
             border-radius: var(--radius-lg);
@@ -38,11 +38,18 @@
         }
         
         .event-image-gallery {
-            margin: var(--spacing-lg) 0;
-            border-radius: var(--radius-lg);
-            overflow: hidden;
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            margin: 0;
+            padding: 0;
+            border-radius: 0;
+            overflow: visible;
             position: relative;
             cursor: pointer;
+            margin-bottom: 16px;
+
         }
         
         .event-image-gallery::after {
@@ -62,9 +69,12 @@
         }
         
         .event-image-gallery img {
+            display: block;
             width: 100%;
+            height: auto;
             max-height: 240px;
             object-fit: cover;
+            border-radius: var(--radius-lg);
             transition: transform var(--transition-normal);
         }
         
@@ -136,44 +146,39 @@
         }
         
         .timeline-node-header {
-            position: relative;
-            height: 26px;
-            margin-bottom: 12px;
             display: flex;
             align-items: center;
+            justify-content: space-between;
+            gap: 0;
+            min-height: 26px;
+            padding: 0 2px;
         }
         
-        .timeline-node .node-time {
-            position: relative;
-            left: auto;
-            transform: none;
-            color: var(--text-secondary);
-            font-size: 14px;
-            white-space: nowrap;
-            line-height: 26px;
-            order: 0;
-        }
-        
-        .timeline-node .user-name {
-            position: relative;
-            color: #666666;
-            font-weight: 500;
-            font-size: 14px;
-            margin-left: 8px;
-            white-space: nowrap;
-            line-height: 26px;
-            order: 1;
-        }
-        
-        .timeline-node .status-ongoing {
-            position: absolute;
-            right: 0;
-            top: 0;
-            height: 26px;
+        .header-left, .header-right { flex: 0 0 auto; }
+        .header-center {
+            flex: 1 1 auto;
             display: flex;
             align-items: center;
-            margin-left: auto;
-            order: 2;
+            gap: 6px;
+            justify-content: flex-start;
+            min-width: 0;
+        }
+        .header-center .node-time {
+            font-size: 14px;
+            color: #999999;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: 0 0 0 8px;
+        }
+        
+        .header-center .user-name {
+            font-size: 14px;
+            color: #999999;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: 0 0 0 0px;
         }
         
         .timeline-card {
@@ -789,102 +794,6 @@
             align-items: center;
             height: 20px;
         }
-
-        /* 修改分享弹窗HTML结构，使用公共样式 */
-        .modal-backdrop {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-        }
-
-        .modal-content {
-            background-color: white;
-            border-radius: var(--radius-lg);
-            width: 85%;
-            max-width: 330px;
-            box-shadow: var(--shadow-lg);
-            animation: modalFadeIn 0.3s;
-        }
-
-        .modal-header {
-            padding: var(--spacing-md) var(--spacing-lg);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-header h3 {
-            font-size: 18px;
-            font-weight: 600;
-            margin: 0;
-        }
-
-        .close-modal {
-            font-size: 24px;
-            cursor: pointer;
-            color: var(--text-secondary);
-        }
-
-        .modal-body {
-            padding: var(--spacing-lg);
-        }
-
-        .modal-body p {
-            margin: 0;
-            word-break: break-word;
-            line-height: 1.5;
-        }
-
-        .modal-footer {
-            padding: var(--spacing-md) var(--spacing-lg);
-            display: flex;
-            justify-content: center;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .btn-primary {
-            background: var(--primary-gradient);
-            color: white;
-            border: none;
-            padding: var(--spacing-sm) var(--spacing-xl);
-            border-radius: var(--radius-md);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all var(--transition-fast);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .btn-primary:active {
-            transform: scale(0.98);
-        }
-
-        /* 添加动画类 */
-        .animate-fadeIn {
-            animation: modalFadeIn 0.3s;
-        }
-
-        @keyframes modalFadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
     </style>
 </head>
 <body>
@@ -937,7 +846,6 @@
             <div class="d-flex justify-content-between mt-4">
                 <span><i class="far fa-comment mr-1"></i> 12</span>
                 <div>
-                    <span class="mr-3" style="cursor: pointer;" onclick="shareEvent()"><i class="fas fa-share-alt mr-1"></i> 分享</span>
                     <span><i class="far fa-eye mr-1"></i> 153</span>
                 </div>
             </div>
@@ -960,9 +868,16 @@
             <div class="timeline" id="timeline-container">
                 <div class="timeline-node" data-timestamp="2023-03-18 10:30">
                     <div class="timeline-node-header">
-                        <div class="node-time">2023-03-18 10:30</div>
-                        <div class="user-name">王业主</div>
-                        <div class="status-ongoing">进行中</div>
+                        <div class="header-left">
+                            <div class="status-ongoing">进行中</div>
+                        </div>
+                        <div class="header-center">
+                            <div class="node-time">2023-03-18</div>
+                            <div class="user-name">王业主</div>
+                        </div>
+                        <div class="header-right">
+                            <div class="content-type-tag announcement">公告</div>
+                        </div>
                     </div>
                     <div class="timeline-content-direct" onclick="window.location.href='announcement-comment.html'">
                         <div class="timeline-body">
@@ -978,26 +893,30 @@
                                 <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="演习图片4" onclick="previewImage(event, this)">
                             </div>
                         </div>
-                        
                         <div class="timeline-footer">
                             <div class="interaction-buttons">
                                 <span class="mr-3"><i class="far fa-thumbs-up mr-1"></i> 24</span>
                                 <span class="mr-3"><i class="far fa-thumbs-down mr-1"></i> 0</span>
                                 <span><i class="far fa-comment mr-1"></i> 8</span>
                             </div>
-                            <div class="content-type-tag announcement">公告</div>
                         </div>
                     </div>
                 </div>
                 
                 <div class="timeline-node" data-timestamp="2023-03-19 14:15">
                     <div class="timeline-node-header">
-                        <div class="node-time">2023-03-19 14:15</div>
-                        <div class="user-name">李业主</div>
-                        <div class="status-ongoing">进行中</div>
+                        <div class="header-left">
+                            <div class="status-ongoing">进行中</div>
+                        </div>
+                        <div class="header-center">
+                            <div class="node-time">2023-03-19</div>
+                            <div class="user-name">李业主</div>
+                        </div>
+                        <div class="header-right">
+                            <div class="content-type-tag vote">投票</div>
+                        </div>
                     </div>
                     <div class="timeline-content-direct" onclick="window.location.href='vote-comment.html'">
-                        
                         <div class="timeline-body">
                             <p><strong>物业与业主代表讨论非机动车充电解决方案</strong></p>
                             <p>
@@ -1011,26 +930,30 @@
                                 <br>6. 物业针对僵尸车辆进行统一位置停放管理
                             </p>
                         </div>
-                        
                         <div class="timeline-footer">
                             <div class="interaction-buttons">
                                 <span class="mr-3"><i class="far fa-thumbs-up mr-1"></i> 12</span>
                                 <span class="mr-3"><i class="far fa-thumbs-down mr-1"></i> 4</span>
                                 <span><i class="far fa-comment mr-1"></i> 4</span>
                             </div>
-                            <div class="content-type-tag vote">投票</div>
                         </div>
                     </div>
                 </div>
                 
                 <div class="timeline-node" data-timestamp="2023-03-19 16:30">
                     <div class="timeline-node-header">
-                        <div class="node-time">2023-03-19 16:30</div>
-                        <div class="user-name">张业主</div>
-                        <div class="status-ongoing">进行中</div>
+                        <div class="header-left">
+                            <div class="status-ongoing">进行中</div>
+                        </div>
+                        <div class="header-center">
+                            <div class="node-time">2023-03-19</div>
+                            <div class="user-name">张业主</div>
+                        </div>
+                        <div class="header-right">
+                            <div class="content-type-tag complaint">投诉</div>
+                        </div>
                     </div>
                     <div class="timeline-content-direct" onclick="window.location.href='complaint-comment.html'">
-                       
                         <div class="timeline-body">
                             <p><strong>2号楼电梯故障投诉</strong></p>
                             <p>
@@ -1053,26 +976,30 @@
                                 <img src="https://images.unsplash.com/photo-1504813184591-01572f98c85f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="故障图片9" onclick="previewImage(event, this)">
                             </div>
                         </div>
-                        
                         <div class="timeline-footer">
                             <div class="interaction-buttons">
                                 <span class="mr-3"><i class="far fa-thumbs-up mr-1"></i> 8</span>
                                 <span class="mr-3"><i class="far fa-thumbs-down mr-1"></i> 3</span>
                                 <span><i class="far fa-comment mr-1"></i> 3</span>
                             </div>
-                            <div class="content-type-tag complaint">投诉</div>
                         </div>
                     </div>
                 </div>
                 
                 <div class="timeline-node" data-timestamp="2023-03-19 18:45">
                     <div class="timeline-node-header">
-                        <div class="node-time">2023-03-19 18:45</div>
-                        <div class="user-name">王物业</div>
-                        <div class="status-ongoing">进行中</div>
+                        <div class="header-left">
+                            <div class="status-ongoing">进行中</div>
+                        </div>
+                        <div class="header-center">
+                            <div class="node-time">2023-03-19</div>
+                            <div class="user-name">王物业</div>
+                        </div>
+                        <div class="header-right">
+                            <div class="content-type-tag update">动态</div>
+                        </div>
                     </div>
                     <div class="timeline-content-direct" onclick="window.location.href='update-comment.html'">
-                        
                         <div class="timeline-body">
                             <p><strong>电梯维修工作已经启动</strong></p>
                             <p>
@@ -1089,14 +1016,12 @@
                                 <img src="https://images.unsplash.com/photo-1582560475093-ba66accbc424?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="检修图片2" onclick="previewImage(event, this)">
                             </div>
                         </div>
-                        
                         <div class="timeline-footer">
                             <div class="interaction-buttons">
                                 <span class="mr-3"><i class="far fa-thumbs-up mr-1"></i> 15</span>
                                 <span class="mr-3"><i class="far fa-thumbs-down mr-1"></i> 2</span>
                                 <span><i class="far fa-comment mr-1"></i> 6</span>
                             </div>
-                            <div class="content-type-tag update">动态</div>
                         </div>
                     </div>
                 </div>
@@ -1113,24 +1038,6 @@
             <i class="fas fa-plus"></i>
             <span>创建新进展</span>
         </button>
-    </div>
-    
-    <!-- 修改分享弹窗HTML结构，使用公共样式 -->
-    <div id="shareModal" class="modal-backdrop" style="display: none;">
-        <div class="modal-content animate-fadeIn" style="padding: 0;">
-            <div class="modal-header">
-                <div class="modal-title">分享内容</div>
-                <i class="fas fa-times" onclick="hideShareModal()" style="cursor: pointer; color: var(--text-secondary);"></i>
-            </div>
-            <div class="modal-body">
-                <div id="shareContent" class="p-3 bg-light rounded-md mb-2 font-sm"></div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary w-100" onclick="copyShareContent()">
-                    <i class="far fa-copy mr-1"></i>点击复制
-                </button>
-            </div>
-        </div>
     </div>
     
     <script>
@@ -1270,68 +1177,6 @@
                 }
             });
         });
-
-        // 修改分享功能
-        function shareEvent() {
-            // 获取事件标题
-            const eventTitle = document.querySelector('.event-header h1.font-bold').innerText;
-            
-            // 小程序分享链接(模拟)
-            const appLink = "#小程序://事件脉络追踪/6j0n1izROF8GU0A";
-            
-            // 组合分享内容
-            const shareContent = `${eventTitle} ${appLink}`;
-            
-            // 显示分享弹窗
-            const modal = document.getElementById('shareModal');
-            const contentElement = document.getElementById('shareContent');
-            
-            contentElement.innerText = shareContent;
-            modal.style.display = 'flex';
-        }
-
-        // 隐藏分享弹窗
-        function hideShareModal() {
-            const modal = document.getElementById('shareModal');
-            modal.style.display = 'none';
-        }
-
-        // 修改复制功能
-        function copyShareContent() {
-            const content = document.getElementById('shareContent').innerText;
-            
-            // 创建临时textarea元素
-            const textarea = document.createElement('textarea');
-            textarea.value = content;
-            document.body.appendChild(textarea);
-            
-            // 选择文本并复制
-            textarea.select();
-            document.execCommand('copy');
-            
-            // 移除临时元素
-            document.body.removeChild(textarea);
-            
-            // 显示复制成功提示
-            const copyBtn = document.querySelector('.modal-footer .btn');
-            const originalText = copyBtn.innerHTML;
-            
-            copyBtn.innerHTML = '<i class="fas fa-check mr-1"></i>复制成功!';
-            copyBtn.style.backgroundColor = '#4CAF50';
-            
-            setTimeout(() => {
-                copyBtn.innerHTML = originalText;
-                copyBtn.style.backgroundColor = '';
-            }, 1500);
-        }
-
-        // 点击外部区域关闭弹窗
-        window.onclick = function(event) {
-            const modal = document.getElementById('shareModal');
-            if (event.target === modal) {
-                hideShareModal();
-            }
-        }
     </script>
 </body>
 </html>
