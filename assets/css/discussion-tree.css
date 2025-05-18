@@ -1,0 +1,136 @@
+/* 结构化讨论树状图样式 */
+#discussion-tree-container {
+  overflow-x: auto;
+  min-height: 80px;
+  padding: 24px 8px 16px 8px;
+  background: #f8fafc;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.03);
+}
+.tree-visual-node {
+  display: inline-block;
+  min-width: 110px;
+  max-width: 200px;
+  padding: 14px 16px 10px 16px;
+  border-radius: 16px;
+  border: 2.5px solid #e5e7eb;
+  background: #fff;
+  font-size: 14px;
+  margin: 0 16px 32px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.06);
+  position: relative;
+}
+.tree-visual-node .font-bold {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.tree-visual-node .truncate {
+  color: #64748b;
+  font-size: 13px;
+}
+.tree-visual-node.selected {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px #2563eb33;
+  background: #e0edff;
+}
+.tree-visual-node:hover {
+  box-shadow: 0 4px 16px 0 rgba(37,99,235,0.10);
+  border-color: #60a5fa;
+  background: #f1f5fd;
+}
+/* 父子连接线：竖线 */
+.tree-visual-node:not(:only-child)::after {
+  content: '';
+  position: absolute;
+  top: -24px;
+  left: 50%;
+  width: 2px;
+  height: 24px;
+  background: #dbeafe;
+  transform: translateX(-50%);
+  z-index: 0;
+}
+.node-children-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  margin-top: 24px;
+  min-width: 220px;
+  gap: 24px;
+  position: relative;
+}
+/* 子节点水平线 */
+.node-children-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #dbeafe;
+  z-index: 0;
+}
+.tree-visual-node[data-tag="支持"] {
+  border-color: #22c55e;
+  background: #f0fdf4;
+}
+.tree-visual-node[data-tag="反对"] {
+  border-color: #ef4444;
+  background: #fef2f2;
+}
+.tree-visual-node[data-tag="提问"] {
+  border-color: #eab308;
+  background: #fefce8;
+}
+.tree-visual-node[data-tag="建议"] {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+.tree-visual-node[data-tag="澄清"] {
+  border-color: #6366f1;
+  background: #eef2ff;
+}
+.tree-visual-node[data-tag="补充信息"] {
+  border-color: #a21caf;
+  background: #f3e8ff;
+}
+.tree-visual-node[data-tag="担忧"] {
+  border-color: #ec4899;
+  background: #fdf2f8;
+}
+.tree-visual-node[data-tag="中立/观察"] {
+  border-color: #6b7280;
+  background: #f3f4f6;
+}
+/* 连接线可用伪元素或后续补充 SVG/CSS 方案 */ 
+
+@media (max-width: 480px) {
+  #discussion-tree-container {
+    padding: 12px 2px 8px 2px;
+    min-height: 40px;
+  }
+  .tree-visual-node {
+    min-width: 80px;
+    max-width: 120px;
+    font-size: 12px;
+    padding: 8px 6px 6px 6px;
+    margin: 0 6px 18px 6px;
+    border-radius: 10px;
+  }
+  .tree-visual-node .font-bold {
+    font-size: 13px;
+  }
+  .tree-visual-node .truncate {
+    font-size: 11px;
+  }
+  .node-children-container {
+    gap: 8px;
+    min-width: 120px;
+    margin-top: 12px;
+    flex-wrap: wrap; /* 允许自动换行 */
+  }
+}
