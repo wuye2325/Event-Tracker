@@ -1,0 +1,37 @@
+<!-- 这是一个富文本编辑器和图片上传组件 -->
+<div class="content-input">
+    <!-- 格式化工具栏 -->
+    <div class="format-toolbar flex items-center p-2 border-b border-gray-200 bg-gray-50 rounded-t-lg">
+        <button class="format-btn p-1.5 mx-1 text-gray-600 hover:bg-gray-200 rounded" data-command="bold" title="加粗">
+            <i class="fas fa-bold"></i>
+        </button>
+        <div class="h-4 mx-2 border-r border-gray-300"></div>
+        <button class="format-btn p-1.5 mx-1 text-gray-600 hover:bg-gray-200 rounded" data-command="createLink" title="添加链接">
+            <i class="fas fa-link"></i>
+        </button>
+    </div>
+
+    <div class="rich-editor-container">
+        <div class="rich-editor" contenteditable="true" placeholder="请输入内容..."></div>
+        <textarea class="hidden-textarea hidden" name="content"></textarea>
+    </div>
+
+    <div class="image-upload-area">
+        <div class="image-upload-item" onclick="uploadImage()">
+            <i class="fas fa-plus"></i>
+        </div>
+    </div>
+</div>
+
+<!-- 添加链接弹窗 (组件的一部分，因为JS逻辑依赖于它) -->
+<div id="linkModal" class="link-modal hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg w-80 p-4 shadow-lg">
+        <h3 class="text-lg font-medium mb-3">添加链接</h3>
+        <input type="text" placeholder="请输入链接文字" class="link-text w-full border border-gray-300 rounded px-3 py-2 mb-2">
+        <input type="url" placeholder="请输入URL地址" class="link-url w-full border border-gray-300 rounded px-3 py-2 mb-4">
+        <div class="flex justify-end">
+            <button class="cancel-btn px-4 py-1.5 mr-2 text-gray-600 hover:bg-gray-100 rounded">取消</button>
+            <button class="confirm-btn px-4 py-1.5 bg-blue-500 text-white rounded hover:bg-blue-600">确定</button>
+        </div>
+    </div>
+</div>

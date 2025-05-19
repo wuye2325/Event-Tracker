@@ -1,0 +1,136 @@
+/* 格式化工具栏样式 */
+.format-toolbar {
+    border-bottom: 1px solid #eee;
+    background-color: #f9f9f9;
+}
+
+.format-btn {
+    transition: all 0.2s;
+}
+
+.format-btn.active {
+    background-color: #e6f0ff;
+    color: #1890ff;
+}
+
+/* 链接弹窗样式 */
+.link-modal {
+    transition: opacity 0.3s;
+}
+
+/* 调整文本域样式 */
+/* 注意：这里的content-textarea可能不再使用，主要用rich-editor */
+/* 如果项目中其他地方还用到了，请保留，否则可以移除 */
+.content-textarea {
+    min-height: 120px;
+    width: 100%;
+    padding: 12px;
+    border: none; /* Rich editor handles its own border */
+    resize: vertical;
+    outline: none;
+    font-size: 14px;
+}
+
+/* 添加富文本编辑器样式 */
+.rich-editor-container {
+    position: relative;
+    margin-bottom: var(--spacing-md); /* Adjust margin as needed in context */
+}
+
+.rich-editor {
+    min-height: 180px;
+    width: 100%;
+    padding: var(--spacing-md);
+    border: 1px solid var(--border-color);
+    border-top: none;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    font-size: 16px;
+    transition: all var(--transition-fast);
+    background: var(--bg-light);
+    overflow-y: auto;
+    outline: none;
+}
+
+.rich-editor:focus {
+    border-color: var(--primary-color);
+    border-top: none;
+    box-shadow: var(--shadow-sm);
+}
+
+.rich-editor:empty:before {
+    content: attr(placeholder);
+    color: #999;
+    pointer-events: none;
+}
+
+.rich-editor b, .rich-editor strong {
+    font-weight: bold;
+}
+
+.rich-editor a {
+    color: #1890ff;
+    text-decoration: underline;
+    border-radius: 2px;
+    transition: all 0.2s;
+}
+
+.rich-editor a:hover {
+    color: #40a9ff;
+}
+
+/* 图片上传区域样式 */
+.image-upload-area {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-sm); /* Use spacing-md as in publish.html? Adjust as needed */
+}
+
+.image-upload-item {
+    aspect-ratio: 1;
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    background: var(--bg-light);
+    color: var(--text-secondary);
+}
+
+.image-upload-item:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.image-preview {
+    position: relative;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.image-preview .remove-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.image-preview .remove-btn:hover {
+    background: rgba(0, 0, 0, 0.7);
+}
