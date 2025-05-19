@@ -44,7 +44,7 @@
             max-width: 100%;
             height: auto;
             margin: 0;
-            padding: 0;
+            padding: 16px 0 0 0;
             border-radius: 0;
             overflow: visible;
             position: relative;
@@ -863,23 +863,18 @@
         </div>
         
         <div class="event-body">
-            <div class="event-image-gallery" onclick="previewImage(this)">
-                <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="事件图片">
-            </div>
-            
             <p class="mb-4">
                 为提高小区居民的消防安全意识和自救能力，物业将于本周六上午10点在小区南广场组织消防安全演习活动，请各位业主积极参与。
             </p>
-            
             <p class="text-danger">
                 注：请各位业主准时参加，穿着舒适运动装，保障参与安全。
             </p>
-            
-            <div class="d-flex justify-content-between mt-4">
-                <span><i class="far fa-comment mr-1"></i> 12</span>
-                <div>
-                    <span><i class="far fa-eye mr-1"></i> 153</span>
-                </div>
+            <div class="event-image-gallery" onclick="previewImage(this)">
+                <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="事件图片">
+            </div>
+            <div class="d-flex justify-content-end mt-4" style="padding-left: 225px;">
+                <span class="mr-3"><i class="far fa-comment mr-1"></i> 12</span>
+                <span><i class="far fa-eye mr-1"></i> 153</span>
             </div>
         </div>
         
