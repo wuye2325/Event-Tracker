@@ -301,7 +301,7 @@
                                             ${statusMap[invite.status]}
                                         </div>
                                     </div>
-                                    ${invite.status === 'pending' ? `
+                                    ${invite.status === 'pending' || invite.name === '张大强' ? `
                                         <button class="cancel-btn" onclick="cancelInvite(${event.id}, ${invite.id})">取消邀请</button>
                                     ` : ''}
                                 </div>
