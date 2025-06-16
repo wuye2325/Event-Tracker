@@ -27,38 +27,34 @@
         }
         .prototype-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(460px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
             gap: 40px;
             padding: 30px;
             max-width: 1800px;
             margin: 0 auto;
         }
-        .prototype-frame {
-            width: 430px; /* 增加宽度以适应内容 */
-            height: 900px; /* 增加高度以适应内容 */
-            margin: 0 auto;
-            border-radius: 55px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            border: 12px solid #1a1a1a;
+        /* 手机模拟器样式 */
+        .phone-mockup {
+            width: 375px;
+            height: 812px;
+            background: #000;
+            border-radius: 36px;
+            padding: 8px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
             position: relative;
-            background: #fff;
+            margin: 20px auto;
             transition: transform 0.3s ease;
+        }
+        
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            border-radius: 28px;
             overflow: hidden;
+            position: relative;
         }
-        .prototype-frame:before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 40%;
-            height: 30px;
-            background: #1a1a1a;
-            border-bottom-left-radius: 20px;
-            border-bottom-right-radius: 20px;
-            z-index: 2;
-        }
-        .prototype-frame:hover {
+        .phone-mockup:hover {
             transform: translateY(-5px);
         }
         .frame-title {
@@ -154,267 +150,305 @@
     
     <div class="prototype-container">
         <!-- 1. 登录/注册流程 -->
-        <div class="prototype-frame">
-            <div class="status-bar">
-                <span class="time">9:41</span>
-                <div class="icons">
-                    <i class="fas fa-signal"></i>
-                    <i class="fas fa-wifi"></i>
-                    <i class="fas fa-battery-full"></i>
+        <div class="phone-mockup">
+            <div class="phone-screen">
+                <div class="status-bar">
+                    <span class="time">9:41</span>
+                    <div class="icons">
+                        <i class="fas fa-signal"></i>
+                        <i class="fas fa-wifi"></i>
+                        <i class="fas fa-battery-full"></i>
+                    </div>
                 </div>
+                <iframe src="login.html" class="prototype-iframe"></iframe>
             </div>
-            <iframe src="login.html" class="prototype-iframe"></iframe>
             <div class="frame-title">1. 登录/注册页面</div>
         </div>
         
         <!-- 2. 微信授权页面 -->
-        <div class="prototype-frame">
-            <div class="status-bar">
-                <span class="time">9:41</span>
-                <div class="icons">
-                    <i class="fas fa-signal"></i>
-                    <i class="fas fa-wifi"></i>
-                    <i class="fas fa-battery-full"></i>
+        <div class="phone-mockup">
+            <div class="phone-screen">
+                <div class="status-bar">
+                    <span class="time">9:41</span>
+                    <div class="icons">
+                        <i class="fas fa-signal"></i>
+                        <i class="fas fa-wifi"></i>
+                        <i class="fas fa-battery-full"></i>
+                    </div>
                 </div>
+                <iframe src="auth-profile.html" class="prototype-iframe"></iframe>
             </div>
-            <iframe src="auth-profile.html" class="prototype-iframe"></iframe>
             <div class="frame-title">2. 微信授权页面</div>
         </div>
         
         <!-- 3. 小区绑定页面 -->
-        <div class="prototype-frame">
-            <div class="status-bar">
-                <span class="time">9:41</span>
-                <div class="icons">
-                    <i class="fas fa-signal"></i>
-                    <i class="fas fa-wifi"></i>
-                    <i class="fas fa-battery-full"></i>
+        <div class="phone-mockup">
+            <div class="phone-screen">
+                <div class="status-bar">
+                    <span class="time">9:41</span>
+                    <div class="icons">
+                        <i class="fas fa-signal"></i>
+                        <i class="fas fa-wifi"></i>
+                        <i class="fas fa-battery-full"></i>
+                    </div>
                 </div>
+                <iframe src="estate-binding.html" class="prototype-iframe"></iframe>
             </div>
-            <iframe src="estate-binding.html" class="prototype-iframe"></iframe>
             <div class="frame-title">3. 小区绑定页面</div>
         </div>
         
         <!-- 4. 主要功能页面 -->
-        <div class="prototype-frame">
-            <div class="status-bar">
-                <span class="time">9:41</span>
-                <div class="icons">
-                    <i class="fas fa-signal"></i>
-                    <i class="fas fa-wifi"></i>
-                    <i class="fas fa-battery-full"></i>
+        <div class="phone-mockup">
+            <div class="phone-screen">
+                <div class="status-bar">
+                    <span class="time">9:41</span>
+                    <div class="icons">
+                        <i class="fas fa-signal"></i>
+                        <i class="fas fa-wifi"></i>
+                        <i class="fas fa-battery-full"></i>
+                    </div>
                 </div>
+                <iframe src="home.html" class="prototype-iframe"></iframe>
             </div>
-            <iframe src="home.html" class="prototype-iframe"></iframe>
             <div class="frame-title">4. 首页（事件列表）</div>
         </div>
-        <div class="prototype-frame">
-            <div class="status-bar">
-                <span class="time">9:41</span>
-                <div class="icons">
-                    <i class="fas fa-signal"></i>
-                    <i class="fas fa-wifi"></i>
-                    <i class="fas fa-battery-full"></i>
+        <div class="phone-mockup">
+            <div class="phone-screen">
+                <div class="status-bar">
+                    <span class="time">9:41</span>
+                    <div class="icons">
+                        <i class="fas fa-signal"></i>
+                        <i class="fas fa-wifi"></i>
+                        <i class="fas fa-battery-full"></i>
+                    </div>
                 </div>
+                <iframe src="publish.html" class="prototype-iframe"></iframe>
             </div>
-            <iframe src="publish.html" class="prototype-iframe"></iframe>
             <div class="frame-title">6. 发布事件页面</div>
         </div>
         
-        <div class="prototype-frame">
-            <div class="status-bar">
-                <span class="time">9:41</span>
-                <div class="icons">
-                    <i class="fas fa-signal"></i>
-                    <i class="fas fa-wifi"></i>
-                    <i class="fas fa-battery-full"></i>
+        <div class="phone-mockup">
+            <div class="phone-screen">
+                <div class="status-bar">
+                    <span class="time">9:41</span>
+                    <div class="icons">
+                        <i class="fas fa-signal"></i>
+                        <i class="fas fa-wifi"></i>
+                        <i class="fas fa-battery-full"></i>
+                    </div>
                 </div>
+                <iframe src="event-detail.html" class="prototype-iframe"></iframe>
             </div>
-            <iframe src="event-detail.html" class="prototype-iframe"></iframe>
             <div class="frame-title">5. 事件详情页面</div>
         </div>
 
 
         <!-- 事件详情（发起者视角） -->
-        <div class="prototype-frame">
-            <div class="status-bar">
-                <span class="time">9:41</span>
-                <div class="icons">
-                    <i class="fas fa-signal"></i>
-                    <i class="fas fa-wifi"></i>
-                    <i class="fas fa-battery-full"></i>
+        <div class="phone-mockup">
+            <div class="phone-screen">
+                <div class="status-bar">
+                    <span class="time">9:41</span>
+                    <div class="icons">
+                        <i class="fas fa-signal"></i>
+                        <i class="fas fa-wifi"></i>
+                        <i class="fas fa-battery-full"></i>
+                    </div>
                 </div>
+                <iframe src="event-detail-owner.html" class="prototype-iframe"></iframe>
             </div>
-            <iframe src="event-detail-owner.html" class="prototype-iframe"></iframe>
             <div class="frame-title">事件详情（发起者视角）</div>
         </div>
 
         <!-- 编辑事件页面 -->
-        <div class="prototype-frame">
-            <div class="status-bar">
-                <span class="time">9:41</span>
-                <div class="icons">
-                    <i class="fas fa-signal"></i>
-                    <i class="fas fa-wifi"></i>
-                    <i class="fas fa-battery-full"></i>
+        <div class="phone-mockup">
+            <div class="phone-screen">
+                <div class="status-bar">
+                    <span class="time">9:41</span>
+                    <div class="icons">
+                        <i class="fas fa-signal"></i>
+                        <i class="fas fa-wifi"></i>
+                        <i class="fas fa-battery-full"></i>
+                    </div>
                 </div>
+                <iframe src="edit-event.html" class="prototype-iframe"></iframe>
             </div>
-            <iframe src="edit-event.html" class="prototype-iframe"></iframe>
             <div class="frame-title">编辑事件页面</div>
         </div>
 
 
         
-        <div class="prototype-frame">
-            <div class="status-bar">
-                <span class="time">9:41</span>
-                <div class="icons">
-                    <i class="fas fa-signal"></i>
-                    <i class="fas fa-wifi"></i>
-                    <i class="fas fa-battery-full"></i>
+        <div class="phone-mockup">
+            <div class="phone-screen">
+                <div class="status-bar">
+                    <span class="time">9:41</span>
+                    <div class="icons">
+                        <i class="fas fa-signal"></i>
+                        <i class="fas fa-wifi"></i>
+                        <i class="fas fa-battery-full"></i>
+                    </div>
                 </div>
+                <iframe src="create-timeline.html" class="prototype-iframe"></iframe>
             </div>
-            <iframe src="create-timeline.html" class="prototype-iframe"></iframe>
             <div class="frame-title">7. 创建新进展页面</div>
         </div>
         
         <!-- 4. 评论页面 -->
-        <div class="prototype-frame">
-            <div class="status-bar">
-                <span class="time">9:41</span>
-                <div class="icons">
-                    <i class="fas fa-signal"></i>
-                    <i class="fas fa-wifi"></i>
-                    <i class="fas fa-battery-full"></i>
+        <div class="phone-mockup">
+            <div class="phone-screen">
+                <div class="status-bar">
+                    <span class="time">9:41</span>
+                    <div class="icons">
+                        <i class="fas fa-signal"></i>
+                        <i class="fas fa-wifi"></i>
+                        <i class="fas fa-battery-full"></i>
+                    </div>
                 </div>
+                <iframe src="update-comment.html" class="prototype-iframe"></iframe>
             </div>
-            <iframe src="update-comment.html" class="prototype-iframe"></iframe>
             <div class="frame-title">8. 评论页面</div>
         </div>
         
         <!-- 5. 搜索页面 -->
-        <div class="prototype-frame">
-            <div class="status-bar">
-                <span class="time">9:41</span>
-                <div class="icons">
-                    <i class="fas fa-signal"></i>
-                    <i class="fas fa-wifi"></i>
-                    <i class="fas fa-battery-full"></i>
+        <div class="phone-mockup">
+            <div class="phone-screen">
+                <div class="status-bar">
+                    <span class="time">9:41</span>
+                    <div class="icons">
+                        <i class="fas fa-signal"></i>
+                        <i class="fas fa-wifi"></i>
+                        <i class="fas fa-battery-full"></i>
+                    </div>
                 </div>
+                <iframe src="search.html" class="prototype-iframe"></iframe>
             </div>
-            <iframe src="search.html" class="prototype-iframe"></iframe>
             <div class="frame-title">9. 搜索页面</div>
         </div>
         
         <!-- 消息通知页面 -->
-        <div class="prototype-frame">
-            <div class="status-bar">
-                <span class="time">9:41</span>
-                <div class="icons">
-                    <i class="fas fa-signal"></i>
-                    <i class="fas fa-wifi"></i>
-                    <i class="fas fa-battery-full"></i>
+        <div class="phone-mockup">
+            <div class="phone-screen">
+                <div class="status-bar">
+                    <span class="time">9:41</span>
+                    <div class="icons">
+                        <i class="fas fa-signal"></i>
+                        <i class="fas fa-wifi"></i>
+                        <i class="fas fa-battery-full"></i>
+                    </div>
                 </div>
+                <iframe src="notifications.html" class="prototype-iframe"></iframe>
             </div>
-            <iframe src="notifications.html" class="prototype-iframe"></iframe>
             <div class="frame-title">消息通知</div>
         </div>
 
         <!-- 用户中心页面 -->
-        <div class="prototype-frame">
-            <div class="status-bar">
-                <span class="time">9:41</span>
-                <div class="icons">
-                    <i class="fas fa-signal"></i>
-                    <i class="fas fa-wifi"></i>
-                    <i class="fas fa-battery-full"></i>
+        <div class="phone-mockup">
+            <div class="phone-screen">
+                <div class="status-bar">
+                    <span class="time">9:41</span>
+                    <div class="icons">
+                        <i class="fas fa-signal"></i>
+                        <i class="fas fa-wifi"></i>
+                        <i class="fas fa-battery-full"></i>
+                    </div>
                 </div>
+                <iframe src="user-center.html" class="prototype-iframe"></iframe>
             </div>
-            <iframe src="user-center.html" class="prototype-iframe"></iframe>
             <div class="frame-title">用户中心</div>
         </div>
 
         <!-- 我的邀请记录页面 -->
-        <div class="prototype-frame">
-            <div class="status-bar">
-                <span class="time">9:41</span>
-                <div class="icons">
-                    <i class="fas fa-signal"></i>
-                    <i class="fas fa-wifi"></i>
-                    <i class="fas fa-battery-full"></i>
+        <div class="phone-mockup">
+            <div class="phone-screen">
+                <div class="status-bar">
+                    <span class="time">9:41</span>
+                    <div class="icons">
+                        <i class="fas fa-signal"></i>
+                        <i class="fas fa-wifi"></i>
+                        <i class="fas fa-battery-full"></i>
+                    </div>
                 </div>
+                <iframe src="my-invites.html" class="prototype-iframe"></iframe>
             </div>
-            <iframe src="my-invites.html" class="prototype-iframe"></iframe>
             <div class="frame-title">我的邀请记录</div>
         </div>
 
         <!-- 账号安全页面 -->
-        <div class="prototype-frame">
-            <div class="status-bar">
-                <span class="time">9:41</span>
-                <div class="icons">
-                    <i class="fas fa-signal"></i>
-                    <i class="fas fa-wifi"></i>
-                    <i class="fas fa-battery-full"></i>
+        <div class="phone-mockup">
+            <div class="phone-screen">
+                <div class="status-bar">
+                    <span class="time">9:41</span>
+                    <div class="icons">
+                        <i class="fas fa-signal"></i>
+                        <i class="fas fa-wifi"></i>
+                        <i class="fas fa-battery-full"></i>
+                    </div>
                 </div>
+                <iframe src="account-security.html" class="prototype-iframe"></iframe>
             </div>
-            <iframe src="account-security.html" class="prototype-iframe"></iframe>
             <div class="frame-title">账号安全</div>
         </div>
 
         <!-- 用户编辑页面 -->
-        <div class="prototype-frame">
-            <div class="status-bar">
-                <span class="time">9:41</span>
-                <div class="icons">
-                    <i class="fas fa-signal"></i>
-                    <i class="fas fa-wifi"></i>
-                    <i class="fas fa-battery-full"></i>
+        <div class="phone-mockup">
+            <div class="phone-screen">
+                <div class="status-bar">
+                    <span class="time">9:41</span>
+                    <div class="icons">
+                        <i class="fas fa-signal"></i>
+                        <i class="fas fa-wifi"></i>
+                        <i class="fas fa-battery-full"></i>
+                    </div>
                 </div>
+                <iframe src="user-edit.html" class="prototype-iframe"></iframe>
             </div>
-            <iframe src="user-edit.html" class="prototype-iframe"></iframe>
             <div class="frame-title">编辑个人信息</div>
         </div>
 
         <!-- 事件关联图谱页面 -->
-        <div class="prototype-frame">
-            <div class="status-bar">
-                <span class="time">9:41</span>
-                <div class="icons">
-                    <i class="fas fa-signal"></i>
-                    <i class="fas fa-wifi"></i>
-                    <i class="fas fa-battery-full"></i>
+        <div class="phone-mockup">
+            <div class="phone-screen">
+                <div class="status-bar">
+                    <span class="time">9:41</span>
+                    <div class="icons">
+                        <i class="fas fa-signal"></i>
+                        <i class="fas fa-wifi"></i>
+                        <i class="fas fa-battery-full"></i>
+                    </div>
                 </div>
+                <iframe src="event-relations.html" class="prototype-iframe"></iframe>
             </div>
-            <iframe src="event-relations.html" class="prototype-iframe"></iframe>
             <div class="frame-title">事件关联图谱</div>
         </div>
 
         <!-- 删除进展确认页面 -->
-        <div class="prototype-frame">
-            <div class="status-bar">
-                <span class="time">9:41</span>
-                <div class="icons">
-                    <i class="fas fa-signal"></i>
-                    <i class="fas fa-wifi"></i>
-                    <i class="fas fa-battery-full"></i>
+        <div class="phone-mockup">
+            <div class="phone-screen">
+                <div class="status-bar">
+                    <span class="time">9:41</span>
+                    <div class="icons">
+                        <i class="fas fa-signal"></i>
+                        <i class="fas fa-wifi"></i>
+                        <i class="fas fa-battery-full"></i>
+                    </div>
                 </div>
+                <iframe src="delete-progress-confirm.html" class="prototype-iframe"></iframe>
             </div>
-            <iframe src="delete-progress-confirm.html" class="prototype-iframe"></iframe>
             <div class="frame-title">删除进展确认</div>
         </div>
 
         <!-- 结构化讨论页面 (update-comment-0518) -->
-        <div class="prototype-frame">
-            <div class="status-bar">
-                <span class="time">9:43</span>
-                <div class="icons">
-                    <i class="fas fa-signal"></i>
-                    <i class="fas fa-wifi"></i>
-                    <i class="fas fa-battery-full"></i>
+        <div class="phone-mockup">
+            <div class="phone-screen">
+                <div class="status-bar">
+                    <span class="time">9:43</span>
+                    <div class="icons">
+                        <i class="fas fa-signal"></i>
+                        <i class="fas fa-wifi"></i>
+                        <i class="fas fa-battery-full"></i>
+                    </div>
                 </div>
+                <iframe src="update-comment-0518.html" class="prototype-iframe"></iframe>
             </div>
-            <iframe src="update-comment-0518.html" class="prototype-iframe"></iframe>
             <div class="frame-title">结构化讨论页面 (update-comment-0518)</div>
         </div>
 
