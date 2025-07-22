@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>0722 UI 展示 - 附件上传功能迭代</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #f6f6f6;
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            justify-items: center;
+        }
+        
+        .iframe-wrapper {
+            background: transparent;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+        
+        .iframe-wrapper:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+        
+        .iframe-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #2D6AE0 0%, #4A90E2 100%);
+            z-index: 1;
+        }
+        
+        .iframe-title {
+            position: absolute;
+            top: 12px;
+            left: 16px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #333;
+            z-index: 2;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        iframe {
+            width: 400px;
+            height: 850px;
+            border: none;
+            background: transparent;
+            display: block;
+        }
+        
+        .page-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .info-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #2D6AE0;
+        }
+        
+        .info-card h3 {
+            color: #333;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .info-card p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .feature-list {
+            list-style: none;
+            margin-top: 12px;
+        }
+        
+        .feature-list li {
+            color: #555;
+            font-size: 13px;
+            padding: 4px 0;
+            position: relative;
+            padding-left: 16px;
+        }
+        
+        .feature-list li::before {
+            content: '•';
+            color: #2D6AE0;
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 1200px) {
+            .grid-container {
+                grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            }
+            
+            iframe {
+                width: 380px;
+                height: 810px;
+            }
+        }
+        
+        @media (max-width: 800px) {
+            body {
+                padding: 10px;
+            }
+            
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+            
+            iframe {
+                width: 100%;
+                max-width: 400px;
+                height: 850px;
+            }
+            
+            .iframe-wrapper {
+                width: 100%;
+                max-width: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>0722 UI 展示</h1>
+            <p>附件上传功能迭代 - 三个核心页面的界面展示</p>
+        </div>
+        
+        <div class="page-info">
+            <div class="info-card">
+                <h3>发布事件页面</h3>
+                <p>用户可以创建新的事件，支持富文本编辑、图片上传和附件上传功能。</p>
+                <ul class="feature-list">
+                    <li>富文本编辑器支持加粗、链接等格式</li>
+                    <li>支持多种格式附件上传（PDF、Word、Excel、PPT）</li>
+                    <li>事件标签选择和自定义标签</li>
+                    <li>事件开始时间设置</li>
+                </ul>
+            </div>
+            
+            <div class="info-card">
+                <h3>事件详情页面</h3>
+                <p>展示事件的完整信息和进展时间线，用户可以查看所有相关内容。</p>
+                <ul class="feature-list">
+                    <li>事件基本信息展示</li>
+                    <li>时间线进展追踪</li>
+                    <li>附件预览和下载</li>
+                    <li>事件状态管理</li>
+                </ul>
+            </div>
+            
+            <div class="info-card">
+                <h3>创建进展页面</h3>
+                <p>为现有事件添加新的进展更新，支持多种类型的进展内容。</p>
+                <ul class="feature-list">
+                    <li>多种进展类型选择（动态、投票、投诉、公告）</li>
+                    <li>富文本内容编辑</li>
+                    <li>图片和附件上传</li>
+                    <li>进展时间设置</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="grid-container">
+            <div class="iframe-wrapper">
+                
+                <iframe src="publish_0722.html" title="发布事件页面"></iframe>
+            </div>
+            
+            <div class="iframe-wrapper">
+                
+                <iframe src="event-detail_0722.html" title="事件详情页面"></iframe>
+            </div>
+            
+            <div class="iframe-wrapper">
+                
+                <iframe src="create-timeline_0722.html" title="创建进展页面"></iframe>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

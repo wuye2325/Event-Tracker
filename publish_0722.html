@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>发布事件 - 大事小事追踪</title>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles.css">
+    <link rel="stylesheet" href="assets/editor-styles.css">
+    <style>
+        .publish-container {
+            max-width: 390px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background-color: var(--bg-light);
+            padding-bottom: 80px;
+        }
+        
+        .form-section {
+            margin-bottom: var(--spacing-lg);
+            background-color: var(--bg-card);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .form-section-title {
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .upload-area {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-md);
+        }
+        
+        .upload-item {
+            aspect-ratio: 1;
+            border-radius: var(--radius-md);
+            border: 2px dashed var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all var(--transition-fast);
+            background-color: var(--bg-light);
+        }
+        
+        .upload-item:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .upload-preview {
+            aspect-ratio: 1;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            position: relative;
+            transition: all var(--transition-fast);
+        }
+        
+        .upload-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .upload-preview .remove-btn {
+            position: absolute;
+            top: var(--spacing-xs);
+            right: var(--spacing-xs);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .upload-preview .remove-btn:hover {
+            background-color: var(--error-color);
+        }
+        
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-sm);
+        }
+        
+        .tag-item {
+            display: inline-flex;
+            align-items: center;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            background-color: var(--bg-light);
+            color: var(--text-secondary);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            border: 1px solid var(--border-color);
+        }
+        
+        .tag-item:hover:not(.selected) {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .tag-item.selected {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+        }
+        
+        .tag-item i {
+            margin-right: var(--spacing-sm);
+        }
+        
+        .custom-tag-input {
+            display: inline-flex;
+            align-items: center;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            background-color: var(--bg-light);
+            border: 1px dashed var(--border-color);
+            transition: all var(--transition-fast);
+            min-width: 120px;
+        }
+        
+        .custom-tag-input:focus-within {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .custom-tag-input input {
+            border: none;
+            background: none;
+            outline: none;
+            font-size: 14px;
+            color: var(--text-primary);
+            width: 100%;
+        }
+        
+        .custom-tag-input input::placeholder {
+            color: var(--text-secondary);
+        }
+        
+        .custom-tag-input .add-btn {
+            color: var(--primary-color);
+            cursor: pointer;
+            padding: 0 var(--spacing-xs);
+            font-size: 14px;
+            opacity: 0;
+            transition: all var(--transition-fast);
+        }
+        
+        .custom-tag-input:focus-within .add-btn {
+            opacity: 1;
+        }
+        
+        .action-buttons {
+            position: fixed;
+            bottom: var(--spacing-lg);
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: var(--spacing-md);
+            width: calc(100% - 32px);
+            max-width: 358px;
+            z-index: 1000;
+            padding-top: var(--spacing-lg);
+        }
+        
+        .action-buttons .btn {
+            height: 44px;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        
+        .action-buttons .btn-primary {
+            flex: 1;
+            background: var(--primary-gradient);
+        }
+        
+        .form-input {
+            width: 100%;
+            height: 44px;
+            padding: 0 var(--spacing-md);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 16px;
+            transition: all var(--transition-fast);
+            background-color: #F5F7FA;
+        }
+        
+        .form-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-md);
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-back" onclick="window.location.href='home.html'">
+            <i class="fas fa-chevron-left"></i>
+        </div>
+        <div class="navbar-title">发布事件</div>
+        <div class="navbar-action"></div>
+    </div>
+    
+    <div class="content">
+        <div class="form-section">
+            <div class="form-section-title">事件标题</div>
+            <input type="text" class="form-input" placeholder="请输入标题（2-20字）" maxlength="20">
+        </div>
+        
+        <div class="form-section">
+            <div class="form-section-title">事件内容</div>
+            <div class="content-input">
+                <div class="format-toolbar flex items-center p-2 border-b border-gray-200 bg-gray-50 rounded-t-lg">
+                    <button class="format-btn p-1.5 mx-1 text-gray-600 hover:bg-gray-200 rounded" data-command="bold" title="加粗">
+                        <i class="fas fa-bold"></i>
+                    </button>
+                    <div class="h-4 mx-2 border-r border-gray-300"></div>
+                    <button class="format-btn p-1.5 mx-1 text-gray-600 hover:bg-gray-200 rounded" data-command="createLink" title="添加链接">
+                        <i class="fas fa-link"></i>
+                    </button>
+                </div>
+                <div class="rich-editor-container">
+                    <div class="rich-editor" contenteditable="true" placeholder="请详细描述事件的内容（10-500字）..."></div>
+                    <textarea class="hidden-textarea hidden" name="content"></textarea>
+                </div>
+                <div class="image-upload-area">
+                    <div class="upload-preview">
+                        <img src="https://images.unsplash.com/photo-1496979551903-46e46589a88b?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" alt="预览图">
+                        <div class="remove-btn">
+                            <i class="fas fa-times"></i>
+                        </div>
+                    </div>
+                    <div class="image-upload-item" onclick="uploadImage()">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 添加附件卡片（单独form-section） -->
+        <div class="form-section">
+            <div class="form-section-title">添加附件</div>
+            <p class="text-secondary font-sm mb-3">支持PDF、Word、Excel、PPT格式</p>
+            <div class="upload-area items-start justify-center" id="attachment-area" style="display: block; margin-top: var(--spacing-md); padding: 0; min-height: 44px; height: auto;">
+                <!-- 附件预览与上传按钮由 JS 动态生成 -->
+            </div>
+        </div>
+        <style>
+        #attachment-area::-webkit-scrollbar { display: none; }
+        .upload-area, .upload-item { aspect-ratio: unset; }
+        </style>
+        
+        <!-- 新增：事件开始时间卡片 -->
+        <div class="form-section">
+            <div class="form-section-title">事件开始时间</div>
+            <input type="datetime-local" class="form-input" id="event-start-time" placeholder="请选择事件开始时间">
+        </div>
+        
+        <div class="form-section">
+            <div class="form-section-title">选择标签</div>
+            <p class="text-secondary font-sm mb-3">最多选择5个标签</p>
+            <div class="tags-container">
+                <div class="tag-item" onclick="toggleTag(this)">
+                    <i class="fas fa-building"></i> 物业通知
+                </div>
+                <div class="tag-item" onclick="toggleTag(this)">
+                    <i class="fas fa-fire-extinguisher"></i> 安全演练
+                </div>
+                <div class="tag-item selected" onclick="toggleTag(this)">
+                    <i class="fas fa-users"></i> 全员参与
+                </div>
+                <div class="tag-item" onclick="toggleTag(this)">
+                    <i class="fas fa-dumbbell"></i> 基础设施
+                </div>
+                <div class="tag-item" onclick="toggleTag(this)">
+                    <i class="fas fa-leaf"></i> 环保行动
+                </div>
+                <div class="custom-tag-input">
+                    <input type="text" placeholder="添加自定义标签" maxlength="10" onkeypress="handleCustomTagKeyPress(event)">
+                    <i class="fas fa-plus add-btn" onclick="addCustomTag()"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="action-buttons">
+        <button class="action-button draft" onclick="saveDraft()">
+            <i class="far fa-save"></i>
+            保存草稿
+        </button>
+        <button class="action-button publish" onclick="publishEvent()">
+            <i class="fas fa-paper-plane"></i>
+            发布事件
+        </button>
+    </div>
+    
+    <script src="assets/editor-scripts.js"></script>
+    <script>
+        function toggleTag(element) {
+            // 获取已选中的标签数量
+            const selectedTags = document.querySelectorAll('.tag-item.selected').length;
+            
+            if (!element.classList.contains('selected') && selectedTags >= 5) {
+                alert('最多只能选择5个标签');
+                return;
+            }
+            
+            element.classList.toggle('selected');
+        }
+        
+        function handleCustomTagKeyPress(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                addCustomTag();
+            }
+        }
+        
+        function addCustomTag() {
+            const input = document.querySelector('.custom-tag-input input');
+            const tagText = input.value.trim();
+            
+            if (!tagText) return;
+            
+            // 检查标签数量限制
+            const selectedTags = document.querySelectorAll('.tag-item.selected').length;
+            if (selectedTags >= 5) {
+                alert('最多只能选择5个标签');
+                return;
+            }
+            
+            // 检查标签是否已存在
+            const existingTags = Array.from(document.querySelectorAll('.tag-item')).map(tag => 
+                tag.textContent.trim()
+            );
+            if (existingTags.includes(tagText)) {
+                alert('该标签已存在');
+                return;
+            }
+            
+            // 创建新标签
+            const newTag = document.createElement('div');
+            newTag.className = 'tag-item selected';
+            newTag.onclick = function() { toggleTag(this); };
+            newTag.innerHTML = `<i class="fas fa-tag"></i> ${tagText}`;
+            
+            // 插入到输入框前面
+            const customTagInput = document.querySelector('.custom-tag-input');
+            customTagInput.parentNode.insertBefore(newTag, customTagInput);
+            
+            // 清空输入框
+            input.value = '';
+        }
+        
+        function saveDraft() {
+            // 同步编辑器内容并保存
+            const content = syncEditorContent();
+            console.log("Draft content:", content); // For debugging
+            alert('保存草稿成功');
+        }
+        
+        function publishEvent() {
+            // 表单验证
+            const title = document.querySelector('.form-input').value;
+            // 获取富文本编辑器内容
+            const content = syncEditorContent();
+            console.log("Publish content:", content); // For debugging
+
+            if (title.length < 2 || title.length > 20) {
+                alert('标题长度需要在2-20字之间');
+                return;
+            }
+
+            // 使用同步后的编辑器内容进行验证
+            // 注意：这里需要根据实际富文本内容来判断长度，innerHTML包含HTML标签，长度会变长
+            // 可能需要一个方法来获取纯文本内容进行长度验证，或者根据innerHTML的复杂性调整长度限制
+            // 简单的长度验证可以检查 hiddenTextarea.value 的长度
+             if (content.length < 10 || content.length > 1000) { // 适当增加富文本内容的长度限制
+                 alert('内容长度需要在10-1000字之间 (包含格式)');
+                 return;
+             }
+
+
+            // 显示加载状态
+            const publishBtn = document.querySelector('.action-button.publish');
+            const btnText = publishBtn.querySelector('span'); // assuming you have a span for text
+            // 如果没有span，直接隐藏publishBtn.innerHTML中的文本，或使用其他方式
+            const originalBtnContent = publishBtn.innerHTML; // Save original content
+            publishBtn.innerHTML = '<div class="loading-spinner" style="width: 20px; height: 20px; margin: 0 auto;"></div>'; // Add spinner
+            publishBtn.disabled = true;
+
+
+            // 模拟发布
+            setTimeout(() => {
+                alert('发布成功！');
+                window.location.href = 'home.html';
+                // 恢复按钮状态 (如果需要停留在页面)
+                // publishBtn.innerHTML = originalBtnContent;
+                // publishBtn.disabled = false;
+            }, 1500);
+        }
+    </script>
+    <script>
+// 附件操作
+let editAttachments = [];
+function renderAttachments(attachments) {
+    const area = document.getElementById('attachment-area');
+    area.innerHTML = '';
+    area.classList.remove('items-center');
+    area.classList.add('items-start','justify-center');
+    area.style.minHeight = '44px';
+    area.style.height = 'auto';
+    area.style.paddingTop = '8px';
+    area.style.paddingBottom = '8px';
+    attachments.forEach((file, idx) => {
+        const ext = file.name ? file.name.split('.').pop().toLowerCase() : '';
+        let iconMap = {
+            'doc': 'assets/lficon/doc-24.svg',
+            'docx': 'assets/lficon/docx-24.svg',
+            'pdf': 'assets/lficon/pdf-24.svg',
+            'xls': 'assets/lficon/xls-24.svg',
+            'xlsx': 'assets/lficon/xlsx-24.svg',
+            'ppt': 'assets/lficon/ppt-24.svg',
+            'pptx': 'assets/lficon/pptx-24.svg',
+        };
+        let iconSrc = iconMap[ext] || 'assets/lficon/file-24-outline.svg';
+        let size = file.size ? (file.size/1024>1024 ? (file.size/1024/1024).toFixed(2)+"MB" : (file.size/1024).toFixed(1)+"KB") : '';
+        let now = new Date();
+        let uploadDate = now;
+        if (file.uploadDate) uploadDate = new Date(file.uploadDate);
+        let month = uploadDate.getMonth() + 1;
+        let day = uploadDate.getDate();
+        let uploadTimeStr = `${month}月${day}日`;
+        let extLabel = ext ? ext.toUpperCase() : '';
+        const div = document.createElement('div');
+        div.className = 'relative flex flex-row items-center py-2 gap-2.5 bg-[#F2F2F2] rounded-lg';
+        div.style.width = '100%';
+        div.style.minHeight = '44px';
+        div.style.height = 'auto';
+        div.style.paddingTop = '8px';
+        div.style.paddingBottom = '8px';
+        div.style.border = '1px solid var(--border-color)';
+        div.style.marginBottom = '12px';
+        div.style.paddingLeft = '12px';
+        div.style.paddingRight = '12px';
+        div.innerHTML = `
+            <img src='${iconSrc}' alt='icon' class='w-6 h-6 flex-shrink-0' style='width:24px;height:24px;'>
+            <div class='flex flex-col justify-center min-w-0 flex-1'>
+                <span class='text-[#0078e5] text-xs font-medium truncate max-w-[140px]' title='${file.name}'>${file.name}</span>
+                <div class='flex flex-row gap-0.5 text-tertiary text-xs leading-4'>
+                    <span>${uploadTimeStr}</span>
+                    <span>，</span>
+                    <span>${size}</span>
+                    <span>，</span>
+                    <span>${extLabel}</span>
+                </div>
+            </div>
+            <div class='remove-btn' onclick='removeAttachment(${idx})' title='删除' style='position:absolute;top:50%;right:4px;transform:translateY(-50%);width:24px;height:24px;z-index:10;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.8);border-radius:50%;color:#fff;cursor:pointer;'>
+                <i class='fas fa-times' style='font-size:14px;'></i>
+            </div>
+        `;
+        div.onclick = function(e) {
+            if (e.target.closest('.remove-btn')) return;
+            showAttachmentPreview(file);
+        };
+        area.appendChild(div);
+    });
+    if (attachments.length < 5) {
+        const upload = document.createElement('div');
+        upload.className = 'upload-item flex flex-row items-center justify-center w-full h-full';
+        upload.style.width = '100%';
+        upload.style.height = '44px';
+        upload.onclick = uploadAttachment;
+        upload.innerHTML = '<i class="fas fa-plus"></i><span class="text-xs select-none ml-1">上传附件</span>';
+        area.appendChild(upload);
+    }
+}
+function uploadAttachment() {
+    if (editAttachments.length >= 5) {
+        alert('最多只能上传5个附件');
+        return;
+    }
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.onchange = function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            let ext = file.name.split('.').pop().toLowerCase();
+            if (file.type.startsWith('image/')) {
+                reader.onload = function(ev) {
+                    editAttachments.push({ name: file.name, type: file.type, size: file.size, uploadDate: new Date().toISOString(), url: ev.target.result });
+                    renderAttachments(editAttachments);
+                }
+                reader.readAsDataURL(file);
+            } else if (file.type === 'application/pdf') {
+                reader.onload = function(ev) {
+                    editAttachments.push({ name: file.name, type: file.type, size: file.size, uploadDate: new Date().toISOString(), url: ev.target.result });
+                    renderAttachments(editAttachments);
+                }
+                reader.readAsDataURL(file);
+            } else if (file.type.startsWith('text/') || /\.(txt|csv)$/i.test(file.name)) {
+                reader.onload = function(ev) {
+                    editAttachments.push({ name: file.name, type: file.type, size: file.size, uploadDate: new Date().toISOString(), content: ev.target.result });
+                    renderAttachments(editAttachments);
+                }
+                reader.readAsText(file);
+            } else {
+                editAttachments.push({ name: file.name, type: file.type, size: file.size, uploadDate: new Date().toISOString() });
+                renderAttachments(editAttachments);
+            }
+        }
+    }
+    input.click();
+}
+function removeAttachment(idx) {
+    editAttachments.splice(idx, 1);
+    renderAttachments(editAttachments);
+}
+function showAttachmentPreview(file) {
+    const oldModal = document.getElementById('attachment-preview-modal');
+    if (oldModal) oldModal.remove();
+    let previewHtml = '';
+    if (file.type && file.type.startsWith('image/') && file.url) {
+        previewHtml = `<img src='${file.url}' alt='预览图片' style='max-width:320px;max-height:320px;border-radius:8px;margin-bottom:12px;'>`;
+    } else if (file.type === 'application/pdf' && file.url) {
+        previewHtml = `<embed src='${file.url}' type='application/pdf' width='320' height='400' style='border-radius:8px;margin-bottom:12px;' />`;
+    } else if ((file.type && file.type.startsWith('text/')) || /\.(txt|csv)$/i.test(file.name)) {
+        if (file.content) {
+            previewHtml = `<pre style='max-width:320px;max-height:320px;overflow:auto;background:#f7f7f7;padding:12px;border-radius:8px;margin-bottom:12px;'>${escapeHtml(file.content)}</pre>`;
+        } else {
+            previewHtml = `<div style='color:#999;margin-bottom:12px;'>无法读取内容</div>`;
+        }
+    } else {
+        previewHtml = `<div style='color:#999;margin-bottom:12px;'>暂不支持该类型文件预览</div>`;
+    }
+    const modal = document.createElement('div');
+    modal.id = 'attachment-preview-modal';
+    modal.style.position = 'fixed';
+    modal.style.left = '0';
+    modal.style.top = '0';
+    modal.style.width = '100vw';
+    modal.style.height = '100vh';
+    modal.style.background = 'rgba(0,0,0,0.5)';
+    modal.style.display = 'flex';
+    modal.style.alignItems = 'center';
+    modal.style.justifyContent = 'center';
+    modal.style.zIndex = '9999';
+    modal.innerHTML = `
+        <div style="background:#fff;border-radius:12px;min-width:260px;max-width:90vw;padding:24px 20px;box-shadow:0 4px 24px rgba(0,0,0,0.12);display:flex;flex-direction:column;align-items:center;">
+            <div style='font-size:16px;font-weight:600;margin-bottom:12px;'>附件预览</div>
+            ${previewHtml}
+            <div style='font-size:14px;color:#333;margin-bottom:8px;word-break:break-all;text-align:center;'>${file.name}</div>
+            <button onclick="document.getElementById('attachment-preview-modal').remove()" style='margin-top:18px;padding:6px 24px;border:none;border-radius:6px;background:#2D6AE0;color:#fff;font-size:14px;cursor:pointer;'>关闭</button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+function escapeHtml(str) {
+    return str.replace(/[&<>"]|'/g, function (c) {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c];
+    });
+}
+function getIconByExt(name) {
+    const ext = name.split('.').pop().toLowerCase();
+    const iconMap = {
+        'doc': 'assets/lficon/doc-24.svg',
+        'docx': 'assets/lficon/docx-24.svg',
+        'pdf': 'assets/lficon/pdf-24.svg',
+        'xls': 'assets/lficon/xls-24.svg',
+        'xlsx': 'assets/lficon/xlsx-24.svg',
+        'ppt': 'assets/lficon/ppt-24.svg',
+        'pptx': 'assets/lficon/pptx-24.svg',
+    };
+    return iconMap[ext] || 'assets/lficon/file-24-outline.svg';
+}
+// 页面初始化
+window.onload = function() {
+    renderAttachments(editAttachments);
+}
+</script>
+</body>
+</html> 

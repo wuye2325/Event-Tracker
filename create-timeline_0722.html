@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>创建新进展 - 大事小事追踪</title>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles.css">
+    <style>
+        .type-selector {
+            display: flex;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-lg);
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .type-item {
+            flex: 1;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-xs);
+            color: var(--text-secondary);
+        }
+        
+        .type-item i {
+            font-size: 20px;
+        }
+        
+        .type-item:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            background: var(--primary-light);
+            transform: translateY(-2px);
+        }
+        
+        .type-item.active {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            background: var(--primary-light);
+        }
+        
+        .content-input {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .content-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            resize: vertical;
+            font-size: 16px;
+            transition: all var(--transition-fast);
+            background: var(--bg-light);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .content-textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .image-upload-area {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-sm);
+        }
+        
+        .image-upload-item {
+            aspect-ratio: 1;
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            background: var(--bg-light);
+            color: var(--text-secondary);
+        }
+        
+        .image-upload-item:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .image-preview {
+            position: relative;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+        
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .image-preview .remove-btn {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .image-preview .remove-btn:hover {
+            background: rgba(0, 0, 0, 0.7);
+        }
+        
+        .action-buttons {
+            position: fixed;
+            bottom: var(--spacing-lg);
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: var(--spacing-md);
+            width: calc(100% - 32px);
+            max-width: 358px;
+            z-index: 100;
+        }
+        
+        .action-button {
+            flex: 1;
+            height: 44px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all var(--transition-fast);
+        }
+        
+        .action-button.draft {
+            background: var(--bg-light);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+        
+        .action-button.publish {
+            background: var(--primary-gradient);
+            color: white;
+        }
+        
+        .action-button:active {
+            transform: scale(0.98);
+        }
+        
+        .action-button i, .action-button .button-icon {
+            margin-right: var(--spacing-sm);
+            width: 16px;
+            height: 16px;
+        }
+
+        .action-button.draft:active .button-icon {
+            content: url('assets/icons/fa-save-active.png');
+        }
+
+        /* 格式化工具栏样式 */
+        .format-toolbar {
+            border-bottom: 1px solid #eee;
+            background-color: #f9f9f9;
+        }
+
+        .format-btn {
+            transition: all 0.2s;
+        }
+
+        .format-btn.active {
+            background-color: #e6f0ff;
+            color: #1890ff;
+        }
+
+        /* 链接弹窗样式 */
+        .link-modal {
+            transition: opacity 0.3s;
+        }
+
+        /* 调整文本域样式 */
+        .content-textarea {
+            min-height: 120px;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            resize: vertical;
+            outline: none;
+            font-size: 14px;
+        }
+
+        /* 添加富文本编辑器样式 */
+        .rich-editor-container {
+            position: relative;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .rich-editor {
+            min-height: 180px;
+            width: 100%;
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-color);
+            border-top: none;
+            border-radius: 0 0 var(--radius-md) var(--radius-md);
+            font-size: 16px;
+            transition: all var(--transition-fast);
+            background: var(--bg-light);
+            overflow-y: auto;
+            outline: none;
+        }
+
+        .rich-editor:focus {
+            border-color: var(--primary-color);
+            border-top: none;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .rich-editor:empty:before {
+            content: attr(placeholder);
+            color: #999;
+            pointer-events: none;
+        }
+
+        .rich-editor b, .rich-editor strong {
+            font-weight: bold;
+        }
+
+        .rich-editor a {
+            color: #1890ff;
+            text-decoration: underline;
+            border-radius: 2px;
+            transition: all 0.2s;
+        }
+        
+        .rich-editor a:hover {
+            color: #40a9ff;
+        }
+        .upload-item {
+            border-radius: var(--radius-md);
+            border: 2px dashed var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all var(--transition-fast);
+            background-color: var(--bg-light);
+            width: 100%;
+            height: 44px;
+        }
+        .upload-item:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-back" onclick="window.location.href='event-detail.html'">
+            <i class="fas fa-chevron-left"></i>
+        </div>
+        <div class="navbar-title">创建新进展</div>
+        <div class="navbar-action"></div>
+    </div>
+    
+    <div class="content">
+        <!-- 类型选择器 -->
+        <div class="type-selector">
+            <div class="type-item active" onclick="selectType('update')">
+                <i class="fas fa-history"></i>
+                <span>动态</span>
+            </div>
+            <div class="type-item" onclick="selectType('vote')">
+                <i class="fas fa-vote-yea"></i>
+                <span>投票</span>
+            </div>
+            <div class="type-item" onclick="selectType('complaint')">
+                <i class="fas fa-exclamation-circle"></i>
+                <span>投诉</span>
+            </div>
+            <div class="type-item" onclick="selectType('announcement')">
+                <i class="fas fa-bullhorn"></i>
+                <span>公告</span>
+            </div>
+        </div>
+
+        <!-- 内容输入区域 -->
+        <div class="content-input">
+            <!-- 格式化工具栏 -->
+            <div class="format-toolbar flex items-center p-2 border-b border-gray-200 bg-gray-50 rounded-t-lg">
+                <button class="format-btn p-1.5 mx-1 text-gray-600 hover:bg-gray-200 rounded" data-command="bold" title="加粗">
+                    <i class="fas fa-bold"></i>
+                </button>
+                <div class="h-4 mx-2 border-r border-gray-300"></div>
+                <button class="format-btn p-1.5 mx-1 text-gray-600 hover:bg-gray-200 rounded" data-command="createLink" title="添加链接">
+                    <i class="fas fa-link"></i>
+                </button>
+            </div>
+            
+            <div class="rich-editor-container">
+                <div class="rich-editor" contenteditable="true" placeholder="请输入进展内容..."></div>
+                <textarea class="hidden-textarea hidden" name="content"></textarea>
+            </div>
+            
+            <div class="image-upload-area">
+                <div class="image-upload-item" onclick="uploadImage()">
+                    <i class="fas fa-plus"></i>
+                </div>
+            </div>
+        </div>
+        <!-- 添加附件卡片（标准form-section） -->
+        <div class="form-section" style="margin-bottom: 24px; background: var(--bg-card); padding: 24px; border-radius: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+            <div class="form-section-title">添加附件</div>
+            <p class="text-secondary font-sm mb-3">支持PDF、Word、Excel、PPT格式</p>
+            <div class="upload-area items-start justify-center" id="attachment-area" style="display: block; margin-top: var(--spacing-md); padding: 0; min-height: 44px; height: auto;">
+                <!-- 附件预览与上传按钮由 JS 动态生成 -->
+            </div>
+        </div>
+        <style>
+        #attachment-area::-webkit-scrollbar { display: none; }
+        .upload-area, .upload-item { aspect-ratio: unset; }
+        </style>
+        <!-- 新增：进展开始时间卡片 -->
+        <div class="content-input">
+            <div class="form-section-title">进展开始时间</div>
+            <input type="datetime-local" class="form-input" id="timeline-start-time" placeholder="请选择进展开始时间">
+        </div>
+        
+    </div>
+    
+    <!-- 底部按钮 -->
+    <div class="action-buttons">
+        <button class="action-button draft" onclick="saveDraft()">
+            <img src="assets/icons/fa-save.png" class="button-icon" id="save-icon" alt="保存">
+            保存草稿
+        </button>
+        <button class="action-button publish" onclick="publishTimeline()">
+            <i class="fas fa-paper-plane"></i>
+            发布
+        </button>
+    </div>
+    
+    <!-- 添加链接弹窗 -->
+    <div id="linkModal" class="link-modal hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg w-80 p-4 shadow-lg">
+            <h3 class="text-lg font-medium mb-3">添加链接</h3>
+            <input type="text" placeholder="请输入链接文字" class="link-text w-full border border-gray-300 rounded px-3 py-2 mb-2">
+            <input type="url" placeholder="请输入URL地址" class="link-url w-full border border-gray-300 rounded px-3 py-2 mb-4">
+            <div class="flex justify-end">
+                <button class="cancel-btn px-4 py-1.5 mr-2 text-gray-600 hover:bg-gray-100 rounded">取消</button>
+                <button class="confirm-btn px-4 py-1.5 bg-blue-500 text-white rounded hover:bg-blue-600">确定</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let selectedType = 'update';
+        let timelineImages = [];
+        
+        function selectType(type) {
+            selectedType = type;
+            document.querySelectorAll('.type-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+        }
+        
+        function uploadImage() {
+            if (timelineImages.length >= 9) {
+                alert('最多只能上传9张图片');
+                return;
+            }
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        timelineImages.push(e.target.result);
+                        updateImagePreview();
+                    }
+                    reader.readAsDataURL(file);
+                }
+            }
+            input.click();
+        }
+        
+        function updateImagePreview() {
+            const uploadArea = document.querySelector('.image-upload-area');
+            uploadArea.innerHTML = '';
+            
+            timelineImages.forEach((img, index) => {
+                const div = document.createElement('div');
+                div.className = 'image-preview';
+                div.innerHTML = `
+                    <img src="${img}" alt="预览图片">
+                    <div class="remove-btn" onclick="removeImage(${index})">
+                        <i class="fas fa-times"></i>
+                    </div>
+                `;
+                uploadArea.appendChild(div);
+            });
+            
+            if (timelineImages.length < 9) {
+                const upload = document.createElement('div');
+                upload.className = 'image-upload-item';
+                upload.onclick = uploadImage;
+                upload.innerHTML = '<i class="fas fa-plus"></i>';
+                uploadArea.appendChild(upload);
+            }
+        }
+        
+        function removeImage(index) {
+            timelineImages.splice(index, 1);
+            updateImagePreview();
+        }
+        
+        function publishTimeline() {
+            // 同步富文本编辑器内容到隐藏的textarea
+            const editor = document.querySelector('.rich-editor');
+            const hiddenTextarea = document.querySelector('.hidden-textarea');
+            hiddenTextarea.value = editor.innerHTML;
+            
+            const content = hiddenTextarea.value.trim();
+            if (!content || content === '<br>') {
+                alert('请输入进展内容');
+                return;
+            }
+            alert('发布成功');
+            window.location.href = 'event-detail.html';
+        }
+
+        function saveDraft() {
+            // 同步富文本编辑器内容到隐藏的textarea
+            const editor = document.querySelector('.rich-editor');
+            const hiddenTextarea = document.querySelector('.hidden-textarea');
+            hiddenTextarea.value = editor.innerHTML;
+            
+            alert('保存草稿成功');
+        }
+
+        // 附件操作
+        let editAttachments = [];
+        function renderAttachments(attachments) {
+            const area = document.getElementById('attachment-area');
+            area.innerHTML = '';
+            area.classList.remove('items-center');
+            area.classList.add('items-start','justify-center');
+            area.style.minHeight = '44px';
+            area.style.height = 'auto';
+            area.style.paddingTop = '8px';
+            area.style.paddingBottom = '8px';
+            attachments.forEach((file, idx) => {
+                const ext = file.name ? file.name.split('.').pop().toLowerCase() : '';
+                let iconMap = {
+                    'doc': 'assets/lficon/doc-24.svg',
+                    'docx': 'assets/lficon/docx-24.svg',
+                    'pdf': 'assets/lficon/pdf-24.svg',
+                    'xls': 'assets/lficon/xls-24.svg',
+                    'xlsx': 'assets/lficon/xlsx-24.svg',
+                    'ppt': 'assets/lficon/ppt-24.svg',
+                    'pptx': 'assets/lficon/pptx-24.svg',
+                };
+                let iconSrc = iconMap[ext] || 'assets/lficon/file-24-outline.svg';
+                let size = file.size ? (file.size/1024>1024 ? (file.size/1024/1024).toFixed(2)+"MB" : (file.size/1024).toFixed(1)+"KB") : '';
+                let now = new Date();
+                let uploadDate = now;
+                if (file.uploadDate) uploadDate = new Date(file.uploadDate);
+                let month = uploadDate.getMonth() + 1;
+                let day = uploadDate.getDate();
+                let uploadTimeStr = `${month}月${day}日`;
+                let extLabel = ext ? ext.toUpperCase() : '';
+                const div = document.createElement('div');
+                div.className = 'relative flex flex-row items-center py-2 gap-2.5 bg-[#F2F2F2] rounded-lg';
+                div.style.width = '100%';
+                div.style.minHeight = '44px';
+                div.style.height = 'auto';
+                div.style.paddingTop = '8px';
+                div.style.paddingBottom = '8px';
+                div.style.border = '1px solid var(--border-color)';
+                div.style.marginBottom = '12px';
+                div.style.paddingLeft = '12px';
+                div.style.paddingRight = '12px';
+                div.innerHTML = `
+                    <img src='${iconSrc}' alt='icon' class='w-6 h-6 flex-shrink-0' style='width:24px;height:24px;'>
+                    <div class='flex flex-col justify-center min-w-0 flex-1'>
+                        <span class='text-[#0078e5] text-xs font-medium truncate max-w-[140px]' title='${file.name}'>${file.name}</span>
+                        <div class='flex flex-row gap-0.5 text-tertiary text-xs leading-4'>
+                            <span>${uploadTimeStr}</span>
+                            <span>，</span>
+                            <span>${size}</span>
+                            <span>，</span>
+                            <span>${extLabel}</span>
+                        </div>
+                    </div>
+                    <div class='remove-btn' onclick='removeAttachment(${idx})' title='删除' style='position:absolute;top:8px;right:8px;width:24px;height:24px;z-index:10;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.8);border-radius:50%;color:#fff;cursor:pointer;'>
+                        <i class='fas fa-times' style='font-size:14px;'></i>
+                    </div>
+                `;
+                div.onclick = function(e) {
+                    if (e.target.closest('.remove-btn')) return;
+                    showAttachmentPreview(file);
+                };
+                area.appendChild(div);
+            });
+            if (attachments.length < 5) {
+                const upload = document.createElement('div');
+                upload.className = 'upload-item flex flex-row items-center justify-center w-full h-full';
+                upload.onclick = uploadAttachment;
+                upload.innerHTML = '<i class="fas fa-plus"></i><span class="text-xs select-none ml-1">上传附件</span>';
+                area.appendChild(upload);
+            }
+        }
+        function uploadAttachment() {
+            if (editAttachments.length >= 5) {
+                alert('最多只能上传5个附件');
+                return;
+            }
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    let ext = file.name.split('.').pop().toLowerCase();
+                    if (file.type.startsWith('image/')) {
+                        reader.onload = function(ev) {
+                            editAttachments.push({ name: file.name, type: file.type, size: file.size, uploadDate: new Date().toISOString(), url: ev.target.result });
+                            renderAttachments(editAttachments);
+                        }
+                        reader.readAsDataURL(file);
+                    } else if (file.type === 'application/pdf') {
+                        reader.onload = function(ev) {
+                            editAttachments.push({ name: file.name, type: file.type, size: file.size, uploadDate: new Date().toISOString(), url: ev.target.result });
+                            renderAttachments(editAttachments);
+                        }
+                        reader.readAsDataURL(file);
+                    } else if (file.type.startsWith('text/') || /\.(txt|csv)$/i.test(file.name)) {
+                        reader.onload = function(ev) {
+                            editAttachments.push({ name: file.name, type: file.type, size: file.size, uploadDate: new Date().toISOString(), content: ev.target.result });
+                            renderAttachments(editAttachments);
+                        }
+                        reader.readAsText(file);
+                    } else {
+                        editAttachments.push({ name: file.name, type: file.type, size: file.size, uploadDate: new Date().toISOString() });
+                        renderAttachments(editAttachments);
+                    }
+                }
+            }
+            input.click();
+        }
+        function removeAttachment(idx) {
+            editAttachments.splice(idx, 1);
+            renderAttachments(editAttachments);
+        }
+        function showAttachmentPreview(file) {
+            const oldModal = document.getElementById('attachment-preview-modal');
+            if (oldModal) oldModal.remove();
+            let previewHtml = '';
+            if (file.type && file.type.startsWith('image/') && file.url) {
+                previewHtml = `<img src='${file.url}' alt='预览图片' style='max-width:320px;max-height:320px;border-radius:8px;margin-bottom:12px;'>`;
+            } else if (file.type === 'application/pdf' && file.url) {
+                previewHtml = `<embed src='${file.url}' type='application/pdf' width='320' height='400' style='border-radius:8px;margin-bottom:12px;' />`;
+            } else if ((file.type && file.type.startsWith('text/')) || /\.(txt|csv)$/i.test(file.name)) {
+                if (file.content) {
+                    previewHtml = `<pre style='max-width:320px;max-height:320px;overflow:auto;background:#f7f7f7;padding:12px;border-radius:8px;margin-bottom:12px;'>${escapeHtml(file.content)}</pre>`;
+                } else {
+                    previewHtml = `<div style='color:#999;margin-bottom:12px;'>无法读取内容</div>`;
+                }
+            } else {
+                previewHtml = `<div style='color:#999;margin-bottom:12px;'>暂不支持该类型文件预览</div>`;
+            }
+            const modal = document.createElement('div');
+            modal.id = 'attachment-preview-modal';
+            modal.style.position = 'fixed';
+            modal.style.left = '0';
+            modal.style.top = '0';
+            modal.style.width = '100vw';
+            modal.style.height = '100vh';
+            modal.style.background = 'rgba(0,0,0,0.5)';
+            modal.style.display = 'flex';
+            modal.style.alignItems = 'center';
+            modal.style.justifyContent = 'center';
+            modal.style.zIndex = '9999';
+            modal.innerHTML = `
+                <div style="background:#fff;border-radius:12px;min-width:260px;max-width:90vw;padding:24px 20px;box-shadow:0 4px 24px rgba(0,0,0,0.12);display:flex;flex-direction:column;align-items:center;">
+                    <div style='font-size:16px;font-weight:600;margin-bottom:12px;'>附件预览</div>
+                    ${previewHtml}
+                    <div style='font-size:14px;color:#333;margin-bottom:8px;word-break:break-all;text-align:center;'>${file.name}</div>
+                    <button onclick="document.getElementById('attachment-preview-modal').remove()" style='margin-top:18px;padding:6px 24px;border:none;border-radius:6px;background:#2D6AE0;color:#fff;font-size:14px;cursor:pointer;'>关闭</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        function escapeHtml(str) {
+            return str.replace(/[&<>"]|'/g, function (c) {
+                return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c];
+            });
+        }
+        function getIconByExt(name) {
+            const ext = name.split('.').pop().toLowerCase();
+            const iconMap = {
+                'doc': 'assets/lficon/doc-24.svg',
+                'docx': 'assets/lficon/docx-24.svg',
+                'pdf': 'assets/lficon/pdf-24.svg',
+                'xls': 'assets/lficon/xls-24.svg',
+                'xlsx': 'assets/lficon/xlsx-24.svg',
+                'ppt': 'assets/lficon/ppt-24.svg',
+                'pptx': 'assets/lficon/pptx-24.svg',
+            };
+            return iconMap[ext] || 'assets/lficon/file-24-outline.svg';
+        }
+        // 页面初始化
+        window.onload = function() {
+            editAttachments = [];
+            renderAttachments(editAttachments);
+        }
+
+        // 替换文本编辑相关脚本
+        document.addEventListener('DOMContentLoaded', function() {
+            const editor = document.querySelector('.rich-editor');
+            const hiddenTextarea = document.querySelector('.hidden-textarea');
+            
+            // 确保编辑器有初始内容，避免空内容问题
+            if (!editor.innerHTML.trim()) {
+                editor.innerHTML = '<br>';
+            }
+            
+            // 给编辑器一个初始焦点，然后再失去焦点
+            // 这样可以初始化编辑器的内部状态
+            editor.focus();
+            setTimeout(() => {
+                document.activeElement.blur();
+            }, 100);
+            
+            // 工具栏按钮点击事件
+            document.querySelectorAll('.format-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const command = this.getAttribute('data-command');
+                    
+                    if (command === 'bold') {
+                        document.execCommand('bold', false, null);
+                        editor.focus();
+                    } else if (command === 'createLink') {
+                        // 获取选中文本
+                        const selection = window.getSelection();
+                        const selectedText = selection.toString();
+                        
+                        // 显示链接弹窗
+                        showRichLinkModal(selectedText);
+                    }
+                });
+            });
+            
+            // 显示链接弹窗
+            function showRichLinkModal(text) {
+                const modal = document.getElementById('linkModal');
+                const textInput = modal.querySelector('.link-text');
+                const editor = document.querySelector('.rich-editor');
+                
+                // 提前获取焦点
+                editor.focus();
+                
+                textInput.value = text;
+                modal.classList.remove('hidden');
+                
+                // 设置确认按钮事件
+                modal.querySelector('.confirm-btn').onclick = function() {
+                    const linkText = modal.querySelector('.link-text').value || '链接文字';
+                    const linkUrl = modal.querySelector('.link-url').value;
+                    
+                    if (linkUrl) {
+                        // 确保编辑器有焦点
+                        editor.focus();
+                        const selection = window.getSelection();
+                        
+                        // 如果有选中文本
+                        if (selection.rangeCount > 0 && selection.toString()) {
+                            // 直接创建链接
+                            document.execCommand('createLink', false, linkUrl);
+                            
+                            // 添加属性到新创建的链接
+                            setTimeout(function() {
+                                const links = editor.querySelectorAll(`a[href="${linkUrl}"]`);
+                                if (links.length > 0) {
+                                    const newLink = links[links.length - 1];
+                                    newLink.setAttribute('target', '_blank');
+                                    newLink.setAttribute('rel', 'noopener');
+                                }
+                            }, 0);
+                        } else {
+                            try {
+                                // 如果没有选中文本，直接插入HTML（去掉背景色样式）
+                                const linkHTML = `<a href="${linkUrl}" target="_blank" rel="noopener" style="color:#1890ff;text-decoration:underline;">${linkText}</a>`;
+                                
+                                // 直接使用execCommand插入HTML
+                                document.execCommand('insertHTML', false, linkHTML);
+                            } catch (e) {
+                                console.error('插入链接失败:', e);
+                                // 备用方案：直接添加到编辑器末尾
+                                editor.innerHTML += linkHTML;
+                                // 移动光标到末尾
+                                const range = document.createRange();
+                                range.selectNodeContents(editor);
+                                range.collapse(false);
+                                const selection = window.getSelection();
+                                selection.removeAllRanges();
+                                selection.addRange(range);
+                            }
+                        }
+                        
+                        // 关闭弹窗
+                        modal.classList.add('hidden');
+                        modal.querySelector('.link-url').value = '';
+                    }
+                };
+                
+                // 其他弹窗逻辑保持不变
+                modal.querySelector('.cancel-btn').onclick = function() {
+                    modal.classList.add('hidden');
+                };
+                
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        modal.classList.add('hidden');
+                    }
+                });
+            }
+            
+            // 在提交表单前将编辑器内容同步到隐藏的textarea
+            function syncContent() {
+                hiddenTextarea.value = editor.innerHTML;
+            }
+            
+            // 支持Markdown语法的自动转换
+            editor.addEventListener('input', function() {
+                const selection = window.getSelection();
+                const range = selection.getRangeAt(0);
+                const startOffset = range.startOffset;
+                
+                // 获取当前行文本内容
+                const node = selection.anchorNode;
+                if (node && node.nodeType === 3) { // 文本节点
+                    const text = node.textContent;
+                    
+                    // 处理加粗语法: **text**
+                    if (text.includes('**')) {
+                        const boldMatches = text.match(/\*\*([^*]+)\*\*/g);
+                        if (boldMatches) {
+                            // 保存当前光标位置
+                            const cursorPosition = range.startOffset;
+                            
+                            // 替换加粗语法
+                            let newText = text;
+                            boldMatches.forEach(match => {
+                                const content = match.slice(2, -2);
+                                newText = newText.replace(match, `<b>${content}</b>`);
+                            });
+                            
+                            // 如果有变化，应用HTML
+                            if (newText !== text) {
+                                // 创建一个文档片段来保存新内容
+                                const fragment = document.createRange().createContextualFragment(newText);
+                                
+                                // 替换节点内容
+                                node.parentNode.replaceChild(fragment, node);
+                                
+                                // 尝试恢复光标位置到合理的地方
+                                placeCaretAfterNode(fragment.lastChild);
+                            }
+                        }
+                    }
+                    
+                    // 处理链接语法: [text](url)
+                    if (text.includes('[') && text.includes('](') && text.includes(')')) {
+                        const linkMatches = text.match(/\[([^\]]+)\]\(([^)]+)\)/g);
+                        if (linkMatches) {
+                            // 保存当前光标位置
+                            const cursorPosition = range.startOffset;
+                            
+                            // 替换链接语法
+                            let newText = text;
+                            linkMatches.forEach(match => {
+                                const linkText = match.match(/\[([^\]]+)\]/)[1];
+                                const linkUrl = match.match(/\]\(([^)]+)\)/)[1];
+                                newText = newText.replace(match, `<a href="${linkUrl}" target="_blank">${linkText}</a>`);
+                            });
+                            
+                            // 如果有变化，应用HTML
+                            if (newText !== text) {
+                                // 创建一个文档片段来保存新内容
+                                const fragment = document.createRange().createContextualFragment(newText);
+                                
+                                // 替换节点内容
+                                node.parentNode.replaceChild(fragment, node);
+                                
+                                // 尝试恢复光标位置到合理的地方
+                                placeCaretAfterNode(fragment.lastChild);
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // 帮助函数：将光标放在指定节点后面
+            function placeCaretAfterNode(node) {
+                if (!node) return;
+                
+                const range = document.createRange();
+                const selection = window.getSelection();
+                
+                range.setStartAfter(node);
+                range.collapse(true);
+                
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+            
+            // 在表单提交前同步内容
+            document.querySelector('.action-button.publish').addEventListener('click', function() {
+                syncContent();
+                const content = hiddenTextarea.value.trim();
+                if (!content || content === '<br>') {
+                    alert('请输入进展内容');
+                    return;
+                }
+                alert('发布成功');
+                window.location.href = 'event-detail.html';
+            });
+            
+            document.querySelector('.action-button.draft').addEventListener('click', function() {
+                syncContent();
+                alert('保存草稿成功');
+            });
+        });
+    </script>
+</body>
+</html>
